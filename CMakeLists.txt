@@ -75,7 +75,10 @@ set(Boost_USE_STATIC_RUNTIME     OFF)
 
 enable_testing()
 
-# find_package(spdlog::spdlog  REQUIRED)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+  add_definitions(-DNDEBUG)
+endif()
+
 find_package(Threads REQUIRED)
 
 add_subdirectory(libcore)

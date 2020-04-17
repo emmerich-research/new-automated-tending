@@ -8,6 +8,7 @@
 , mesa
 , mesa_drivers
 , libGLU
+, doxygen
 }:
 
 let
@@ -32,6 +33,7 @@ in
     buildInputs            = [
       boost
       gtkmm3
+      doxygen
     ];
 
     cmakeFlags             = [

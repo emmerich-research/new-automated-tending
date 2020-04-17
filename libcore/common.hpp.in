@@ -1,9 +1,47 @@
 #ifndef LIB_CORE_COMMON_HPP_
 #define LIB_CORE_COMMON_HPP_
 
+/** \file common.hpp
+ *  \brief Common definitions for whole project
+ *
+ * Every implementation must use the namespace defined this file
+ *
+ * List of global variables
+ * - APP_AUTHOR
+ * - APP_AUTHOR
+ * - LOGS_DIR  
+ * - APP_NAME  
+ * - APP_DESC   
+ * - DEBUG     
+ * - TIME_FMT
+ */
+
+/**
+ * \def NAMESPACE_BEGIN
+ * Macro namespace begin definition (auto generated from cmake)
+ */
 #define NAMESPACE_BEGIN       namespace @PROJECT_NAMESPACE@ {
+
+/**
+ * \def NAMESPACE_END
+ * Macro namespace begin definition (auto generated from cmake)
+ */
 #define NAMESPACE_END         }
+
+/**
+ * \def ns(T)
+ * (Outside the project the namespace) Use static function \a T inside class that is defined inside the project namespace (auto generated from cmake)
+ *
+ * Usage:
+ * ns(SomeClass)::print() will be expanded into namespace::SomeClass::print()
+ * @param T  static function
+ */
 #define ns(T)                 @PROJECT_NAMESPACE@::T
+
+/**
+ * \def USE_NAMESPACE
+ * using project namespace (auto generated from cmake)
+ */
 #define USE_NAMESPACE         using namespace @PROJECT_NAMESPACE@;
 
 static const char* APP_AUTHOR = "@PROJECT_AUTHOR@";

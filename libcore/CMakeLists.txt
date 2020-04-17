@@ -5,15 +5,16 @@ configure_file(common.hpp.in common.hpp @ONLY)
 ucm_add_files(
   "test.cpp"
   # "allocation.cpp"
-  # "state.cpp"
+  "macros.cpp"
+  "state.cpp"
   TO SOURCES)
   
 ucm_add_target(
   NAME ${NAME}
   TYPE STATIC
-  SOURCES ${SOURCES})
-  # UNITY CPP_PER_UNITY 20
-  # PCH_FILE "precompiled.hpp")
+  SOURCES ${SOURCES}
+  UNITY CPP_PER_UNITY 20
+  PCH_FILE "precompiled.hpp")
 
 add_library("${PROJECT_NAMESPACE}::${NAME}" ALIAS ${NAME})
 
