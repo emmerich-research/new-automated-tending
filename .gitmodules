@@ -1,0 +1,9 @@
+[submodule "external/yaml"]
+	path = external/yaml
+	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "external/doctest"]
+	path = external/doctest
+	url = https://github.com/onqtam/doctest.git
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = https://github.com/gabime/spdlog.git

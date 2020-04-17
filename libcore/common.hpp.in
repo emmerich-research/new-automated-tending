@@ -1,0 +1,16 @@
+#ifndef LIB_CORE_COMMON_HPP_
+#define LIB_CORE_COMMON_HPP_
+
+#define NAMESPACE_BEGIN       namespace @PROJECT_NAMESPACE@ {
+#define NAMESPACE_END         }
+#define ns(T)                 @PROJECT_NAMESPACE@::T
+#define USE_NAMESPACE         using namespace @PROJECT_NAMESPACE@;
+
+static const char* APP_AUTHOR = "@PROJECT_AUTHOR@";
+static const char* LOGS_DIR   = "logs";
+static const char* APP_NAME   = "@PROJECT_ALT_TITLE@";
+static const char* APP_DESC   = "@PROJECT_DESCRIPTION@";
+static const bool  DEBUG      = false;
+static const char* TIME_FMT   = "%Y-%m-%dT%H:%M:%S";
+
+#endif
