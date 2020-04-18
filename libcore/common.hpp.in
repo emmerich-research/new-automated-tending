@@ -7,10 +7,14 @@
  * Every implementation must use the namespace defined this file
  *
  * List of global variables
+ * - PROJECT_CONFIG_DIR
+ * - PROJECT_CONFIG_FILE
+ * - PROJECT_STATE_FILE
  * - APP_AUTHOR
  * - APP_AUTHOR
  * - LOGS_DIR  
  * - APP_NAME  
+ * - APP_ALT_NAME
  * - APP_DESC   
  * - DEBUG     
  * - TIME_FMT
@@ -44,11 +48,15 @@
  */
 #define USE_NAMESPACE         using namespace @PROJECT_NAMESPACE@;
 
-static const char* APP_AUTHOR = "@PROJECT_AUTHOR@";
-static const char* LOGS_DIR   = "logs";
-static const char* APP_NAME   = "@PROJECT_ALT_TITLE@";
-static const char* APP_DESC   = "@PROJECT_DESCRIPTION@";
-static const bool  DEBUG      = false;
-static const char* TIME_FMT   = "%Y-%m-%dT%H:%M:%S";
+static const char* PROJECT_CONFIG_DIR  = "@PROJECT_CONFIG_DIR@";
+static const char* PROJECT_CONFIG_FILE = "@PROJECT_CONFIG_FILE@";
+static const char* PROJECT_STATE_FILE  = "@PROJECT_STATE_FILE@";
+static const char* APP_AUTHOR          = "@PROJECT_AUTHOR@";
+static const char* LOGS_DIR            = "logs";
+static const char* APP_NAME            = "@PROJECT_TITLE@";
+static const char* APP_ALT_NAME        = "@PROJECT_ALT_TITLE@";
+static const char* APP_DESC            = "@PROJECT_DESCRIPTION@";
+static const bool  DEBUG               = false;
+static const char* TIME_FMT            = "%Y-%m-%dT%H:%M:%S";
 
 #endif

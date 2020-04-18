@@ -1,0 +1,43 @@
+# all distance is in mm
+
+general:
+  name: "Emmerich Tending App"
+  debug: true
+devices:
+  movement:
+    delay_each_step: 500
+    sleep_pin: 16
+    edge_limit_switch_pin: 11
+    x:
+      homing_pin: 5
+      step_pin: 26
+      direction_pin: 13
+      step_per_mm: 6.2069
+      reversed: false
+      speed: 200.0
+      acceleration: 1000.0
+    y:
+      homing_pin: 6
+      step_pin: 21
+      direction_pin: 20
+      step_per_mm: 6.2069
+      reversed: true
+      speed: 200.0
+      acceleration: 1000.0
+    z:
+      homing_pin: 19
+      step_pin: 27
+      direction_pin: 17
+      step_per_mm: 0
+      reversed: true
+      speed: 200.0
+      acceleration: 1000.0
+      height: 18
+  watering:
+    pump: 19
+  rotation:
+    pwm: 12
+    nonpwm: 12
+    speed: 50
+    encoder: 0
+  

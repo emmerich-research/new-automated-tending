@@ -1,6 +1,6 @@
-#include "precompiled.hpp"
+#include "core.hpp"
 
-#include "macros.hpp"
+#include <iostream>
 
 void _massert(const char* expr_str,
               bool        expr,

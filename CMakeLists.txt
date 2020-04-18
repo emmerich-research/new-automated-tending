@@ -79,6 +79,8 @@ if(${CMAKE_BUILD_TYPE} MATCHES Debug)
   add_definitions(-DNDEBUG)
 endif()
 
+add_definitions(-DATM_COMPILATION)
+
 find_package(Threads REQUIRED)
 
 add_subdirectory(libcore)

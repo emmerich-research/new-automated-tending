@@ -1,15 +1,15 @@
-#include "precompiled.hpp"
+#include "core.hpp"
 
 #include "state.hpp"
-
-#include "common.hpp"
 
 NAMESPACE_BEGIN
 
 impl::StateImpl* State::instance_ = nullptr;
 
 namespace impl {
-StateImpl::StateImpl() {}
+StateImpl::StateImpl() {
+  DEBUG_ONLY(obj_name_ = "StateImpl");
+}
 
 void StateImpl::print() {
   std::cout << "hello world" << std::endl;

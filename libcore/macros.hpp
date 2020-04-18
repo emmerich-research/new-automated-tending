@@ -5,8 +5,6 @@
  *  \brief Macros definitions
  */
 
-#include <iostream>
-
 /**
  * \def DEBUG_ONLY(code)
  *
@@ -26,7 +24,7 @@
  * @param Msg  message for this assert
  */
 
-#ifndef NDEBUG
+#ifdef NDEBUG
 #define DEBUG_ONLY(code) code
 #define NOT_DEBUG(code) static_cast<void>(0)
 #define massert(Expr, Msg) _massert(#Expr, Expr, __FILE__, __LINE__, Msg)

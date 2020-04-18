@@ -1,12 +1,16 @@
 set(NAME "core")
 
+project(${NAME})
+
 configure_file(common.hpp.in common.hpp @ONLY)
 
 ucm_add_files(
   "test.cpp"
-  # "allocation.cpp"
   "macros.cpp"
+  
+  "logger.cpp"
   "state.cpp"
+  "config.cpp"
   TO SOURCES)
   
 ucm_add_target(
@@ -14,17 +18,28 @@ ucm_add_target(
   TYPE STATIC
   SOURCES ${SOURCES}
   UNITY CPP_PER_UNITY 20
-  PCH_FILE "precompiled.hpp")
+  PCH_FILE "core.hpp")
 
 add_library("${PROJECT_NAMESPACE}::${NAME}" ALIAS ${NAME})
 
-target_include_directories(${NAME} PRIVATE
-  ${PROJECT_SOURCE_DIR}
-  ${CMAKE_BINARY_DIR})
+# target_include_directories(${NAME} PRIVATE
+#   ${PROJECT_SOURCE_DIR}
+#   ${CMAKE_BINARY_DIR})
 
-target_link_libraries(${NAME} PRIVATE
+# target_include_directories(${NAME}
+#   PUBLIC
+#     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+#     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+target_include_directories(${NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+
+target_link_libraries(${NAME} PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
-  spdlog::spdlog)
+  spdlog::spdlog
+  yaml::yaml)
 
 target_set_warnings(${NAME}
   ENABLE ALL

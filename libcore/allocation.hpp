@@ -11,7 +11,6 @@
 #include <string>
 
 #include "common.hpp"
-
 #include "macros.hpp"
 
 NAMESPACE_BEGIN
@@ -35,9 +34,9 @@ NAMESPACE_BEGIN
 class AllocObj {
  public:
   /**
-   * GetName of this object
+   * Get name of this object
    */
-  inline const std::string& getName() const { return name_; }
+  inline const std::string& get_obj_name() const { return obj_name_; }
 
   /**
    * Stream allocated object info
@@ -50,12 +49,12 @@ class AllocObj {
   friend OStream& operator<<(OStream& os, const AllocObj& obj);
 
  protected:
-  std::string name_;
+  std::string obj_name_;
 };
 
 template <typename OStream>
 OStream& operator<<(OStream& os, const AllocObj& obj) {
-  return os << obj.getName();
+  return os << obj.get_obj_name();
 }
 #else
 /** Grandparent of all class */
