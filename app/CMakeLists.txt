@@ -13,14 +13,11 @@ ucm_add_target(
   # UNITY CPP_PER_UNITY 20
   # PCH_FILE "precompiled.hpp")
 
-target_include_directories(${NAME} PRIVATE
-  # ${PROJECT_SOURCE_DIR}
-  ${CMAKE_BINARY_DIR})
+# target_include_directories(${NAME} PRIVATE
+#   # ${PROJECT_SOURCE_DIR}
+#   ${CMAKE_BINARY_DIR})
 
 target_link_libraries(${NAME} PRIVATE
-  # ${CMAKE_THREAD_LIBS_INIT}
-  # yaml::yaml
-  # spdlog::spdlog
   "${PROJECT_NAMESPACE}::core")
 
 target_set_warnings(${NAME}

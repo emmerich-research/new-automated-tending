@@ -40,14 +40,14 @@ class Config : StaticObj {
    * @return impl::ConfigImpl pointer
    */
   template <typename... Args>
-  static impl::ConfigImpl* create(Args... args);
+  inline static impl::ConfigImpl* create(Args... args);
 
   /**
    * Get impl::ConfigImpl pointer
    *
    * @return impl::ConfigImpl pointer that has been initialized
    */
-  static impl::ConfigImpl* get();
+  inline static impl::ConfigImpl* get();
 
  private:
   static impl::ConfigImpl* instance_;

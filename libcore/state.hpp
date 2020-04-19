@@ -36,14 +36,14 @@ class State : StaticObj {
    * @return impl::StateImpl pointer
    */
   template <typename... Args>
-  static impl::StateImpl* create(Args... args);
+  inline static impl::StateImpl* create(Args... args);
 
   /**
    * Get impl::StateImpl pointer
    *
    * @return impl::StateImpl pointer that has been initialized
    */
-  static impl::StateImpl* get();
+  inline static impl::StateImpl* get();
 
  private:
   static impl::StateImpl* instance_;

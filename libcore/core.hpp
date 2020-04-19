@@ -29,8 +29,6 @@
 #include <yaml-cpp/yaml.h>
 
 // 3. Local
-#define __CORE_HPP_INSIDE__
-
 #include "common.hpp"
 
 #include "allocation.hpp"
@@ -39,7 +37,5 @@
 #include "config.hpp"
 #include "logger.hpp"
 #include "state.hpp"
-
-#undef __CORE_HPP_INSIDE__
 
 #endif

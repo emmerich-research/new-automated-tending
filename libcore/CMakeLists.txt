@@ -22,15 +22,6 @@ ucm_add_target(
 
 add_library("${PROJECT_NAMESPACE}::${NAME}" ALIAS ${NAME})
 
-# target_include_directories(${NAME} PRIVATE
-#   ${PROJECT_SOURCE_DIR}
-#   ${CMAKE_BINARY_DIR})
-
-# target_include_directories(${NAME}
-#   PUBLIC
-#     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-#     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-
 target_include_directories(${NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"

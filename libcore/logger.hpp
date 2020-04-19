@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
 
 #include "common.hpp"
@@ -42,14 +43,14 @@ class Logger : StaticObj {
    * @return impl::LoggerImpl pointer
    */
   template <typename... Args>
-  static impl::LoggerImpl* create(Args... args);
+  inline static impl::LoggerImpl* create(Args... args);
 
   /**
    * Get impl::LoggerImpl pointer
    *
    * @return impl::LoggerImpl pointer that has been initialized
    */
-  static impl::LoggerImpl* get();
+  inline static impl::LoggerImpl* get();
 
  private:
   static impl::LoggerImpl* instance_;
