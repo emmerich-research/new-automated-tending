@@ -36,7 +36,7 @@ class State : StaticObj {
    * @return impl::StateImpl pointer
    */
   template <typename... Args>
-  inline static impl::StateImpl* create(Args... args);
+  inline static ATM_STATUS create(Args... args);
 
   /**
    * Get impl::StateImpl pointer
@@ -62,7 +62,7 @@ namespace impl {
  */
 class StateImpl : public StackObj {
   template <typename... Args>
-  friend StateImpl* State::create(Args... args);
+  friend ATM_STATUS State::create(Args... args);
 
  public:
   /**
@@ -83,14 +83,18 @@ class StateImpl : public StackObj {
 }  // namespace impl
 
 template <typename... Args>
-inline impl::StateImpl* State::create(Args... args) {
+inline ATM_STATUS State::create(Args... args) {
   massert(instance_ == nullptr, "create only can be called once");
   if (instance_ == nullptr) {
     static impl::StateImpl state(args...);
     instance_ = &state;
   }
-  massert(instance_ != nullptr, "sanity check");
-  return instance_;
+  if (instance_ == nullptr) {
+    return ATM_ERR;
+  } else {
+    massert(instance_ != nullptr, "sanity check");
+    return ATM_OK;
+  }
 }
 
 inline impl::StateImpl* State::get() {

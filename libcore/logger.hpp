@@ -43,7 +43,7 @@ class Logger : StaticObj {
    * @return impl::LoggerImpl pointer
    */
   template <typename... Args>
-  inline static impl::LoggerImpl* create(Args... args);
+  inline static ATM_STATUS create(Args... args);
 
   /**
    * Get impl::LoggerImpl pointer
@@ -59,7 +59,7 @@ class Logger : StaticObj {
 namespace impl {
 class LoggerImpl : public StackObj {
   template <typename... Args>
-  friend LoggerImpl* Logger::create(Args... args);
+  friend ATM_STATUS Logger::create(Args... args);
 
  public:
   inline const std::shared_ptr<spdlog::logger>& getLogger() const {
@@ -125,14 +125,19 @@ class LoggerImpl : public StackObj {
 }  // namespace impl
 
 template <typename... Args>
-inline impl::LoggerImpl* Logger::create(Args... args) {
+inline ATM_STATUS Logger::create(Args... args) {
   massert(instance_ == nullptr, "create only can be called once");
   if (instance_ == nullptr) {
     static impl::LoggerImpl logger(args...);
     instance_ = &logger;
   }
-  massert(instance_ != nullptr, "sanity check");
-  return instance_;
+
+  if (instance_ == nullptr) {
+    return ATM_ERR;
+  } else {
+    massert(instance_ != nullptr, "sanity check");
+    return ATM_OK;
+  }
 }
 
 inline impl::LoggerImpl* Logger::get() {

@@ -40,7 +40,7 @@ class Config : StaticObj {
    * @return impl::ConfigImpl pointer
    */
   template <typename... Args>
-  inline static impl::ConfigImpl* create(Args... args);
+  inline static ATM_STATUS create(Args... args);
 
   /**
    * Get impl::ConfigImpl pointer
@@ -66,7 +66,7 @@ namespace impl {
  */
 class ConfigImpl : public StackObj {
   template <typename... Args>
-  friend ConfigImpl* Config::create(Args... args);
+  friend ATM_STATUS Config::create(Args... args);
 
  public:
   template <typename Key>
@@ -99,14 +99,18 @@ class ConfigImpl : public StackObj {
 }  // namespace impl
 
 template <typename... Args>
-inline impl::ConfigImpl* Config::create(Args... args) {
+inline ATM_STATUS Config::create(Args... args) {
   massert(instance_ == nullptr, "create only can be called once");
   if (instance_ == nullptr) {
     static impl::ConfigImpl config(args...);
     instance_ = &config;
   }
-  massert(instance_ != nullptr, "sanity check");
-  return instance_;
+  if (instance_ == nullptr) {
+    return ATM_ERR;
+  } else {
+    massert(instance_ != nullptr, "sanity check");
+    return ATM_OK;
+  }
 }
 
 inline impl::ConfigImpl* Config::get() {

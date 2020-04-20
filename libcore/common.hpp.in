@@ -48,6 +48,30 @@
  */
 #define USE_NAMESPACE         using namespace @PROJECT_NAMESPACE@;
 
+
+NAMESPACE_BEGIN
+
+/**
+ * \var using ATM_STATUS = int
+ * \brief Type definition for whole project status
+    
+    Details.
+*/
+using ATM_STATUS = int;
+
+/**
+ * \var ATM_OK = 0
+ * OK status for all project
+ */
+static const int ATM_OK  = 0;
+
+/**
+ * \var ATM_ERR = -1
+ * ERROR status for all project
+ */
+static const int ATM_ERR = -1;
+// #define ATM_ERR   (-1)
+
 static const char* PROJECT_CONFIG_DIR  = "@PROJECT_CONFIG_DIR@";
 static const char* PROJECT_CONFIG_FILE = "@PROJECT_CONFIG_FILE@";
 static const char* PROJECT_STATE_FILE  = "@PROJECT_STATE_FILE@";
@@ -58,5 +82,7 @@ static const char* APP_ALT_NAME        = "@PROJECT_ALT_TITLE@";
 static const char* APP_DESC            = "@PROJECT_DESCRIPTION@";
 static const bool  DEBUG               = false;
 static const char* TIME_FMT            = "%Y-%m-%dT%H:%M:%S";
+
+NAMESPACE_END
 
 #endif
