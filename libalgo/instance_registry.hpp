@@ -39,19 +39,26 @@ namespace impl {
  */
 template <typename T>
 class InstanceRegistryImpl : public StackObj {
-  template <class InstanceRegistryImpl>
   template <typename... Args>
-  friend ATM_STATUS StaticObj<InstanceRegistryImpl>::create(Args&&... args);
+  friend ATM_STATUS InstanceRegistry<T>::create(Args&&... args);
 
  public:
   /**
    * Create new instance of T
+   *
+   * @tparam Args  variadic template for arguments
    *
    * @param  id    unique identifier of instance
    * @param  args  arguments to pass to constructor of T
    */
   template <typename... Args>
   inline ATM_STATUS create(const std::string& id, Args&&... args);
+  /**
+   * Get instance of T with unique id
+   *
+   * @param  id    unique identifier of instance
+   */
+  inline const std::shared_ptr<T>& get(const std::string& id);
 
  private:
   /**

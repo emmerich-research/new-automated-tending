@@ -13,6 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <stdexcept>
 
 // 2. Vendor
 

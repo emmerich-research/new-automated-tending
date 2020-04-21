@@ -24,8 +24,12 @@
 // 3. Inside projects
 #include <libcore/core.hpp>
 
+#include <libalgo/algo.hpp>
+
 // 4. Local
 #include "gpio.hpp"
+
+#include "init.hpp"
 
 // 4.1. Analog Device
 #include "analog/analog.hpp"

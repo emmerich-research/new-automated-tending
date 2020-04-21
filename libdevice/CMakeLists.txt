@@ -1,8 +1,8 @@
 project(device)
 
 ucm_add_files(
+  "init.cpp"
   "gpio.cpp"
-
   "analog/analog.cpp"
   TO SOURCES)
 

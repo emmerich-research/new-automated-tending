@@ -11,6 +11,7 @@ AnalogDevice::AnalogDevice(unsigned char address,
                            unsigned char bus,
                            unsigned char flags)
     : address_(address), bus_(bus), flags_(flags) {
+  DEBUG_ONLY(obj_name_ = "AnalogDevice");
   handle_ = i2cOpen(bus, address, flags);
 }
 

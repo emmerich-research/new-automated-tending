@@ -32,6 +32,8 @@
 #include "common.hpp"
 #include "macros.hpp"
 
+#include "init.hpp"
+
 #include "allocation.hpp"
 #include "allocation.inline.hpp"
 

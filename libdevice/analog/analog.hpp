@@ -7,11 +7,21 @@
  * Analog device using i2c
  */
 
+#include <memory>
+
+#include <libalgo/algo.hpp>
 #include <libcore/core.hpp>
 
 NAMESPACE_BEGIN
 
 namespace device {
+// forward declaration
+class AnalogDevice;
+
+/** device::AnalogDevice registry singleton class using algo::InstanceRegistry
+ */
+using AnalogDeviceRegistry = algo::InstanceRegistry<AnalogDevice>;
+
 /**
  * @brief Analog Device class
  *
@@ -22,6 +32,12 @@ namespace device {
  * @date   April 2020
  */
 class AnalogDevice : public StackObj {
+  template <class AnalogDevice>
+  template <typename... Args>
+  friend ATM_STATUS
+  StaticObj<algo::impl::InstanceRegistryImpl<AnalogDevice>>::create(
+      Args&&... args);
+
  public:
   /**
    * Write data from analog pin via i2c port
@@ -33,8 +49,15 @@ class AnalogDevice : public StackObj {
    * Differs between each analog device
    */
   virtual int read(unsigned char pin) = 0;
+  /**
+   * Create shared_ptr<AnalogDevice>
+   */
+  template <typename... Args>
+  static auto create(Args&&... args) {
+    return std::make_shared<AnalogDevice>(std::forward<Args>(args)...);
+  }
 
- protected:
+ protected:  
   /**
    * AnalogDevice Constructor
    *
@@ -50,7 +73,7 @@ class AnalogDevice : public StackObj {
    *
    * Close the i2c port that has been initialized
    */
-  virtual ~AnalogDevice();
+  virtual ~AnalogDevice();  
   /**
    * Write the data bytes to the raw device associated with handle via Pigpio
    * lib
@@ -88,6 +111,7 @@ class AnalogDevice : public StackObj {
   /**
    * i2c handle
    * will be initialized in the constructor
+   * and destroyed in the destructor
    */
   int handle_;
 };

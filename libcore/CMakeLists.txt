@@ -5,6 +5,7 @@ project(${NAME})
 configure_file(common.hpp.in common.hpp @ONLY)
 
 ucm_add_files(
+  "init.cpp"
   "macros.cpp"
   "logger.cpp"
   "state.cpp"
