@@ -1,8 +1,8 @@
 #ifndef LIB_CORE_ALLOCATION_HPP_
 #define LIB_CORE_ALLOCATION_HPP_
 
-/** \file allocation.hpp
- *  \brief Allocation class definitions
+/** @file allocation.hpp
+ *  @brief Allocation class definitions
  *
  * All object in this project must extend one of this class
  */
@@ -11,19 +11,18 @@
 #include <string>
 
 #include "common.hpp"
-#include "macros.hpp"
 
 NAMESPACE_BEGIN
 
 #ifdef NDEBUG
 /**
- * \def ALLOC_SUPER
- * Grandparent of all class
+ * @def ALLOC_SUPER
+ * Grand ... grandparent of all class except singleton
  */
 #define ALLOC_SUPER : public AllocObj
 
 /**
- * \brief Allocated object super class.
+ * @brief Allocated object super class.
  *
  * This class is a parent of all class in the universe of this project.
  * This is good for create a uniform class for debugging.
@@ -36,7 +35,7 @@ class AllocObj {
   /**
    * Get name of this object
    */
-  inline const std::string& get_obj_name() const { return obj_name_; }
+  inline const std::string& get_obj_name() const;
 
   /**
    * Stream allocated object info
@@ -52,12 +51,11 @@ class AllocObj {
   std::string obj_name_;
 };
 
-template <typename OStream>
-OStream& operator<<(OStream& os, const AllocObj& obj) {
-  return os << obj.get_obj_name();
-}
 #else
-/** Grandparent of all class */
+/**
+ * @def ALLOC_SUPER
+ * Grand ... grandparent of all class except singleton which is nothing...
+ */
 #define ALLOC_SUPER
 #endif
 
@@ -70,7 +68,7 @@ OStream& operator<<(OStream& os, const AllocObj& obj) {
  * @date   April 2020
  */
 class StackObj ALLOC_SUPER {
- private:
+ protected:
   /**
    * Delete `new` operator to disable pointer creation
    */
@@ -80,11 +78,7 @@ class StackObj ALLOC_SUPER {
    */
   void* operator new[](std::size_t size) = delete;
   /**
-   * Delete `delete` operator to disable pointer deletion
-   */
-  void operator delete(void* p) = delete;
-  /**
-   * Delete `delete` operator to disable pointer deletion
+   * Delete `delete[]` operator to disable pointer deletion
    */
   void operator delete[](void* p) = delete;
 };
@@ -92,9 +86,12 @@ class StackObj ALLOC_SUPER {
 /**
  * @brief Parent of all singleton class
  *
+ * @tparam T class type to instantiate with
+ *
  * @author Ray Andrew
  * @date   April 2020
  */
+template <typename T>
 class StaticObj {
  public:
   /**
@@ -105,47 +102,27 @@ class StaticObj {
    * Delete destructor because singleton does not need it
    */
   ~StaticObj() = delete;
+  /**
+   * Singleton initialization
+   *
+   * @param  args    arguments are same with typename T constructor
+   * @return T pointer
+   */
+  template <typename... Args>
+  inline static ATM_STATUS create(Args&&... args);
+  /**
+   * Get T pointer
+   *
+   * @return T pointer that has been initialized
+   */
+  inline static T* get();
+
+ private:
+  /**
+   * T singleton pointer
+   */
+  static T* instance_;
 };
-
-// credits to
-// https://www.theimpossiblecode.com/blog/c11-generic-singleton-pattern/
-// with some changes by Ray Andrew <raydreww@gmail.com>
-// template <typename T, typename CONTEXT>
-// class Singleton : public StackObj {
-//  public:
-//   T* operator->() {
-//     massert(instance_ != nullptr, "sanity check");
-//     return instance_;
-//   }
-//   const T* operator->() const {
-//     massert(instance_ != nullptr, "sanity check");
-//     return instance_;
-//   }
-//   T& operator*() {
-//     massert(instance_ != nullptr, "sanity check");
-//     return *instance_;
-//   }
-//   const T& operator*() const {
-//     massert(instance_ != nullptr, "sanity check");
-//     return *instance_;
-//   }
-
-//   template <typename... Args>
-//   Singleton(Args... args) {
-//     static bool static_init = [=]() -> bool {
-//       instance_ = new T(args...);
-//       return true;
-//     }();
-//     (void)static_init;
-//     massert(static_init && instance_ != nullptr, "sanity check");
-//   }
-
-//  private:
-//   static T* instance_;
-// };
-
-// template <typename T, typename Context>
-// T* Singleton<T, Context>::instance_;
 
 NAMESPACE_END
 

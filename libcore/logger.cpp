@@ -2,7 +2,6 @@
 
 #include "logger.hpp"
 
-#include <filesystem>
 #include <utility>
 
 #include <spdlog/async.h>
@@ -10,9 +9,9 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-NAMESPACE_BEGIN
+#include "filesystem.hpp"
 
-impl::LoggerImpl* Logger::instance_ = nullptr;
+NAMESPACE_BEGIN
 
 namespace impl {
 LoggerImpl::LoggerImpl(const impl::ConfigImpl* config)
@@ -26,7 +25,7 @@ LoggerImpl::LoggerImpl(const impl::ConfigImpl* config)
   auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
   stdout_sink->set_level(debug ? spdlog::level::debug : spdlog::level::info);
 
-  std::filesystem::create_directory(LOGS_DIR);
+  fs::create_directory(LOGS_DIR);
 
   std::string path = fmt::format("{}/{}.log", LOGS_DIR, APP_NAME);
   auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(

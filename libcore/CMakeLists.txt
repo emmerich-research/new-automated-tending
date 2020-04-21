@@ -5,9 +5,7 @@ project(${NAME})
 configure_file(common.hpp.in common.hpp @ONLY)
 
 ucm_add_files(
-  "test.cpp"
   "macros.cpp"
-  
   "logger.cpp"
   "state.cpp"
   "config.cpp"
@@ -29,6 +27,7 @@ target_include_directories(${NAME} PUBLIC
 
 target_link_libraries(${NAME} PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
+  fs::fs
   spdlog::spdlog
   yaml::yaml)
 
@@ -43,3 +42,4 @@ set_target_properties(${NAME} PROPERTIES
     CXX_EXTENSIONS NO)
 
 target_enable_lto(${NAME} optimized)
+

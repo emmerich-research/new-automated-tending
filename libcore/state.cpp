@@ -4,8 +4,6 @@
 
 NAMESPACE_BEGIN
 
-impl::StateImpl* State::instance_ = nullptr;
-
 namespace impl {
 StateImpl::StateImpl() {
   DEBUG_ONLY(obj_name_ = "StateImpl");

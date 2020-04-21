@@ -35,6 +35,7 @@ include(Cotire)
 include(CTest)
 include(Doctest)
 include(Documentation)
+include(Filesystem)
 # include(Fmt)
 # include(Fruit)
 include(LTO)
@@ -50,18 +51,6 @@ find_package(PkgConfig)
 
 # enable unity build
 set(UCM_UNITY_BUILD ON)
-
-set(RASPI_LIB "")
-
-EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE arch)
-
-if (${arch} MATCHES "^arm")
-  find_package(pigpio REQUIRED)
-  LIST(APPEND RASPI_LIB "pigpio")
-  LIST(APPEND RASPI_LIB "rt")
-else()
-  add_definitions(-DMOCK_GPIO)
-endif()
 
 # Check for LTO support.
 find_lto(CXX)
@@ -84,4 +73,6 @@ add_definitions(-DATM_COMPILATION)
 find_package(Threads REQUIRED)
 
 add_subdirectory(libcore)
+add_subdirectory(libalgo)
+add_subdirectory(libdevice)
 add_subdirectory(app)

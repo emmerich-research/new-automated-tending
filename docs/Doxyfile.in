@@ -772,7 +772,11 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                   = @CMAKE_CURRENT_SOURCE_DIR@/README.md
-INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/libcore @CMAKE_CURRENT_BINARY_DIR@/libcore @CMAKE_CURRENT_SOURCE_DIR@/app
+INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/libcore
+INPUT                  += @CMAKE_CURRENT_BINARY_DIR@/libcore/common.hpp
+INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/libalgo
+INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/libdevice
+INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/app
 
 
 FILE_PATTERNS += *.md *.markdown
@@ -806,7 +810,7 @@ FILE_PATTERNS          =
 # be searched for input files as well.
 # The default value is: NO.
 
-RECURSIVE              = NO
+RECURSIVE              = YES
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a
@@ -831,7 +835,7 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS       = */cotire/*
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -1402,7 +1406,7 @@ DISABLE_INDEX          = NO
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-GENERATE_TREEVIEW      = NO
+GENERATE_TREEVIEW      = YES
 
 # The ENUM_VALUES_PER_LINE tag can be used to set the number of enum values that
 # doxygen will group on one line in the generated HTML documentation.

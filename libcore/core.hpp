@@ -1,8 +1,8 @@
 #ifndef LIB_CORE_LIBCORE_HPP_
 #define LIB_CORE_LIBCORE_HPP_
 
-/** \file core.hpp
- *  \brief Precompiled header for faster project compilation
+/** @file core.hpp
+ *  @brief Precompiled header for faster project compilation
  *
  * Every source file must include this file whether precompiled feature is
  * enabled or not
@@ -30,9 +30,10 @@
 
 // 3. Local
 #include "common.hpp"
+#include "macros.hpp"
 
 #include "allocation.hpp"
-#include "macros.hpp"
+#include "allocation.inline.hpp"
 
 #include "config.hpp"
 #include "logger.hpp"

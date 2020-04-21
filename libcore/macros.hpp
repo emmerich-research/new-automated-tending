@@ -1,24 +1,24 @@
 #ifndef LIB_CORE_MACROS_HPP_
 #define LIB_CORE_MACROS_HPP_
 
-/** \file macros.hpp
- *  \brief Macros definitions
+/** @file macros.hpp
+ *  @brief Macros definitions
  */
 
 /**
- * \def DEBUG_ONLY(code)
+ * @def DEBUG_ONLY(code)
  *
  * @param code code that will be executed in DEBUG environment
  */
 
 /**
- * \def NOT_DEBUG(code)
+ * @def NOT_DEBUG(code)
  *
  * @param code code that will be executed in NON-DEBUG environment
  */
 
 /**
- * \def massert(Expr, Msg)
+ * @def massert(Expr, Msg)
  *
  * @param Expr expression that needs to be tested
  * @param Msg  message for this assert
@@ -35,7 +35,7 @@
 #endif
 
 /**
- * \brief Assertion with message.
+ * @brief Assertion with message.
  *        Enabled only in development.
  *
  * taken from https://stackoverflow.com/a/37264642/6808347 \n

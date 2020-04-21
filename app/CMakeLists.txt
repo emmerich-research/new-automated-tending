@@ -18,7 +18,9 @@ ucm_add_target(
 #   ${CMAKE_BINARY_DIR})
 
 target_link_libraries(${NAME} PRIVATE
-  "${PROJECT_NAMESPACE}::core")
+  "${PROJECT_NAMESPACE}::core"
+  "${PROJECT_NAMESPACE}::algo"
+  "${PROJECT_NAMESPACE}::device")
 
 target_set_warnings(${NAME}
   ENABLE ALL

@@ -1,14 +1,15 @@
 #ifndef LIB_CORE_LOGGER_HPP_
 #define LIB_CORE_LOGGER_HPP_
 
-/** \file logger.hpp
- *  \brief Logger singleton class definition
+/** @file logger.hpp
+ *  @brief Logger singleton class definition
  *
  * Project's logger
  */
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
@@ -26,77 +27,104 @@ namespace impl {
 class LoggerImpl;
 }
 
+/** impl::LoggerImpl singleton class using StaticObj */
+using Logger = StaticObj<impl::LoggerImpl>;
+
+namespace impl {
 /**
- * @brief Singleton of impl::StateImpl class
+ * @brief Logger implementation.
+ *        This is a class wrapper that should not be instantiated and accessed
+ * publicly.
  *
- * Public and singleton class of impl::StateImpl class
+ * Machine's console and file logger
  *
  * @author Ray Andrew
  * @date   April 2020
  */
-class Logger : StaticObj {
- public:
-  /**
-   * Logger singleton initialization
-   *
-   * @param  args    arguments are same with impl::LoggerImpl()
-   * @return impl::LoggerImpl pointer
-   */
-  template <typename... Args>
-  inline static ATM_STATUS create(Args... args);
-
-  /**
-   * Get impl::LoggerImpl pointer
-   *
-   * @return impl::LoggerImpl pointer that has been initialized
-   */
-  inline static impl::LoggerImpl* get();
-
- private:
-  static impl::LoggerImpl* instance_;
-};
-
-namespace impl {
 class LoggerImpl : public StackObj {
+  template <class LoggerImpl>
   template <typename... Args>
-  friend ATM_STATUS Logger::create(Args... args);
+  friend ATM_STATUS StaticObj<LoggerImpl>::create(Args&&... args);
 
  public:
+  /**
+   * Get shared_ptr of spdlog logger
+   */
   inline const std::shared_ptr<spdlog::logger>& getLogger() const {
     return logger_;
   }
-
+  /**
+   * Get current level of spdlog logger
+   */
   inline spdlog::level::level_enum level() const { return logger_->level(); }
-
+  /**
+   * Set spdlog logger level
+   */
   inline void set_level(const spdlog::level::level_enum& log_level) {
     logger_->set_level(log_level);
   }
-
+  /**
+   * Output log message in trace level
+   *
+   * @param fmt   fmt::fmt format syntax, see https://fmt.dev/latest/syntax.html
+   * for more details
+   * @param args  formatted message
+   */
   template <typename... Args>
   inline void trace(fmt::basic_string_view<char> fmt, const Args&... args) {
     logger_->trace(fmt, args...);
   }
-
+  /**
+   * Output log message in debug level
+   *
+   * @param fmt   fmt::fmt format syntax, see https://fmt.dev/latest/syntax.html
+   * for more details
+   * @param args  formatted message
+   */
   template <typename... Args>
   inline void debug(fmt::basic_string_view<char> fmt, const Args&... args) {
     logger_->debug(fmt, args...);
   }
-
+  /**
+   * Output log message in info level
+   *
+   * @param fmt   fmt::fmt format syntax, see https://fmt.dev/latest/syntax.html
+   * for more details
+   * @param args  formatted message
+   */
   template <typename... Args>
   inline void info(fmt::basic_string_view<char> fmt, const Args&... args) {
     logger_->info(fmt, args...);
   }
-
+  /**
+   * Output log message in warn level
+   *
+   * @param fmt   fmt::fmt format syntax, see https://fmt.dev/latest/syntax.html
+   * for more details
+   * @param args  formatted message
+   */
   template <typename... Args>
   inline void warn(fmt::basic_string_view<char> fmt, const Args&... args) {
     logger_->warn(fmt, args...);
   }
-
+  /**
+   * Output log message in error level
+   *
+   * @param fmt   fmt::fmt format syntax, see https://fmt.dev/latest/syntax.html
+   * for more details
+   * @param args  formatted message
+   */
   template <typename... Args>
   inline void error(fmt::basic_string_view<char> fmt, const Args&... args) {
     logger_->error(fmt, args...);
   }
-
+  /**
+   * Output log message in critical level
+   *
+   * @param fmt   fmt::fmt format syntax, see https://fmt.dev/latest/syntax.html
+   * for more details
+   * @param args  formatted message
+   */
   template <typename... Args>
   void critical(fmt::basic_string_view<char> fmt, const Args&... args) {
     logger_->critical(fmt, args...);
@@ -119,31 +147,16 @@ class LoggerImpl : public StackObj {
   ~LoggerImpl();
 
  private:
-  const std::string               name_;
+  /**
+   * Logger instance name
+   */
+  const std::string name_;
+  /**
+   * Shared pointer of spdlog logger
+   */
   std::shared_ptr<spdlog::logger> logger_;
 };
 }  // namespace impl
-
-template <typename... Args>
-inline ATM_STATUS Logger::create(Args... args) {
-  massert(instance_ == nullptr, "create only can be called once");
-  if (instance_ == nullptr) {
-    static impl::LoggerImpl logger(args...);
-    instance_ = &logger;
-  }
-
-  if (instance_ == nullptr) {
-    return ATM_ERR;
-  } else {
-    massert(instance_ != nullptr, "sanity check");
-    return ATM_OK;
-  }
-}
-
-inline impl::LoggerImpl* Logger::get() {
-  massert(instance_ != nullptr, "can only be called if it is initialized");
-  return instance_;
-}
 
 NAMESPACE_END
 

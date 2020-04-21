@@ -6,7 +6,7 @@
 
 NAMESPACE_BEGIN
 
-impl::ConfigImpl* Config::instance_ = nullptr;
+// impl::ConfigImpl* Config::instance_ = nullptr;
 
 namespace impl {
 ConfigImpl::ConfigImpl(const std::string config_path)
