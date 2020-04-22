@@ -3,7 +3,10 @@ project(device)
 ucm_add_files(
   "init.cpp"
   "gpio.cpp"
+
+  # analog devices
   "analog/analog.cpp"
+  "analog/PCF8591.cpp"
   TO SOURCES)
 
 ucm_add_target(

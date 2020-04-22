@@ -13,6 +13,8 @@ ATM_STATUS initialize_device() {
     return ATM_ERR;
   }
 
+  // device::AnalogDeviceRegistry::get()->create("rot_en", 1, 2, 3);
+
   return ATM_OK;
 }
 

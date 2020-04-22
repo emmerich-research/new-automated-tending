@@ -26,7 +26,9 @@ using AnalogDeviceRegistry = algo::InstanceRegistry<AnalogDevice>;
  * @brief Analog Device class
  *
  * Abstract class for analog device implementation in RaspberryPI-like GPIO
- * with library Pigpio
+ * with library Pigpio.
+ *
+ * Every analog implementation class must extend this class
  *
  * @author Ray Andrew
  * @date   April 2020
@@ -40,13 +42,24 @@ class AnalogDevice : public StackObj {
 
  public:
   /**
+   * Abstract function
+   *
    * Write data from analog pin via i2c port
    * Differs between each analog device
+   *
+   * @param   pin   i2c pin
+   * @param   val   value to write
+   * @return  ATM_OK or ATM_ERR, but not both
    */
-  virtual int write(unsigned char pin, unsigned int val) = 0;
+  virtual ATM_STATUS write(unsigned char pin, unsigned int val) = 0;
   /**
+   * Abstract function
+   *
    * Read data from analog pin via i2c port
    * Differs between each analog device
+   *
+   * @param   pin   i2c pin
+   * @return  pin data
    */
   virtual int read(unsigned char pin) = 0;
   /**
@@ -57,7 +70,7 @@ class AnalogDevice : public StackObj {
     return std::make_shared<AnalogDevice>(std::forward<Args>(args)...);
   }
 
- protected:  
+ protected:
   /**
    * AnalogDevice Constructor
    *
@@ -73,7 +86,7 @@ class AnalogDevice : public StackObj {
    *
    * Close the i2c port that has been initialized
    */
-  virtual ~AnalogDevice();  
+  virtual ~AnalogDevice();
   /**
    * Write the data bytes to the raw device associated with handle via Pigpio
    * lib

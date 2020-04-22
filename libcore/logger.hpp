@@ -21,6 +21,97 @@
 
 #include "config.hpp"
 
+/**
+ * @def LOGGER
+ *
+ * Get Logger singleton instance
+ */
+#define LOGGER ns(Logger::get())
+
+/**
+ * @def LOG_DEBUG
+ *
+ * @see impl::LoggerImpl::trace
+ *
+ * @param args any fmt::fmt format
+ */
+#define LOG_TRACE(...)              \
+  do {                              \
+    if (LOGGER != nullptr) {        \
+      (LOGGER)->trace(__VA_ARGS__); \
+    }                               \
+  } while (0)
+
+/**
+ * @def LOG_DEBUG
+ *
+ * @see impl::LoggerImpl::debug
+ *
+ * @param args any fmt::fmt format
+ */
+#define LOG_DEBUG(...)              \
+  do {                              \
+    if (LOGGER != nullptr) {        \
+      (LOGGER)->debug(__VA_ARGS__); \
+    }                               \
+  } while (0)
+
+/**
+ * @def LOG_INFO
+ *
+ * @see impl::LoggerImpl::info
+ *
+ * @param args any fmt::fmt format
+ */
+#define LOG_INFO(...)              \
+  do {                             \
+    if (LOGGER != nullptr) {       \
+      (LOGGER)->info(__VA_ARGS__); \
+    }                              \
+  } while (0)
+
+/**
+ * @def LOG_WARN
+ *
+ * @see impl::LoggerImpl::warn
+ *
+ * @param args any fmt::fmt format
+ */
+#define LOG_WARN(...)              \
+  do {                             \
+    if (LOGGER != nullptr) {       \
+      (LOGGER)->warn(__VA_ARGS__); \
+    }                              \
+  } while (0)
+
+/**
+ * @def LOG_ERROR
+ *
+ * @see impl::LoggerImpl::error
+ *
+ * @param args any fmt::fmt format
+ */
+#define LOG_ERROR(...)              \
+  do {                              \
+    if (LOGGER != nullptr) {        \
+      (LOGGER)->error(__VA_ARGS__); \
+    }                               \
+  } while (0)
+
+/**
+ * @def LOG_CRITICAL
+ *
+ * @see impl::LoggerImpl::critical
+ *
+ * @param args any fmt::fmt format
+ */
+#define LOG_ERROR(...)                 \
+  do {                                 \
+    if (LOGGER != nullptr) {           \
+      (LOGGER)->critical(__VA_ARGS__); \
+    }                                  \
+  } while (0)
+
 NAMESPACE_BEGIN
 
 namespace impl {
