@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <libalgo/algo.hpp>
+
 #include <libcore/core.hpp>
 
 NAMESPACE_BEGIN
@@ -62,13 +63,6 @@ class AnalogDevice : public StackObj {
    * @return  pin data
    */
   virtual int read(unsigned char pin) = 0;
-  /**
-   * Create shared_ptr<AnalogDevice>
-   */
-  template <typename... Args>
-  static auto create(Args&&... args) {
-    return std::make_shared<AnalogDevice>(std::forward<Args>(args)...);
-  }
 
  protected:
   /**
@@ -90,21 +84,37 @@ class AnalogDevice : public StackObj {
   /**
    * Write the data bytes to the raw device associated with handle via Pigpio
    * lib
+   *
+   * @param  buf   buffer to write to device
+   * @param  count buffer length
+   *
+   * @return ATM_OK or ATM_ERR, but not both
    */
-  virtual int writeDevice(char* buf, unsigned count);
+  virtual ATM_STATUS writeDevice(char* buf, unsigned count);
   /**
    * Read count bytes read from the raw device associated with handle via Pigpio
    * lib
+   *
+   * @param  buf   buffer to write to device
+   * @param  count buffer length
+   *
+   * @return > 0 or ATM_ERR
    */
   virtual int readDevice(char* buf, unsigned count);
   /**
    * Write single byte to device associated with handle via Pigpio
    * lib
+   *
+   * @param  val   byte to write
+   *
+   * @return ATM_OK or ATM_ERR, but not both
    */
-  virtual int writeByte(unsigned val);
+  virtual ATM_STATUS writeByte(unsigned val);
   /**
    * Read single byte to device associated with handle via Pigpio
    * lib
+   *
+   * @return >= 0 or ATM_ERR, but not both
    */
   virtual int readByte();
 

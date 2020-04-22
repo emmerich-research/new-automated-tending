@@ -1,14 +1,11 @@
 #ifndef LIB_ALGO_INSTANCE_REGISTRY_INLINE_HPP_
 #define LIB_ALGO_INSTANCE_REGISTRY_INLINE_HPP_
 
-/** @file instance_registry.inline.hpp
- *  @brief Instance registry class implementation
- */
-
 #include "instance_registry.hpp"
 
-#include <utility>
 #include <stdexcept>
+#include <type_traits>
+#include <utility>
 
 NAMESPACE_BEGIN
 
@@ -21,15 +18,30 @@ InstanceRegistryImpl<T>::InstanceRegistryImpl() {
 }
 
 template <typename T>
-template <typename... Args>
+template <typename U, typename... Args, typename>
 inline ATM_STATUS InstanceRegistryImpl<T>::create(const std::string& id,
                                                   Args&&... args) {
   massert(container_.count(id) == 0, "instance id is not unique");
   if (container_.count(id) == 1) {
     return ATM_ERR;
   }
-  // container_[id] = std::make_shared<T>(std::forward<Args>(args)...);
-  container_[id] = T::create(std::forward<Args>(args)...);
+  container_[id] = U::create(std::forward<Args>(args)...);
+  return ATM_OK;
+}
+
+template <typename T>
+template <typename U, typename... Args, typename>
+inline ATM_STATUS InstanceRegistryImpl<T>::create(
+    const std::map<const std::string&, Args&&...>& initializers) {
+  LOG_INFO("ASD");
+  for (const auto& [id, args] : initializers) {
+    int res = create(id, std::forward<Args>(args)...);
+    if (res == ATM_ERR) {
+      LOG_DEBUG("Failed to create instances with id = {}", id);
+      return ATM_ERR;
+    }
+  }
+
   return ATM_OK;
 }
 

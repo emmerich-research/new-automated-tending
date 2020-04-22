@@ -105,7 +105,7 @@
  *
  * @param args any fmt::fmt format
  */
-#define LOG_ERROR(...)                 \
+#define LOG_CRITICAL(...)              \
   do {                                 \
     if (LOGGER != nullptr) {           \
       (LOGGER)->critical(__VA_ARGS__); \

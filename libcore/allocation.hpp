@@ -62,7 +62,16 @@ class AllocObj {
 /**
  * @brief Parent of all stack-allocated object
  *
- * Stack object
+ * Stack object, raw pointer creation is prohibited
+ * However smart pointer creation is allowed as long as long as the scope is
+ * known (not global like singleton, @see StaticObj)
+ *
+ * All classes that satisfy that condition MUST extend this class
+ *
+ * What is the known scope?
+ * - Inside the class lifetime
+ * - Inside the function
+ * - Inside the curly braces
  *
  * @author Ray Andrew
  * @date   April 2020

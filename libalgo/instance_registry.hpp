@@ -31,8 +31,7 @@ namespace impl {
  *        This is a class wrapper that should not be instantiated and accessed
  * publicly.
  *
- * Instance registry will create, hold, and destroy all the instances through
- * the lifetime of application
+ * Instance registry will create, hold, and destroy all the instances
  *
  * @author Ray Andrew
  * @date   April 2020
@@ -46,13 +45,35 @@ class InstanceRegistryImpl : public StackObj {
   /**
    * Create new instance of T
    *
+   * This method is only enabled if U is base of T or T itself
+   *
+   * @tparam U     factory class which is base of T or T itself
    * @tparam Args  variadic template for arguments
    *
    * @param  id    unique identifier of instance
-   * @param  args  arguments to pass to constructor of T
+   * @param  args  arguments to pass to constructor of U
    */
-  template <typename... Args>
+  template <typename U = T,
+            typename... Args,
+            typename = std::enable_if_t<std::is_base_of<T, U>::value>>
   inline ATM_STATUS create(const std::string& id, Args&&... args);
+  /**
+   * Create multiple instances of T
+   *
+   * This method is only enabled if U is base of T or T itself
+   *
+   * @tparam U           factory class which is base of T or T itself
+   * @tparam Args        variadic template for arguments
+   *
+   * @param  initalizers arguments that contain id and args to pass to
+   * constructor of
+   * U
+   */
+  template <typename U = T,
+            typename... Args,
+            typename = std::enable_if_t<std::is_base_of<T, U>::value>>
+  inline ATM_STATUS create(
+      const std::map<const std::string&, Args&&...>& initializers);
   /**
    * Get instance of T with unique id
    *
@@ -70,7 +91,7 @@ class InstanceRegistryImpl : public StackObj {
    *
    * Noop
    */
-  ~InstanceRegistryImpl() = default;
+  virtual ~InstanceRegistryImpl() = default;
 
  private:
   /**
