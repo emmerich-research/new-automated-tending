@@ -1,9 +1,11 @@
 #ifndef LIB_DEVICE_DIGITAL_DIGITAL_HPP_
 #define LIB_DEVICE_DIGITAL_DIGITAL_HPP_
 
-#include <libcore/core.hpp>
+#include <string>
+#include <type_traits>
 
 #include <libalgo/algo.hpp>
+#include <libcore/core.hpp>
 
 NAMESPACE_BEGIN
 
@@ -20,10 +22,13 @@ namespace digital {
 enum class device_mode {
   INPUT,
   OUTPUT,
-  PWM,
 };
 
-enum class device_output { LOW, HIGH };
+enum class device_output {
+  LOW,
+  HIGH,
+};
+
 }  // namespace digital
 
 /** device::DigitalDevice registry singleton class using algo::InstanceRegistry
@@ -32,11 +37,9 @@ template <digital::device_mode Mode>
 using DigitalDeviceRegistry = algo::InstanceRegistry<DigitalDevice<Mode>>;
 
 /**
- * @brief Instance Registry implementation.
- *        This is a class wrapper that should not be instantiated and accessed
- * publicly.
+ * @brief Digital Device implementation.
  *
- * Instance registry will create, hold, and destroy all the instances
+ * DigitalDevice will instantiate GPIO Device
  *
  * @tparam Mode digital device mode can be input, output, or pwm
  *
@@ -44,20 +47,21 @@ using DigitalDeviceRegistry = algo::InstanceRegistry<DigitalDevice<Mode>>;
  * @date   April 2020
  */
 template <digital::device_mode Mode>
-class DigitalDevice {
+class DigitalDevice : public StackObj {
  public:
-  DigitalDevice(uint pin);
+  DigitalDevice(unsigned char pin);
   virtual ~DigitalDevice() = default;
 
   template <typename = std::enable_if_t<Mode == digital::device_mode::OUTPUT>>
-  void write(const digital::device_output& level);
+  ATM_STATUS write(const digital::device_output& level);
 
   template <typename = std::enable_if_t<Mode == digital::device_mode::INPUT>>
   const digital::device_output read() const;
 
   inline int                  get_pin() const { return pin_; }
   inline digital::device_mode get_mode() const { return mode_; }
-  inline const char* get_mode_str() const { return get_device_mode(mode_); }
+  // inline const char* get_device_mode() const { return get_device_mode(mode_);
+  // }
 
   // virtual void set_mode(const device_mode& mode) = 0;
 
@@ -73,7 +77,7 @@ class DigitalDevice {
   }
 
  protected:
-  const uint                 pin_;
+  const unsigned char        pin_;
   const digital::device_mode mode_;
 };
 }  // namespace device

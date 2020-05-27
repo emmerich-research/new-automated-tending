@@ -9,7 +9,9 @@ NAMESPACE_BEGIN
 
 namespace device {
 template <digital::device_mode Mode>
-DigitalDevice<Mode>::DigitalDevice(uint pin) : pin_{pin}, mode_{Mode} {
+DigitalDevice<Mode>::DigitalDevice(unsigned char pin) : pin_{pin}, mode_{Mode} {
+  DEBUG_ONLY(obj_name_ = fmt::format("{}{} pin {}", get_device_mode(Mode),
+                                     "DigitalDevice", pin));
   int res = gpioSetMode(
       pin_, mode_ == digital::device_mode::INPUT ? PI_INPUT : PI_OUTPUT);
 
@@ -19,7 +21,9 @@ DigitalDevice<Mode>::DigitalDevice(uint pin) : pin_{pin}, mode_{Mode} {
 
 template <digital::device_mode Mode>
 template <typename>
-void DigitalDevice<Mode>::write(const digital::device_output& level) {}
+ATM_STATUS DigitalDevice<Mode>::write(const digital::device_output& level) {
+  return ATM_OK;
+}
 
 template <digital::device_mode Mode>
 template <typename>
