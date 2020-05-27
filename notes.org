@@ -1,0 +1,18 @@
+#+TITLE: Notes
+
+* Development
+** Device
+*** Analog
+*** Digital
+**** Input
+**** Output
+***** Stepper
+*** PWM -> this is digital (inherit digital (?))
+** State
+*** Implement using machine state -> this is preferred
+*** Should be continueable
+*** Traceable
+** Movement
+*** Should be continueable
+*** If this
+** Threads

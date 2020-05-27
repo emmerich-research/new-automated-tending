@@ -14,7 +14,7 @@ ATM_STATUS PCF8591Device::write(unsigned char pin, unsigned int val) {
   unsigned char command[2];
   command[0] = 0x40 | (pin & 0x03);
   command[1] = val;
-  int res = writeDevice(reinterpret_cast<char*>(&command), 2);
+  int res = write_device(reinterpret_cast<char*>(&command), 2);
 
   if (res == ATM_OK) {
     return ATM_OK;
@@ -28,10 +28,10 @@ ATM_STATUS PCF8591Device::write(unsigned char pin, unsigned int val) {
 int PCF8591Device::read(unsigned char pin) {
   unsigned char command[1];
   command[0] = 0x40 | (pin & 0x03);
-  int res = writeDevice(reinterpret_cast<char*>(&command), 1);
+  int res = write_device(reinterpret_cast<char*>(&command), 1);
 
   if (res == ATM_OK) {
-    res = readByte();
+    res = read_byte();
 
     if (res == ATM_ERR) {
       LOG_DEBUG("[FAILED] PCF8591::read (i2cReadByte) to pin {}", pin);

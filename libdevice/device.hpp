@@ -34,4 +34,8 @@
 // 4.1. Analog Device
 #include "analog/analog.hpp"
 
+// 4.2. Digital Device
+#include "digital/digital.hpp"
+#include "digital/digital.inline.hpp"
+
 #endif  // LIB_DEVICE_DEVICE_HPP_

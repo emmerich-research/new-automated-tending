@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 #include <libcore/core.hpp>
@@ -32,6 +33,8 @@ namespace impl {
  * publicly.
  *
  * Instance registry will create, hold, and destroy all the instances
+ *
+ * @tparam T any type to hold the instances
  *
  * @author Ray Andrew
  * @date   April 2020

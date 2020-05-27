@@ -1,8 +1,8 @@
 #include "device.hpp"
 
-#include "gpio.hpp"
-
 #include "analog/analog.hpp"
+
+#include "gpio.hpp"
 
 NAMESPACE_BEGIN
 
@@ -31,7 +31,7 @@ AnalogDevice::~AnalogDevice() {
   }
 }
 
-ATM_STATUS AnalogDevice::writeDevice(char* buf, unsigned int count) {
+ATM_STATUS AnalogDevice::write_device(char* buf, unsigned int count) {
   int res = i2cWriteDevice(static_cast<unsigned int>(handle_), buf, count);
 
   if (res == PI_OK) {
@@ -45,7 +45,7 @@ ATM_STATUS AnalogDevice::writeDevice(char* buf, unsigned int count) {
   return ATM_ERR;
 }
 
-int AnalogDevice::readDevice(char* buf, unsigned int count) {
+int AnalogDevice::read_device(char* buf, unsigned int count) {
   int res = i2cReadDevice(static_cast<unsigned int>(handle_), buf, count);
 
   if (res > 0) {
@@ -59,7 +59,7 @@ int AnalogDevice::readDevice(char* buf, unsigned int count) {
   return ATM_ERR;
 }
 
-ATM_STATUS AnalogDevice::writeByte(unsigned int val) {
+ATM_STATUS AnalogDevice::write_byte(unsigned int val) {
   int res = i2cWriteByte(static_cast<unsigned int>(handle_), val);
 
   if (res == PI_OK) {
@@ -73,7 +73,7 @@ ATM_STATUS AnalogDevice::writeByte(unsigned int val) {
   return ATM_ERR;
 }
 
-int AnalogDevice::readByte() {
+int AnalogDevice::read_byte() {
   int res = i2cReadByte(static_cast<unsigned int>(handle_));
 
   if (res == PI_BAD_HANDLE || res == PI_I2C_READ_FAILED) {

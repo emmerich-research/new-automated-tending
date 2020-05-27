@@ -9,6 +9,11 @@ NAMESPACE_BEGIN
 
 namespace device {
 // forward declaration
+namespace digital {
+enum class device_mode;
+}
+
+template <digital::device_mode Mode>
 class DigitalDevice;
 
 namespace digital {
@@ -18,37 +23,58 @@ enum class device_mode {
   PWM,
 };
 
-inline const std::string getDeviceModeString(const device_mode& mode) {
-  if (mode == device_mode::INPUT) {
-    return "input";
-  } else if (mode == device_mode::OUTPUT) {
-    return "output";
-  } else {
-    return "pwm";
-  }
-}
+enum class device_output { LOW, HIGH };
 }  // namespace digital
 
 /** device::DigitalDevice registry singleton class using algo::InstanceRegistry
  */
-using DigitalDeviceRegistry = algo::InstanceRegistry<DigitalDevice>;
+template <digital::device_mode Mode>
+using DigitalDeviceRegistry = algo::InstanceRegistry<DigitalDevice<Mode>>;
 
+/**
+ * @brief Instance Registry implementation.
+ *        This is a class wrapper that should not be instantiated and accessed
+ * publicly.
+ *
+ * Instance registry will create, hold, and destroy all the instances
+ *
+ * @tparam Mode digital device mode can be input, output, or pwm
+ *
+ * @author Ray Andrew
+ * @date   April 2020
+ */
+template <digital::device_mode Mode>
 class DigitalDevice {
  public:
-  DigitalDevice(int pin) : _pin(pin) {}
-  DigitalDevice(int pin, const device_mode& mode) : _pin(pin), _mode(mode) {}
+  DigitalDevice(uint pin);
   virtual ~DigitalDevice() = default;
 
-  // Digital IO
-  virtual void          setMode(const device_mode& mode) = 0;
-  virtual void          write(const device_output& level) = 0;
-  virtual device_output read() const = 0;
-  inline int            getPin() const { return _pin; }
-  inline device_mode    getMode() const { return _mode; }
+  template <typename = std::enable_if_t<Mode == digital::device_mode::OUTPUT>>
+  void write(const digital::device_output& level);
+
+  template <typename = std::enable_if_t<Mode == digital::device_mode::INPUT>>
+  const digital::device_output read() const;
+
+  inline int                  get_pin() const { return pin_; }
+  inline digital::device_mode get_mode() const { return mode_; }
+  inline const char* get_mode_str() const { return get_device_mode(mode_); }
+
+  // virtual void set_mode(const device_mode& mode) = 0;
+
+ private:
+  static inline const char* get_device_mode(const digital::device_mode& mode) {
+    if (mode == digital::device_mode::INPUT) {
+      return "input";
+    } else if (mode == digital::device_mode::OUTPUT) {
+      return "output";
+    } else {
+      return "pwm";
+    }
+  }
 
  protected:
-  const int   pin_;
-  device_mode mode_;
+  const uint                 pin_;
+  const digital::device_mode mode_;
 };
 }  // namespace device
 

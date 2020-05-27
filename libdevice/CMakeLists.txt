@@ -7,6 +7,9 @@ ucm_add_files(
   # analog devices
   "analog/analog.cpp"
   "analog/PCF8591.cpp"
+
+  # digital
+  "digital/digital.cpp"
   TO SOURCES)
 
 ucm_add_target(
@@ -47,7 +50,7 @@ target_set_warnings(device
   DISABLE Annoying)
 
 set_target_properties(device PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO)
 

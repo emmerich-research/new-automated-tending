@@ -3,6 +3,8 @@
 #include "analog/PCF8591.hpp"
 #include "analog/analog.hpp"
 
+#include "digital/digital.hpp"
+
 NAMESPACE_BEGIN
 
 static ATM_STATUS initialize_analog_devices() {

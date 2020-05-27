@@ -53,7 +53,7 @@ class AnalogDevice : public StackObj {
    * @return  ATM_OK or ATM_ERR, but not both
    */
   virtual ATM_STATUS write(unsigned char pin, unsigned int val) = 0;
-  /**
+  /*j*
    * Abstract function
    *
    * Read data from analog pin via i2c port
@@ -90,7 +90,7 @@ class AnalogDevice : public StackObj {
    *
    * @return ATM_OK or ATM_ERR, but not both
    */
-  virtual ATM_STATUS writeDevice(char* buf, unsigned count);
+  virtual ATM_STATUS write_device(char* buf, unsigned count);
   /**
    * Read count bytes read from the raw device associated with handle via Pigpio
    * lib
@@ -100,7 +100,7 @@ class AnalogDevice : public StackObj {
    *
    * @return > 0 or ATM_ERR
    */
-  virtual int readDevice(char* buf, unsigned count);
+  virtual int read_device(char* buf, unsigned count);
   /**
    * Write single byte to device associated with handle via Pigpio
    * lib
@@ -109,14 +109,14 @@ class AnalogDevice : public StackObj {
    *
    * @return ATM_OK or ATM_ERR, but not both
    */
-  virtual ATM_STATUS writeByte(unsigned val);
+  virtual ATM_STATUS write_byte(unsigned val);
   /**
    * Read single byte to device associated with handle via Pigpio
    * lib
    *
    * @return >= 0 or ATM_ERR, but not both
    */
-  virtual int readByte();
+  virtual int read_byte();
 
  protected:
   /**
