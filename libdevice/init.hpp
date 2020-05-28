@@ -10,7 +10,7 @@
 NAMESPACE_BEGIN
 
 /**
- * Initialize device
+ * Initialize devices
  *
  * There are 3 types of device:
  * - Digital
@@ -20,6 +20,13 @@ NAMESPACE_BEGIN
  * @return  ATM_STATUS ATM_OK or ATM_ERR
  */
 ATM_STATUS initialize_device();
+
+/**
+ * Destroy devices
+ *
+ * @return void
+ */
+void destroy_device();
 
 NAMESPACE_END
 

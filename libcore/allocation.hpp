@@ -17,6 +17,7 @@ NAMESPACE_BEGIN
 #ifdef NDEBUG
 /**
  * @def ALLOC_SUPER
+ *
  * Grand ... grandparent of all class except singleton
  */
 #define ALLOC_SUPER : public AllocObj
@@ -35,7 +36,7 @@ class AllocObj {
   /**
    * Get name of this object
    */
-  inline const std::string& get_obj_name() const;
+  inline const std::string& obj_name() const;
 
   /**
    * Stream allocated object info
@@ -54,6 +55,7 @@ class AllocObj {
 #else
 /**
  * @def ALLOC_SUPER
+ *
  * Grand ... grandparent of all class except singleton which is nothing...
  */
 #define ALLOC_SUPER
@@ -132,6 +134,64 @@ class StaticObj {
    */
   static T* instance_;
 };
+
+/**
+ * @def MAKE_STD_SHARED(T)
+ *
+ * Create shared_ptr out of any class (even with private constructor and
+ * destructor)
+ *
+ * This macro will generate the static function called `create`
+ * that returns shared_ptr<T>
+ *
+ * Purpose:
+ * Hide constructor and destructor so it cannot be invoked
+ *
+ * Credit:
+ * https://stackoverflow.com/a/27832765/6808347
+ *
+ * Usage:
+ * MAKE_STD_SHARED(SomeClass)
+ *
+ * @param T class to be enabled
+ */
+#define MAKE_STD_SHARED(T)                                                  \
+  template <typename... Args>                                               \
+  inline static auto create(Args&&... args) {                               \
+    struct EnableMakeShared : public T {                                    \
+      EnableMakeShared(Args&&... args) : T(std::forward<Args>(args)...) {}  \
+    };                                                                      \
+    return std::make_shared<EnableMakeShared>(std::forward<Args>(args)...); \
+  }
+
+/**
+ * @def MAKE_STD_UNIQUE(T)
+ *
+ * Create unique_ptr out of any class (even with private constructor and
+ * destructor)
+ *
+ * This macro will generate the static function called `create`
+ * that returns unique_ptr<T>
+ *
+ * Purpose:
+ * Hide constructor and destructor so it cannot be invoked
+ *
+ * Credit:
+ * https://stackoverflow.com/a/27832765/6808347
+ *
+ * Usage:
+ * MAKE_STD_UNIQUE(SomeClass)
+ *
+ * @param T class to be enabled
+ */
+#define MAKE_STD_UNIQUE(T)                                                  \
+  template <typename... Args>                                               \
+  inline static auto create(Args&&... args) {                               \
+    struct EnableMakeUnique : public T {                                    \
+      EnableMakeUnique(Args&&... args) : T(std::forward<Args>(args)...) {}  \
+    };                                                                      \
+    return std::make_unique<EnableMakeUnique>(std::forward<Args>(args)...); \
+  }
 
 NAMESPACE_END
 

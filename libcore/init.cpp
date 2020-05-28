@@ -28,4 +28,6 @@ ATM_STATUS initialize_core() {
   return ATM_OK;
 }
 
+void destroy_core() {}
+
 NAMESPACE_END

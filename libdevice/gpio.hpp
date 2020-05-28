@@ -7,11 +7,12 @@
  * see the documentation at http://abyz.me.uk/rpi/pigpio/cif.html
  */
 
+using PI_RES = int;
 #define PI_OK 0
 
 #ifdef MOCK_GPIO
 
-// all interfaces copied from PIGPIO library
+// all interfaces are copied from PIGPIO library
 // credits to @joan2937
 // https://github.com/joan2937/pigpio/blob/master/pigpio.h
 

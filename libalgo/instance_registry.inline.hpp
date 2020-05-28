@@ -25,6 +25,7 @@ inline ATM_STATUS InstanceRegistryImpl<T>::create(const std::string& id,
   if (container_.count(id) == 1) {
     return ATM_ERR;
   }
+  LOG_DEBUG("InstanceRegistryImpl::create instance with key {}", id);
   container_[id] = U::create(std::forward<Args>(args)...);
   return ATM_OK;
 }
@@ -33,7 +34,6 @@ template <typename T>
 template <typename U, typename... Args, typename>
 inline ATM_STATUS InstanceRegistryImpl<T>::create(
     const std::map<const std::string&, Args&&...>& initializers) {
-  LOG_INFO("ASD");
   for (const auto& [id, args] : initializers) {
     int res = create(id, std::forward<Args>(args)...);
     if (res == ATM_ERR) {

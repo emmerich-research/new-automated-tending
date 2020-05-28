@@ -15,13 +15,13 @@ NAMESPACE_BEGIN
 
 #ifdef NDEBUG
 
-inline const std::string& AllocObj::get_obj_name() const {
+inline const std::string& AllocObj::obj_name() const {
   return obj_name_;
 }
 
 template <typename OStream>
 OStream& operator<<(OStream& os, const AllocObj& obj) {
-  return os << obj.get_obj_name();
+  return os << obj.obj_name();
 }
 
 #endif  // NDEBUG

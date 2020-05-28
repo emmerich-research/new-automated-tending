@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <utility>
 
 // 2. Vendor
@@ -37,5 +38,8 @@
 // 4.2. Digital Device
 #include "digital/digital.hpp"
 #include "digital/digital.inline.hpp"
+
+// 4.2.1. PWM Device
+#include "digital/pwm.hpp"
 
 #endif  // LIB_DEVICE_DEVICE_HPP_

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include <libalgo/algo.hpp>
-
 #include <libcore/core.hpp>
 
 NAMESPACE_BEGIN

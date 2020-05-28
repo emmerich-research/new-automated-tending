@@ -21,6 +21,13 @@ NAMESPACE_BEGIN
  */
 ATM_STATUS initialize_core();
 
+/**
+ * Destroy core
+ *
+ * @return void
+ */
+void destroy_core();
+
 NAMESPACE_END
 
 #endif

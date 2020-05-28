@@ -1,8 +1,6 @@
 #ifndef LIB_DEVICE_ANALOG_PCF8591_HPP_
 #define LIB_DEVICE_ANALOG_PCF8591_HPP_
 
-#include <memory>
-
 #include <libcore/core.hpp>
 
 #include "analog.hpp"
@@ -11,8 +9,7 @@ NAMESPACE_BEGIN
 
 namespace device {
 namespace analog {
-class PCF8591Device : public AnalogDevice,
-                      std::enable_shared_from_this<PCF8591Device> {                 
+class PCF8591Device : public AnalogDevice {
  public:
   /**
    * Write data from analog pin via i2c port
@@ -29,7 +26,6 @@ class PCF8591Device : public AnalogDevice,
    * @return  ATM_OK or ATM_ERR, but not both
    */
   virtual int read(unsigned char pin);
-
   /**
    * Create shared_ptr<PCF8591Device>
    *
@@ -41,7 +37,6 @@ class PCF8591Device : public AnalogDevice,
   inline static auto create(Args&&... args) {
     return std::make_shared<PCF8591Device>(std::forward<Args>(args)...);
   }
-
   /**
    * PCF8591Device Constructor
    *

@@ -140,12 +140,16 @@ class LoggerImpl : public StackObj {
  public:
   /**
    * Get shared_ptr of spdlog logger
+   *
+   * @return shared_ptr<spdlog::logger>
    */
   inline const std::shared_ptr<spdlog::logger>& getLogger() const {
     return logger_;
   }
   /**
    * Get current level of spdlog logger
+   *
+   * @return spdlog logger level
    */
   inline spdlog::level::level_enum level() const { return logger_->level(); }
   /**

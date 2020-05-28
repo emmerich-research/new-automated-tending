@@ -9,7 +9,7 @@ ucm_add_files(
   "analog/PCF8591.cpp"
 
   # digital
-  "digital/digital.cpp"
+  "digital/pwm.cpp"
   TO SOURCES)
 
 ucm_add_target(
