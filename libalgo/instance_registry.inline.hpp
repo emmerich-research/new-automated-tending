@@ -35,7 +35,7 @@ template <typename U, typename... Args, typename>
 inline ATM_STATUS InstanceRegistryImpl<T>::create(
     const std::map<const std::string&, Args&&...>& initializers) {
   for (const auto& [id, args] : initializers) {
-    int res = create(id, std::forward<Args>(args)...);
+    ATM_STATUS res = create(id, std::forward<Args>(args)...);
     if (res == ATM_ERR) {
       LOG_DEBUG("Failed to create instances with id = {}", id);
       return ATM_ERR;

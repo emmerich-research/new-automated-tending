@@ -18,30 +18,42 @@ NAMESPACE_BEGIN
 namespace device {
 // forward declaration
 namespace digital {
-enum class device_mode;
+enum class mode;
 }
 
-template <digital::device_mode Mode>
+template <digital::mode Mode>
 class DigitalDevice;
 // end of forward declaration
 
 namespace digital {
-enum class device_mode {
+enum class mode {
   INPUT,
   OUTPUT,
 };
 
-enum class device_output {
+enum class value {
   LOW,
   HIGH,
   ERROR,
 };
 }  // namespace digital
 
-/** device::DigitalDevice registry singleton class using algo::InstanceRegistry
+/** digital::mode::OUTPUT mode specific implementation of device::DigitalDevice
  */
-template <digital::device_mode Mode>
-using DigitalDeviceRegistry = algo::InstanceRegistry<DigitalDevice<Mode>>;
+using DigitalOutputDevice = DigitalDevice<digital::mode::OUTPUT>;
+
+/** digital::mode::INPUT mode specific implementation of device::DigitalDevice
+ */
+using DigitalInputDevice = DigitalDevice<digital::mode::INPUT>;
+
+/** device::DigitalOutputDevice registry singleton class using
+ * algo::InstanceRegistry
+ */
+using DigitalOutputDeviceRegistry = algo::InstanceRegistry<DigitalOutputDevice>;
+/** device::DigitalInputDevice registry singleton class using
+ * algo::InstanceRegistry
+ */
+using DigitalInputDeviceRegistry = algo::InstanceRegistry<DigitalInputDevice>;
 
 /**
  * @brief Digital Device implementation.
@@ -53,7 +65,7 @@ using DigitalDeviceRegistry = algo::InstanceRegistry<DigitalDevice<Mode>>;
  * @author Ray Andrew
  * @date   May 2020
  */
-template <digital::device_mode Mode>
+template <digital::mode Mode>
 class DigitalDevice : public StackObj {
   template <class DigitalDevice>
   template <typename... Args>
@@ -62,7 +74,6 @@ class DigitalDevice : public StackObj {
       Args&&... args);
 
  public:
-  MAKE_STD_SHARED(DigitalDevice<Mode>)
   /**
    * Create shared_ptr<DigitalDevice>
    *
@@ -70,11 +81,15 @@ class DigitalDevice : public StackObj {
    *
    * @param args arguments that will be passed to DigitalDevice()
    */
-  // template <typename... Args>
-  // inline static auto create(Args&&... args) {
-  //   return
-  //   std::make_shared<DigitalDevice<Mode>>(std::forward<Args>(args)...);
-  // }
+  MAKE_STD_SHARED(DigitalDevice<Mode>)
+  /**
+   * Create unique_ptr<DigitalDevice>
+   *
+   * Pass every args to DigitalDevice()
+   *
+   * @param args arguments that will be passed to DigitalDevice()
+   */
+  MAKE_STD_UNIQUE(DigitalDevice<Mode>)
   /**
    * Write the HIGH/LOW data to GPIO via Pigpio lib
    *
@@ -84,9 +99,9 @@ class DigitalDevice : public StackObj {
    *
    * @return ATM_OK or ATM_ERR, but not both
    */
-  template <digital::device_mode Mode_ = Mode,
-            typename = std::enable_if_t<Mode_ == digital::device_mode::OUTPUT>>
-  ATM_STATUS write(const digital::device_output& level);
+  template <digital::mode Mode_ = Mode,
+            typename = std::enable_if_t<Mode_ == digital::mode::OUTPUT>>
+  ATM_STATUS write(const digital::value& level);
   /**
    * Read the HIGH/LOW data from GPIO via Pigpio lib
    *
@@ -94,9 +109,9 @@ class DigitalDevice : public StackObj {
    *
    * @return ATM_OK or ATM_ERR, but not both
    */
-  template <digital::device_mode Mode_ = Mode,
-            typename = std::enable_if_t<Mode_ == digital::device_mode::INPUT>>
-  const digital::device_output read() const;
+  template <digital::mode Mode_ = Mode,
+            typename = std::enable_if_t<Mode_ == digital::mode::INPUT>>
+  const digital::value read() const;
   /**
    * Get GPIO pin that has been initialized
    *
@@ -108,19 +123,32 @@ class DigitalDevice : public StackObj {
    *
    * @return device mode
    */
-  inline digital::device_mode mode() const { return mode_; }
+  inline digital::mode mode() const { return mode_; }
   /**
    * Get current device mode of GPIO pin
    *
    * @return device mode
    */
-  inline operator digital::device_mode() const { return mode_; }
+  inline operator digital::mode() const { return mode_; }
   /**
    * Get string representation of current device mode of GPIO pin
    *
    * @return string representation of device mode
    */
-  inline operator const char*() const { return get_device_mode(mode_); }
+  inline operator const char*() const { return get_mode(mode_); }
+  /**
+   * Set current active state of GPIO pin
+   *
+   * Can be TRUE means HIGH or FALSE means LOW
+   */
+  void active_state(bool active_state);
+
+  /**
+   * Get current active state of GPIO pin
+   *
+   * @return TRUE/FALSE
+   */
+  inline const bool active_state() const { return active_state_; }
 
  private:
   /**
@@ -131,13 +159,23 @@ class DigitalDevice : public StackObj {
    *
    * @return string representation of device mode
    */
-  static inline const char* get_device_mode(const digital::device_mode& mode) {
-    if (mode == digital::device_mode::INPUT) {
+  static inline const char* get_mode(const digital::mode& mode) {
+    if (mode == digital::mode::INPUT) {
       return "input";
     } else {
       return "output";
     }
   }
+
+  template <digital::mode Mode_ = Mode,
+            typename = std::enable_if_t<Mode_ == digital::mode::OUTPUT>>
+  static const int process_value(const digital::value& value,
+                                 const bool            active_state);
+
+  template <digital::mode Mode_ = Mode,
+            typename = std::enable_if_t<Mode_ == digital::mode::INPUT>>
+  static const digital::value& process_value(const int& value,
+                                             const bool active_state);
 
  protected:
   /**
@@ -148,11 +186,10 @@ class DigitalDevice : public StackObj {
    * @param  pin gpio pin, see Raspberry GPIO pinout for details
    */
   DigitalDevice(unsigned char pin);
-
   /**
    * DigitalDevice Destructor
    *
-   * Close the GPIO that has been initialized
+   * Close the DigitalDevice that has been initialized
    */
   virtual ~DigitalDevice() = default;
 
@@ -164,7 +201,11 @@ class DigitalDevice : public StackObj {
   /**
    * Device mode
    */
-  const digital::device_mode mode_;
+  const digital::mode mode_;
+  /**
+   * Active state
+   */
+  bool active_state_;
 };
 }  // namespace device
 

@@ -5,15 +5,14 @@
 NAMESPACE_BEGIN
 
 namespace device {
-PWMDevice::PWMDevice(unsigned char pin)
-    : DigitalDevice<digital::device_mode::OUTPUT>(pin) {
+PWMDevice::PWMDevice(unsigned char pin) : DigitalOutputDevice(pin) {
   DEBUG_ONLY(obj_name_ = fmt::format("PWMDevice pin {}", pin));
 
   LOG_DEBUG("Initializing PWMDevice using GPIO with pin {}", pin);
 }
 
 ATM_STATUS PWMDevice::duty_cycle(unsigned int duty_cycle) {
-  int res = gpioPWM(pin(), duty_cycle);
+  PI_RES res = gpioPWM(pin(), duty_cycle);
 
   if (res == PI_OK) {
     return ATM_OK;
@@ -27,7 +26,7 @@ ATM_STATUS PWMDevice::duty_cycle(unsigned int duty_cycle) {
 }
 
 std::optional<unsigned int> PWMDevice::duty_cycle() const {
-  int res = gpioGetPWMdutycycle(pin());
+  PI_RES res = gpioGetPWMdutycycle(pin());
 
   if (res == PI_BAD_USER_GPIO || res == PI_NOT_PWM_GPIO) {
     LOG_DEBUG(
@@ -41,7 +40,7 @@ std::optional<unsigned int> PWMDevice::duty_cycle() const {
 }
 
 ATM_STATUS PWMDevice::range(unsigned int range) {
-  int res = gpioSetPWMrange(pin(), range);
+  PI_RES res = gpioSetPWMrange(pin(), range);
 
   if (res == PI_BAD_USER_GPIO || res == PI_BAD_DUTYRANGE) {
     LOG_DEBUG(
@@ -55,7 +54,7 @@ ATM_STATUS PWMDevice::range(unsigned int range) {
 }
 
 std::optional<unsigned int> PWMDevice::range() const {
-  int res = gpioGetPWMrange(pin());
+  PI_RES res = gpioGetPWMrange(pin());
 
   if (res == PI_BAD_USER_GPIO || res == PI_BAD_DUTYRANGE) {
     LOG_DEBUG(
@@ -68,7 +67,7 @@ std::optional<unsigned int> PWMDevice::range() const {
 }
 
 std::optional<unsigned int> PWMDevice::real_range() const {
-  int res = gpioGetPWMrealRange(pin());
+  PI_RES res = gpioGetPWMrealRange(pin());
 
   if (res == PI_BAD_USER_GPIO) {
     LOG_DEBUG(
@@ -82,7 +81,7 @@ std::optional<unsigned int> PWMDevice::real_range() const {
 }
 
 ATM_STATUS PWMDevice::frequency(unsigned int frequency) {
-  int res = gpioSetPWMfrequency(pin(), frequency);
+  PI_RES res = gpioSetPWMfrequency(pin(), frequency);
 
   if (res == PI_BAD_USER_GPIO) {
     LOG_DEBUG(
@@ -97,7 +96,7 @@ ATM_STATUS PWMDevice::frequency(unsigned int frequency) {
 }
 
 std::optional<unsigned int> PWMDevice::frequency() const {
-  int res = gpioGetPWMfrequency(pin());
+  PI_RES res = gpioGetPWMfrequency(pin());
 
   if (res == PI_BAD_USER_GPIO) {
     LOG_DEBUG(
@@ -112,7 +111,7 @@ std::optional<unsigned int> PWMDevice::frequency() const {
 
 ATM_STATUS PWMDevice::hardware(unsigned int frequency,
                                unsigned int duty_cycle) {
-  int res = gpioHardwarePWM(pin(), frequency, duty_cycle);
+  PI_RES res = gpioHardwarePWM(pin(), frequency, duty_cycle);
 
   if (res == PI_BAD_USER_GPIO) {
     LOG_DEBUG(

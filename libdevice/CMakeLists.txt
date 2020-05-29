@@ -10,6 +10,9 @@ ucm_add_files(
 
   # digital
   "digital/pwm.cpp"
+
+  # stepper
+  "stepper/stepper.cpp"
   TO SOURCES)
 
 ucm_add_target(

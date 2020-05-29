@@ -27,7 +27,7 @@ namespace device {
  * @author Ray Andrew
  * @date   May 2020
  */
-class PWMDevice : public DigitalDevice<digital::device_mode::OUTPUT> {
+class PWMDevice : public DigitalOutputDevice {
  public:
   /**
    * PWMDevice Constructor

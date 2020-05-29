@@ -24,7 +24,7 @@ AnalogDevice::~AnalogDevice() {
       "Closing AnalogDevice using i2c with address {}, bus {}, and flags {} "
       "with handle {}",
       address_, bus_, flags_, handle_);
-  int res = i2cClose(static_cast<unsigned int>(handle_));
+  PI_RES res = i2cClose(static_cast<unsigned int>(handle_));
 
   if (res != PI_OK) {
     LOG_DEBUG("Failed to close i2c device");
@@ -32,7 +32,7 @@ AnalogDevice::~AnalogDevice() {
 }
 
 ATM_STATUS AnalogDevice::write_device(char* buf, unsigned int count) {
-  int res = i2cWriteDevice(static_cast<unsigned int>(handle_), buf, count);
+  PI_RES res = i2cWriteDevice(static_cast<unsigned int>(handle_), buf, count);
 
   if (res == PI_OK) {
     return ATM_OK;
@@ -46,7 +46,7 @@ ATM_STATUS AnalogDevice::write_device(char* buf, unsigned int count) {
 }
 
 int AnalogDevice::read_device(char* buf, unsigned int count) {
-  int res = i2cReadDevice(static_cast<unsigned int>(handle_), buf, count);
+  PI_RES res = i2cReadDevice(static_cast<unsigned int>(handle_), buf, count);
 
   if (res > 0) {
     return res;
@@ -60,7 +60,7 @@ int AnalogDevice::read_device(char* buf, unsigned int count) {
 }
 
 ATM_STATUS AnalogDevice::write_byte(unsigned int val) {
-  int res = i2cWriteByte(static_cast<unsigned int>(handle_), val);
+  PI_RES res = i2cWriteByte(static_cast<unsigned int>(handle_), val);
 
   if (res == PI_OK) {
     return ATM_OK;
@@ -74,7 +74,7 @@ ATM_STATUS AnalogDevice::write_byte(unsigned int val) {
 }
 
 int AnalogDevice::read_byte() {
-  int res = i2cReadByte(static_cast<unsigned int>(handle_));
+  PI_RES res = i2cReadByte(static_cast<unsigned int>(handle_));
 
   if (res == PI_BAD_HANDLE || res == PI_I2C_READ_FAILED) {
     LOG_DEBUG("[FAILED] AnalogDevice::readByte with handle {}, result = {}",

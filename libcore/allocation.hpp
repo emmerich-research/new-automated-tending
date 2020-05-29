@@ -8,7 +8,9 @@
  */
 
 #include <cstddef>
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "common.hpp"
 
@@ -65,7 +67,7 @@ class AllocObj {
  * @brief Parent of all stack-allocated object
  *
  * Stack object, raw pointer creation is prohibited
- * However smart pointer creation is allowed as long as long as the scope is
+ * However smart pointer creation is allowed as long as the scope is
  * known (not global like singleton, @see StaticObj)
  *
  * All classes that satisfy that condition MUST extend this class
@@ -170,7 +172,7 @@ class StaticObj {
  * Create unique_ptr out of any class (even with private constructor and
  * destructor)
  *
- * This macro will generate the static function called `create`
+ * This macro will generate the static function called `create_unique`
  * that returns unique_ptr<T>
  *
  * Purpose:
@@ -186,7 +188,7 @@ class StaticObj {
  */
 #define MAKE_STD_UNIQUE(T)                                                  \
   template <typename... Args>                                               \
-  inline static auto create(Args&&... args) {                               \
+  inline static auto create_unique(Args&&... args) {                        \
     struct EnableMakeUnique : public T {                                    \
       EnableMakeUnique(Args&&... args) : T(std::forward<Args>(args)...) {}  \
     };                                                                      \

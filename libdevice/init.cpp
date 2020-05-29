@@ -16,23 +16,19 @@ static ATM_STATUS initialize_analog_devices() {
 }
 
 static ATM_STATUS initialize_input_digital_devices() {
-  return DigitalDeviceRegistry<digital::device_mode::INPUT>::get()
-      ->create<DigitalDevice<digital::device_mode::INPUT>>("INPUT1", 0);
+  return DigitalInputDeviceRegistry::get()->create<DigitalInputDevice>("INPUT1",
+                                                                       0);
 }
 
 static ATM_STATUS initialize_output_digital_devices() {
   ATM_STATUS status = ATM_OK;
-  status =
-      DigitalDeviceRegistry<digital::device_mode::OUTPUT>::get()
-          ->create<DigitalDevice<digital::device_mode::OUTPUT>>("OUTPUT1", 1);
+  status = DigitalOutputDeviceRegistry::get()->create("OUTPUT1", 1);
 
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
-  status =
-      DigitalDeviceRegistry<digital::device_mode::OUTPUT>::get()
-          ->create<DigitalDevice<digital::device_mode::OUTPUT>>("OUTPUT2", 2);
+  status = DigitalOutputDeviceRegistry::get()->create("OUTPUT2", 2);
 
   if (status == ATM_ERR) {
     return ATM_ERR;
@@ -53,13 +49,13 @@ ATM_STATUS initialize_device() {
     return ATM_ERR;
   }
 
-  status = DigitalDeviceRegistry<digital::device_mode::INPUT>::create();
+  status = DigitalInputDeviceRegistry::create();
 
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
-  status = DigitalDeviceRegistry<digital::device_mode::OUTPUT>::create();
+  status = DigitalOutputDeviceRegistry::create();
 
   if (status == ATM_ERR) {
     return ATM_ERR;
