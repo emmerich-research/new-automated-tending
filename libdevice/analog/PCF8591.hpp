@@ -18,14 +18,14 @@ class PCF8591Device : public AnalogDevice {
    * @param   val   value to write
    * @return  ATM_OK or ATM_ERR, but not both
    */
-  virtual ATM_STATUS write(unsigned char pin, unsigned int val);
+  virtual ATM_STATUS write(const PI_PIN& pin, const analog::value& val);
   /**
    * Read data from analog pin via i2c port
    *
    * @param   pin   i2c pin
    * @return  ATM_OK or ATM_ERR, but not both
    */
-  virtual int read(unsigned char pin);
+  virtual std::optional<analog::value> read(const PI_PIN& pin);
   /**
    * Create shared_ptr<PCF8591Device>
    *

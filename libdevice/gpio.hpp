@@ -7,7 +7,22 @@
  * see the documentation at http://abyz.me.uk/rpi/pigpio/cif.html
  */
 
+/**
+ * @var using PI_RES = int
+ * @brief Type definition for Pigpio returned value
+ */
 using PI_RES = int;
+
+/**
+ * @var using PI_RES = int
+ * @brief Type definition for Pigpio returned value
+ */
+using PI_PIN = unsigned char;
+
+/**
+ * @def PI_OK
+ * PI_OK for all ok status in Pigpio
+ */
 #define PI_OK 0
 
 #ifdef MOCK_GPIO

@@ -9,7 +9,7 @@ NAMESPACE_BEGIN
 
 namespace device {
 template <digital::mode Mode>
-DigitalDevice<Mode>::DigitalDevice(unsigned char pin)
+DigitalDevice<Mode>::DigitalDevice(PI_PIN pin)
     : pin_{pin}, mode_{Mode}, active_state_{true} {
   DEBUG_ONLY(obj_name_ =
                  fmt::format("DigitalDevice<{}> pin {}", get_mode(Mode), pin));
@@ -18,7 +18,7 @@ DigitalDevice<Mode>::DigitalDevice(unsigned char pin)
             get_mode(Mode), pin);
 
   PI_RES res =
-      gpioSetMode(pin_, mode_ == digital::mode::INPUT ? PI_INPUT : PI_OUTPUT);
+      gpioSetMode(pin_, mode_ == digital::mode::input ? PI_INPUT : PI_OUTPUT);
 
   if (res != PI_OK) {
     LOG_DEBUG("[FAILED] Initializing DigitalDevice<{}> using GPIO with pin {}",
@@ -32,8 +32,8 @@ template <digital::mode Mode_, typename>
 ATM_STATUS DigitalDevice<Mode>::write(const digital::value& level) {
   PI_RES res;
   switch (level) {
-    case digital::value::LOW:
-    case digital::value::HIGH:
+    case digital::value::low:
+    case digital::value::high:
       res = gpioWrite(pin_, process_value(level, active_state()));
       break;
     default:
@@ -60,7 +60,7 @@ const digital::value DigitalDevice<Mode>::read() const {
   if (res == PI_BAD_GPIO) {
     LOG_DEBUG("[FAILED] DigitalDevice<{}>::read with pin {}, result = {}",
               get_mode(Mode), pin_, res);
-    return digital::value::ERROR;
+    return digital::value::error;
   }
 
   return process_value(res, active_state());
@@ -71,14 +71,14 @@ template <digital::mode Mode_, typename>
 const PI_RES DigitalDevice<Mode>::process_value(const digital::value& value,
                                                 const bool active_state) {
   if (active_state) {
-    if (value == digital::value::HIGH) {
+    if (value == digital::value::high) {
       return PI_HIGH;
     } else {
       return PI_LOW;
     }
   }
 
-  if (value == digital::value::HIGH) {
+  if (value == digital::value::high) {
     return PI_LOW;
   } else {
     return PI_HIGH;
@@ -92,16 +92,16 @@ const digital::value& DigitalDevice<Mode>::process_value(
     const bool    active_state) {
   if (active_state) {
     if (value == PI_HIGH) {
-      return digital::value::HIGH;
+      return digital::value::high;
     } else {
-      return digital::value::LOW;
+      return digital::value::low;
     }
   }
 
   if (value == PI_HIGH) {
-    return digital::value::LOW;
+    return digital::value::low;
   } else {
-    return digital::value::HIGH;
+    return digital::value::high;
   }
 }
 

@@ -8,6 +8,7 @@
  */
 
 #include <memory>
+#include <optional>
 
 #include <libalgo/algo.hpp>
 #include <libcore/core.hpp>
@@ -17,6 +18,14 @@ NAMESPACE_BEGIN
 namespace device {
 // forward declaration
 class AnalogDevice;
+
+namespace analog {
+/**
+ * @var using value = unsigned int
+ * @brief Type definition for stepper steps
+ */
+using value = unsigned char;
+};  // namespace analog
 
 /** device::AnalogDevice registry singleton class using algo::InstanceRegistry
  */
@@ -51,17 +60,17 @@ class AnalogDevice : public StackObj {
    * @param   val   value to write
    * @return  ATM_OK or ATM_ERR, but not both
    */
-  virtual ATM_STATUS write(unsigned char pin, unsigned int val) = 0;
-  /*j*
+  virtual ATM_STATUS write(const PI_PIN& pin, const analog::value& val) = 0;
+  /**
    * Abstract function
    *
-   * Read data from analog pin via i2c port
+   * Read data (0-255) from analog pin via i2c port
    * Differs between each analog device
    *
    * @param   pin   i2c pin
-   * @return  pin data
+   * @return  pin data (0-255)
    */
-  virtual int read(unsigned char pin) = 0;
+  virtual std::optional<analog::value> read(const PI_PIN& pin) = 0;
 
  protected:
   /**
@@ -99,7 +108,7 @@ class AnalogDevice : public StackObj {
    *
    * @return > 0 or ATM_ERR
    */
-  virtual int read_device(char* buf, unsigned count);
+  virtual std::optional<int> read_device(char* buf, unsigned count);
   /**
    * Write single byte to device associated with handle via Pigpio
    * lib
@@ -115,7 +124,7 @@ class AnalogDevice : public StackObj {
    *
    * @return >= 0 or ATM_ERR, but not both
    */
-  virtual int read_byte();
+  virtual std::optional<analog::value> read_byte();
 
  protected:
   /**

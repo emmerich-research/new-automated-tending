@@ -27,29 +27,30 @@ class DigitalDevice;
 
 namespace digital {
 enum class mode {
-  INPUT,
-  OUTPUT,
+  input,
+  output,
 };
 
 enum class value {
-  LOW,
-  HIGH,
-  ERROR,
+  low,
+  high,
+  error,
 };
 }  // namespace digital
 
-/** digital::mode::OUTPUT mode specific implementation of device::DigitalDevice
+/** digital::mode::output mode specific implementation of device::DigitalDevice
  */
-using DigitalOutputDevice = DigitalDevice<digital::mode::OUTPUT>;
+using DigitalOutputDevice = DigitalDevice<digital::mode::output>;
 
-/** digital::mode::INPUT mode specific implementation of device::DigitalDevice
+/** digital::mode::input mode specific implementation of device::DigitalDevice
  */
-using DigitalInputDevice = DigitalDevice<digital::mode::INPUT>;
+using DigitalInputDevice = DigitalDevice<digital::mode::input>;
 
 /** device::DigitalOutputDevice registry singleton class using
  * algo::InstanceRegistry
  */
 using DigitalOutputDeviceRegistry = algo::InstanceRegistry<DigitalOutputDevice>;
+
 /** device::DigitalInputDevice registry singleton class using
  * algo::InstanceRegistry
  */
@@ -100,7 +101,7 @@ class DigitalDevice : public StackObj {
    * @return ATM_OK or ATM_ERR, but not both
    */
   template <digital::mode Mode_ = Mode,
-            typename = std::enable_if_t<Mode_ == digital::mode::OUTPUT>>
+            typename = std::enable_if_t<Mode_ == digital::mode::output>>
   ATM_STATUS write(const digital::value& level);
   /**
    * Read the HIGH/LOW data from GPIO via Pigpio lib
@@ -110,7 +111,7 @@ class DigitalDevice : public StackObj {
    * @return ATM_OK or ATM_ERR, but not both
    */
   template <digital::mode Mode_ = Mode,
-            typename = std::enable_if_t<Mode_ == digital::mode::INPUT>>
+            typename = std::enable_if_t<Mode_ == digital::mode::input>>
   const digital::value read() const;
   /**
    * Get GPIO pin that has been initialized
@@ -160,7 +161,7 @@ class DigitalDevice : public StackObj {
    * @return string representation of device mode
    */
   static inline const char* get_mode(const digital::mode& mode) {
-    if (mode == digital::mode::INPUT) {
+    if (mode == digital::mode::input) {
       return "input";
     } else {
       return "output";
@@ -168,12 +169,12 @@ class DigitalDevice : public StackObj {
   }
 
   template <digital::mode Mode_ = Mode,
-            typename = std::enable_if_t<Mode_ == digital::mode::OUTPUT>>
+            typename = std::enable_if_t<Mode_ == digital::mode::output>>
   static const int process_value(const digital::value& value,
                                  const bool            active_state);
 
   template <digital::mode Mode_ = Mode,
-            typename = std::enable_if_t<Mode_ == digital::mode::INPUT>>
+            typename = std::enable_if_t<Mode_ == digital::mode::input>>
   static const digital::value& process_value(const int& value,
                                              const bool active_state);
 
@@ -185,7 +186,7 @@ class DigitalDevice : public StackObj {
    *
    * @param  pin gpio pin, see Raspberry GPIO pinout for details
    */
-  DigitalDevice(unsigned char pin);
+  DigitalDevice(PI_PIN pin);
   /**
    * DigitalDevice Destructor
    *
@@ -197,7 +198,7 @@ class DigitalDevice : public StackObj {
   /**
    * GPIO pin
    */
-  const unsigned char pin_;
+  const PI_PIN pin_;
   /**
    * Device mode
    */

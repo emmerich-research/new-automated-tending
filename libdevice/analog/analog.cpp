@@ -45,18 +45,18 @@ ATM_STATUS AnalogDevice::write_device(char* buf, unsigned int count) {
   return ATM_ERR;
 }
 
-int AnalogDevice::read_device(char* buf, unsigned int count) {
+std::optional<int> AnalogDevice::read_device(char* buf, unsigned int count) {
   PI_RES res = i2cReadDevice(static_cast<unsigned int>(handle_), buf, count);
 
   if (res > 0) {
-    return res;
+    return static_cast<int>(res);
   }
 
   LOG_DEBUG(
       "[FAILED] AnalogDevice::readDevice with handle {} and buf count {}, "
       "result = {}",
       handle_, count, res);
-  return ATM_ERR;
+  return {};
 }
 
 ATM_STATUS AnalogDevice::write_byte(unsigned int val) {
@@ -73,16 +73,16 @@ ATM_STATUS AnalogDevice::write_byte(unsigned int val) {
   return ATM_ERR;
 }
 
-int AnalogDevice::read_byte() {
+std::optional<analog::value> AnalogDevice::read_byte() {
   PI_RES res = i2cReadByte(static_cast<unsigned int>(handle_));
 
   if (res == PI_BAD_HANDLE || res == PI_I2C_READ_FAILED) {
     LOG_DEBUG("[FAILED] AnalogDevice::readByte with handle {}, result = {}",
               handle_, res);
-    return ATM_ERR;
+    return {};
   }
 
-  return res;
+  return static_cast<analog::value>(res);
 }
 }  // namespace device
 

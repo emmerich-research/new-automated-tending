@@ -7,9 +7,10 @@ configure_file(common.hpp.in common.hpp @ONLY)
 ucm_add_files(
   "init.cpp"
   "macros.cpp"
+  "config.cpp"
   "logger.cpp"
   "state.cpp"
-  "config.cpp"
+  "timer.cpp"
   TO SOURCES)
   
 ucm_add_target(

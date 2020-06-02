@@ -9,13 +9,16 @@
  */
 
 // 1. STL
+#include <chrono>
 #include <cstddef>
+#include <cstdlib>
 #include <filesystem>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <thread>
 
 // 2. Vendors
 // 2.1. Spdlog
@@ -41,5 +44,6 @@
 #include "config.hpp"
 #include "logger.hpp"
 #include "state.hpp"
+#include "timer.hpp"
 
 #endif

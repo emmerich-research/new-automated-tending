@@ -9,7 +9,9 @@
  */
 
 // 1. STL
+#include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <optional>
