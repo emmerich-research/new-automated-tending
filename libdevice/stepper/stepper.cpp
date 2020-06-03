@@ -25,7 +25,7 @@ void StepperDevice<stepper::speed::constant>::start_move(long      steps,
 template <>
 void StepperDevice<stepper::speed::constant>::calc_step_pulse() {
   // this should not be happening, but avoids strange calculations
-  if (remaining_steps() <= 0){
+  if (remaining_steps() <= 0) {
     return;
   }
 

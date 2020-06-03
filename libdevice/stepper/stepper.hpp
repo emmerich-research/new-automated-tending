@@ -1,5 +1,5 @@
-#ifndef LIB_DEVICE_DIGITAL_STEPPER_HPP_
-#define LIB_DEVICE_DIGITAL_STEPPER_HPP_
+#ifndef LIB_DEVICE_DIGITAL_STEPPER_STEPPER_HPP_
+#define LIB_DEVICE_DIGITAL_STEPPER_STEPPER_HPP_
 
 /** @file stepper.hpp
  *  @brief Stepper device class definition
@@ -128,7 +128,7 @@ class StepperDevice : public StackObj {
    *
    * Close the StepperDevice that has been initialized
    */
-  ~StepperDevice() = default;
+  virtual ~StepperDevice() = default;
   /**
    * Get Step DigitalOutputDevice that has been initialized
    *
@@ -182,7 +182,7 @@ class StepperDevice : public StackObj {
    *
    * @param microsteps microsteps to set
    */
-  void microsteps(stepper::step microsteps);
+  virtual void microsteps(const stepper::step& microsteps);
   /**
    * Get stepper microsteps
    *
@@ -196,7 +196,7 @@ class StepperDevice : public StackObj {
    *
    * @param rpm rpm to set
    */
-  void rpm(double rpm);
+  virtual void rpm(double rpm);
   /**
    * Get current rpm of stepper motor
    *
@@ -208,7 +208,7 @@ class StepperDevice : public StackObj {
    *
    * @param acceleration acceleration to set
    */
-  void acceleration(double acceleration);
+  virtual void acceleration(double acceleration);
   /**
    * Get current acceleration of stepper motor
    *
@@ -220,7 +220,7 @@ class StepperDevice : public StackObj {
    *
    * @param deceleration deceleration to set
    */
-  void deceleration(double deceleration);
+  virtual void deceleration(double deceleration);
   /**
    * Get current deceleration of stepper motor
    *
@@ -232,7 +232,7 @@ class StepperDevice : public StackObj {
    *
    * @param rpm rpm to set
    */
-  void motor_steps(stepper::step motor_steps);
+  virtual void motor_steps(const stepper::step& motor_steps);
   /**
    * Get current motor steps
    *
@@ -285,9 +285,10 @@ class StepperDevice : public StackObj {
    * calculate the step pulse in microseconds for a given rpm value.
    * 60[s/min] * 1000000[us/s] / microsteps / steps / rpm
    */
-  static stepper::pulse calc_step_pulse_from_rpm(stepper::step steps,
-                                                 unsigned long microsteps,
-                                                 double        rpm);
+  static stepper::pulse calc_step_pulse_from_rpm(
+      const stepper::step& steps,
+      const stepper::step& microsteps,
+      double               rpm);
 
   /**
    * calculate the step pulse for each yield move
@@ -415,4 +416,4 @@ class StepperDevice : public StackObj {
 
 NAMESPACE_END
 
-#endif  // LIB_DEVICE_DIGITAL_STEPPER_HPP_
+#endif  // LIB_DEVICE_DIGITAL_STEPPER_STEPPER_HPP_

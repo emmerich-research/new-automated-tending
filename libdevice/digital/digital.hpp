@@ -7,6 +7,7 @@
  * Digital device using GPIO
  */
 
+#include <optional>
 #include <string>
 #include <type_traits>
 
@@ -34,7 +35,6 @@ enum class mode {
 enum class value {
   low,
   high,
-  error,
 };
 }  // namespace digital
 
@@ -92,6 +92,14 @@ class DigitalDevice : public StackObj {
    */
   MAKE_STD_UNIQUE(DigitalDevice<Mode>)
   /**
+   * DigitalDevice Destructor
+   *
+   * Check if pin is active or not
+   *
+   * @return active status of GPIO pin
+   */
+  const bool active() const { return active_; }
+  /**
    * Write the HIGH/LOW data to GPIO via Pigpio lib
    *
    * Only ENABLE if device mode is OUTPUT
@@ -112,7 +120,7 @@ class DigitalDevice : public StackObj {
    */
   template <digital::mode Mode_ = Mode,
             typename = std::enable_if_t<Mode_ == digital::mode::input>>
-  const digital::value read() const;
+  const std::optional<digital::value> read() const;
   /**
    * Get GPIO pin that has been initialized
    *
@@ -207,6 +215,12 @@ class DigitalDevice : public StackObj {
    * Active state
    */
   bool active_state_;
+  /**
+   * Active status
+   *
+   * Will become false if only initialize with PI_UNDEF_PIN
+   **/
+  bool active_;
 };
 }  // namespace device
 

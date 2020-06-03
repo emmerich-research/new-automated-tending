@@ -14,6 +14,11 @@ DigitalDevice<Mode>::DigitalDevice(PI_PIN pin)
   DEBUG_ONLY(obj_name_ =
                  fmt::format("DigitalDevice<{}> pin {}", get_mode(Mode), pin));
 
+  if (pin == PI_UNDEF_PIN) {
+    active_ = false;
+    return;
+  }
+
   LOG_DEBUG("Initializing DigitalDevice<{}> using GPIO with pin {}",
             get_mode(Mode), pin);
 
@@ -23,6 +28,7 @@ DigitalDevice<Mode>::DigitalDevice(PI_PIN pin)
   if (res != PI_OK) {
     LOG_DEBUG("[FAILED] Initializing DigitalDevice<{}> using GPIO with pin {}",
               get_mode(Mode), pin);
+    active_ = false;
     return;
   }
 }
@@ -30,6 +36,13 @@ DigitalDevice<Mode>::DigitalDevice(PI_PIN pin)
 template <digital::mode Mode>
 template <digital::mode Mode_, typename>
 ATM_STATUS DigitalDevice<Mode>::write(const digital::value& level) {
+  if (!active()) {
+    LOG_DEBUG(
+        "[FAILED] DigitalDevice<{}>::write with pin {}, device is not active!",
+        get_mode(Mode), pin_);
+    return ATM_ERR;
+  }
+
   PI_RES res;
   switch (level) {
     case digital::value::low:
@@ -54,13 +67,20 @@ ATM_STATUS DigitalDevice<Mode>::write(const digital::value& level) {
 
 template <digital::mode Mode>
 template <digital::mode Mode_, typename>
-const digital::value DigitalDevice<Mode>::read() const {
+const std::optional<digital::value> DigitalDevice<Mode>::read() const {
+  if (!active()) {
+    LOG_DEBUG(
+        "[FAILED] DigitalDevice<{}>::read with pin {}, device is not active!",
+        get_mode(Mode), pin_);
+    return {};
+  }
+
   PI_RES res = gpioRead(pin_);
 
   if (res == PI_BAD_GPIO) {
     LOG_DEBUG("[FAILED] DigitalDevice<{}>::read with pin {}, result = {}",
               get_mode(Mode), pin_, res);
-    return digital::value::error;
+    return {};
   }
 
   return process_value(res, active_state());

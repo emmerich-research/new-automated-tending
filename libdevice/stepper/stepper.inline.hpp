@@ -1,10 +1,10 @@
-#ifndef LIB_DEVICE_DIGITAL_STEPPER_INLINE_HPP_
-#define LIB_DEVICE_DIGITAL_STEPPER_INLINE_HPP_
+#ifndef LIB_DEVICE_DIGITAL_STEPPER_STEPPER_INLINE_HPP_
+#define LIB_DEVICE_DIGITAL_STEPPER_STEPPER_INLINE_HPP_
 
 #include "stepper/stepper.hpp"
 
-#include <thread>
 #include <chrono>
+#include <thread>
 
 NAMESPACE_BEGIN
 
@@ -39,12 +39,12 @@ StepperDevice<Speed>::StepperDevice(PI_PIN        step_pin,
 }
 
 template <stepper::speed Speed>
-void StepperDevice<Speed>::microsteps(stepper::step microsteps) {
+void StepperDevice<Speed>::microsteps(const stepper::step& microsteps) {
   microsteps_ = microsteps;
 }
 
 template <stepper::speed Speed>
-void StepperDevice<Speed>::motor_steps(stepper::step motor_steps) {
+void StepperDevice<Speed>::motor_steps(const stepper::step& motor_steps) {
   motor_steps_ = motor_steps;
 }
 
@@ -78,9 +78,9 @@ const stepper::state StepperDevice<Speed>::state() const {
   stepper::state state = stepper::state::stopped;
 
   if (remaining_steps() > 0) {
-    if (remaining_steps() <= steps_to_brake()){
+    if (remaining_steps() <= steps_to_brake()) {
       state = stepper::state::decelerating;
-    } else if (step_count() <= steps_to_cruise()){
+    } else if (step_count() <= steps_to_cruise()) {
       state = stepper::state::accelerating;
     } else {
       state = stepper::state::cruising;
@@ -92,9 +92,9 @@ const stepper::state StepperDevice<Speed>::state() const {
 
 template <stepper::speed Speed>
 stepper::pulse StepperDevice<Speed>::calc_step_pulse_from_rpm(
-    stepper::step steps,
-    stepper::step microsteps,
-    double        rpm) {
+    const stepper::step& steps,
+    const stepper::step& microsteps,
+    double               rpm) {
   return static_cast<stepper::pulse>(60.0 * 1000000L / steps / microsteps /
                                      rpm);
 }
@@ -115,13 +115,11 @@ void StepperDevice<Speed>::pre_start_move(long steps) {
 template <stepper::speed Speed>
 bool StepperDevice<Speed>::yield_move(void) {
   if (remaining_steps() > 0) {
-    // TODO: delay this
     // original code :delayMicros(next_action_interval, last_action_end);
-    // time_unit now = micros();
-    safe_delay<time_units::micros>(next_move_interval());
- 
+    sleep_until<time_units::micros>(next_move_interval(), last_move_end());
+
     // DIR pin is sampled on rising STEP edge, so it is set first
-    switch(direction()) {
+    switch (direction()) {
       case stepper::direction::forward:
         dir_device()->write(digital::value::high);
         break;
@@ -140,13 +138,14 @@ bool StepperDevice<Speed>::yield_move(void) {
     // save value because calcStepPulse() will overwrite it
     stepper::pulse pulse = step_pulse();
     calc_step_pulse();
+
     // We should pull HIGH for at least 1-2us (step_high_min)
-    safe_delay<time_units::micros>(step_high_min);
+    sleep_for<time_units::micros>(step_high_min);
     step_device()->write(digital::value::low);
     // end of pulsing
 
-    // account for calcStepPulse() execution time; sets ceiling for max rpm on
-    // slower MCUs
+    // account for calcStepPulse() execution time;
+    // sets ceiling for max rpm on slower MCUs
     last_move_end_ = micros();
     m = last_move_end() - m;
     next_move_interval_ = (pulse > m) ? pulse - m : 1;
@@ -162,11 +161,12 @@ bool StepperDevice<Speed>::yield_move(void) {
 template <stepper::speed Speed>
 void StepperDevice<Speed>::move(long steps) {
   start_move(steps);
-  // do the rest...
-  while(yield_move());
+  while (yield_move()) {
+    // noop
+  }
 }
 }  // namespace device
 
 NAMESPACE_END
 
-#endif  // LIB_DEVICE_DIGITAL_STEPPER_INLINE_HPP_
+#endif  // LIB_DEVICE_DIGITAL_STEPPER_STEPPER_INLINE_HPP_

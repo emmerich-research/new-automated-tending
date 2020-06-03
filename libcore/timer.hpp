@@ -49,8 +49,26 @@ time_unit micros(void);
  */
 time_unit nanos(void);
 
-template<time_units TimeUnits>
-void safe_delay(time_unit time);
+/**
+ * @brief Sleep for relative time from now
+ *
+ * @tparam TimeUnits time units can be millis, micros, or nanos
+ *
+ * @param  time sleep time
+ */
+template <time_units TimeUnits>
+void sleep_for(time_unit time);
+
+/**
+ * @brief Sleep for absolute time from given start time
+ *
+ * @tparam TimeUnits time units can be millis, micros, or nanos
+ *
+ * @param  time        delay time
+ * @param  start_time  starting time, if zero it means now() + time
+ */
+template <time_units TimeUnits>
+void sleep_until(time_unit time, time_unit start_time = 0);
 
 NAMESPACE_END
 

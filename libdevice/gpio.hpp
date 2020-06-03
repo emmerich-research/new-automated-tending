@@ -25,6 +25,12 @@ using PI_PIN = unsigned char;
  */
 #define PI_OK 0
 
+/**
+ * @def PI_UNDEF_PIN
+ * PI_UNDEF_PIN for stating that pin is unusable
+ */
+#define PI_UNDEF_PIN -1
+
 #ifdef MOCK_GPIO
 
 // all interfaces are copied from PIGPIO library

@@ -43,6 +43,8 @@
 #include "digital/pwm.hpp"
 
 // 4.3. Stepper Device
+#include "stepper/A4988.hpp"
+#include "stepper/A4988.inline.hpp"
 #include "stepper/stepper.hpp"
 #include "stepper/stepper.inline.hpp"
 

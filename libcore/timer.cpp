@@ -15,10 +15,21 @@ time_unit millis() {
   return static_cast<time_unit>(ms);
 }
 
-
-template<>
-void safe_delay<time_units::millis>(time_unit time) {
+template <>
+void sleep_for<time_units::millis>(time_unit time) {
   std::this_thread::sleep_for(std::chrono::milliseconds(time));
+}
+
+template <>
+void sleep_until<time_units::millis>(time_unit time, time_unit start_time) {
+  time_unit start = start_time;
+
+  if (start == 0) {
+    start = millis();
+  }
+
+  std::this_thread::sleep_until(std::chrono::high_resolution_clock::time_point{
+      std::chrono::milliseconds(start + time)});
 }
 
 time_unit micros() {
@@ -29,11 +40,22 @@ time_unit micros() {
   return static_cast<time_unit>(us);
 }
 
-template<>
-void safe_delay<time_units::micros>(time_unit time) {
+template <>
+void sleep_for<time_units::micros>(time_unit time) {
   std::this_thread::sleep_for(std::chrono::microseconds(time));
 }
 
+template <>
+void sleep_until<time_units::micros>(time_unit time, time_unit start_time) {
+  time_unit start = start_time;
+
+  if (start == 0) {
+    start = micros();
+  }
+
+  std::this_thread::sleep_until(std::chrono::high_resolution_clock::time_point{
+      std::chrono::microseconds(start + time)});
+}
 
 time_unit nanos() {
   uint64_t ns =
@@ -43,10 +65,21 @@ time_unit nanos() {
   return static_cast<time_unit>(ns);
 }
 
-template<>
-void safe_delay<time_units::nanos>(time_unit time) {
+template <>
+void sleep_for<time_units::nanos>(time_unit time) {
   std::this_thread::sleep_for(std::chrono::nanoseconds(time));
 }
 
+template <>
+void sleep_until<time_units::nanos>(time_unit time, time_unit start_time) {
+  time_unit start = start_time;
+
+  if (start == 0) {
+    start = nanos();
+  }
+
+  std::this_thread::sleep_until(std::chrono::high_resolution_clock::time_point{
+      std::chrono::nanoseconds(start + time)});
+}
 
 NAMESPACE_END
