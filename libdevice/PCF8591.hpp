@@ -1,6 +1,12 @@
 #ifndef LIB_DEVICE_ANALOG_PCF8591_HPP_
 #define LIB_DEVICE_ANALOG_PCF8591_HPP_
 
+/** @file PCF8591.hpp
+ *  @brief PCF8591 Analog Digital Converter
+ *
+ * PCF8591 Analog Digital Converter
+ */
+
 #include <libcore/core.hpp>
 
 #include "analog.hpp"

@@ -9,15 +9,24 @@
 
 #include <libcore/core.hpp>
 
-#include "digital/digital.hpp"
-
-#include "stepper/stepper.hpp"
+#include "digital.hpp"
+#include "stepper.hpp"
 
 NAMESPACE_BEGIN
 
 namespace device {
+// forward declaration
 template <stepper::speed Speed>
-class A4988Device : public StepperDevice<Speed> {
+class A4988Device;
+
+/** Constant speed specific implementation for Pololu A4988 Device */
+using ConstantSpeedA4988Device = A4988Device<stepper::speed::constant>;
+
+/** Linear speed specific implementation for Pololu A4988 Device */
+using LinearSpeedA4988Device = A4988Device<stepper::speed::linear>;
+
+template <stepper::speed Speed>
+class A4988Device : public impl::StepperDeviceImpl<Speed> {
  public:
   /**
    * Create shared_ptr<A4988Device>

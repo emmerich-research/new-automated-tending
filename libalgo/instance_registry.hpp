@@ -17,6 +17,7 @@
 NAMESPACE_BEGIN
 
 namespace algo {
+// forward declaration
 namespace impl {
 template <typename T>
 class InstanceRegistryImpl;
@@ -81,8 +82,18 @@ class InstanceRegistryImpl : public StackObj {
    * Get instance of T with unique id
    *
    * @param  id    unique identifier of instance
+   *
+   * @return instance of given id or fail
    */
   inline const std::shared_ptr<T>& get(const std::string& id);
+  /**
+   * Check instance of T with unique id
+   *
+   * @param  id    unique identifier of instance
+   *
+   * @return exist or not
+   */
+  inline const bool exist(const std::string& id) const;
 
  private:
   /**

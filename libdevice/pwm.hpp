@@ -12,7 +12,7 @@
 #include <libalgo/algo.hpp>
 #include <libcore/core.hpp>
 
-#include "digital/digital.hpp"
+#include "digital.hpp"
 
 NAMESPACE_BEGIN
 

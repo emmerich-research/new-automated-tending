@@ -227,7 +227,7 @@ class LoggerImpl : public StackObj {
 
  private:
   /**
-   * ConfigImpl Constructor
+   * LoggerImpl Constructor
    *
    * Initialize log file and log to screen functionality
    *
@@ -235,7 +235,7 @@ class LoggerImpl : public StackObj {
    */
   explicit LoggerImpl(const impl::ConfigImpl* config);
   /**
-   * ConfigImpl Destructor
+   * LoggerImpl Destructor
    *
    * Will destroy all the spdlog logger instances
    */

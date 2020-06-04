@@ -1,7 +1,7 @@
 #ifndef LIB_DEVICE_DIGITAL_STEPPER_STEPPER_INLINE_HPP_
 #define LIB_DEVICE_DIGITAL_STEPPER_STEPPER_INLINE_HPP_
 
-#include "stepper/stepper.hpp"
+#include "stepper.hpp"
 
 #include <chrono>
 #include <thread>
@@ -9,27 +9,15 @@
 NAMESPACE_BEGIN
 
 namespace device {
-template <stepper::speed Speed>
-const time_unit StepperDevice<Speed>::step_high_min = 1;
 
+namespace impl {
 template <stepper::speed Speed>
-StepperDevice<Speed>::StepperDevice(PI_PIN        step_pin,
-                                    PI_PIN        dir_pin,
-                                    PI_PIN        enable_pin,
-                                    stepper::step steps)
-    : step_pin_{step_pin},
-      dir_pin_{dir_pin},
-      enable_pin_{enable_pin},
-      step_device_{DigitalOutputDevice::create(step_pin)},
-      dir_device_{DigitalOutputDevice::create(dir_pin)},
-      enable_device_{DigitalOutputDevice::create(enable_pin)},
-      motor_steps_{steps} {
+StepperDeviceImpl<Speed>::StepperDeviceImpl(PI_PIN        step_pin,
+                                            PI_PIN        dir_pin,
+                                            PI_PIN        enable_pin,
+                                            stepper::step steps)
+    : StepperDevice{step_pin, dir_pin, enable_pin, steps} {
   /* Movement mechanism variables initialization */
-  last_move_end_ = 0;
-  next_move_interval_ = 0;
-  acceleration_ = 1000;
-  deceleration_ = 1000;
-  direction_ = stepper::direction::forward;
   remaining_steps_ = 0;
   steps_to_cruise_ = 0;
   steps_to_brake_ = 0;
@@ -39,42 +27,7 @@ StepperDevice<Speed>::StepperDevice(PI_PIN        step_pin,
 }
 
 template <stepper::speed Speed>
-void StepperDevice<Speed>::microsteps(const stepper::step& microsteps) {
-  microsteps_ = microsteps;
-}
-
-template <stepper::speed Speed>
-void StepperDevice<Speed>::motor_steps(const stepper::step& motor_steps) {
-  motor_steps_ = motor_steps;
-}
-
-template <stepper::speed Speed>
-void StepperDevice<Speed>::rpm(double rpm) {
-  rpm_ = rpm;
-}
-
-template <stepper::speed Speed>
-void StepperDevice<Speed>::acceleration(double acceleration) {
-  acceleration_ = acceleration;
-}
-
-template <stepper::speed Speed>
-void StepperDevice<Speed>::deceleration(double deceleration) {
-  deceleration_ = deceleration;
-}
-
-template <stepper::speed Speed>
-void StepperDevice<Speed>::enable() {
-  step_device()->write(digital::value::high);
-}
-
-template <stepper::speed Speed>
-void StepperDevice<Speed>::disable() {
-  step_device()->write(digital::value::low);
-}
-
-template <stepper::speed Speed>
-const stepper::state StepperDevice<Speed>::state() const {
+const stepper::state StepperDeviceImpl<Speed>::state() const {
   stepper::state state = stepper::state::stopped;
 
   if (remaining_steps() > 0) {
@@ -91,7 +44,7 @@ const stepper::state StepperDevice<Speed>::state() const {
 }
 
 template <stepper::speed Speed>
-stepper::pulse StepperDevice<Speed>::calc_step_pulse_from_rpm(
+stepper::pulse StepperDeviceImpl<Speed>::calc_step_pulse_from_rpm(
     const stepper::step& steps,
     const stepper::step& microsteps,
     double               rpm) {
@@ -100,7 +53,7 @@ stepper::pulse StepperDevice<Speed>::calc_step_pulse_from_rpm(
 }
 
 template <stepper::speed Speed>
-void StepperDevice<Speed>::pre_start_move(long steps) {
+void StepperDeviceImpl<Speed>::pre_start_move(long steps) {
   // set direction
   direction_ =
       (steps >= 0) ? stepper::direction::forward : stepper::direction::backward;
@@ -113,7 +66,7 @@ void StepperDevice<Speed>::pre_start_move(long steps) {
 }
 
 template <stepper::speed Speed>
-bool StepperDevice<Speed>::yield_move(void) {
+const bool StepperDeviceImpl<Speed>::yield_move(void) {
   if (remaining_steps() > 0) {
     // original code :delayMicros(next_action_interval, last_action_end);
     sleep_until<time_units::micros>(next_move_interval(), last_move_end());
@@ -140,7 +93,7 @@ bool StepperDevice<Speed>::yield_move(void) {
     calc_step_pulse();
 
     // We should pull HIGH for at least 1-2us (step_high_min)
-    sleep_for<time_units::micros>(step_high_min);
+    sleep_for<time_units::micros>(StepperDevice::step_high_min);
     step_device()->write(digital::value::low);
     // end of pulsing
 
@@ -159,12 +112,21 @@ bool StepperDevice<Speed>::yield_move(void) {
 }
 
 template <stepper::speed Speed>
-void StepperDevice<Speed>::move(long steps) {
+void StepperDeviceImpl<Speed>::move(long steps) {
   start_move(steps);
   while (yield_move()) {
     // noop
+    LOG_DEBUG("MOVE {}", remaining_steps());
   }
 }
+
+template <stepper::speed Speed>
+const stepper::step StepperDeviceImpl<Speed>::stop() {
+  stepper::step retval = remaining_steps();
+  remaining_steps_ = 0;
+  return retval;
+}
+}  // namespace impl
 }  // namespace device
 
 NAMESPACE_END

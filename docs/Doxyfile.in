@@ -776,6 +776,7 @@ INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/libcore
 INPUT                  += @CMAKE_CURRENT_BINARY_DIR@/libcore/common.hpp
 INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/libalgo
 INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/libdevice
+INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/libmechanism
 INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/app
 
 

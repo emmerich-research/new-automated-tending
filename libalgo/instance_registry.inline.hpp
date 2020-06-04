@@ -54,6 +54,16 @@ inline const std::shared_ptr<T>& InstanceRegistryImpl<T>::get(
     return nullptr;
   }
 }
+
+template <typename T>
+inline const bool InstanceRegistryImpl<T>::exist(const std::string& id) const {
+  try {
+    [[maybe_unused]] auto instance = container_.at(id);
+    return true;
+  } catch ([[maybe_unused]] const std::out_of_range& e) {
+    return false;
+  }
+}
 }  // namespace impl
 }  // namespace algo
 

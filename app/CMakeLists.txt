@@ -20,7 +20,8 @@ ucm_add_target(
 target_link_libraries(${NAME} PRIVATE
   "${PROJECT_NAMESPACE}::core"
   "${PROJECT_NAMESPACE}::algo"
-  "${PROJECT_NAMESPACE}::device")
+  "${PROJECT_NAMESPACE}::device"
+  "${PROJECT_NAMESPACE}::mechanism")
 
 target_set_warnings(${NAME}
   ENABLE ALL
@@ -28,7 +29,7 @@ target_set_warnings(${NAME}
   DISABLE Annoying)
 
 set_target_properties(${NAME} PROPERTIES
-    CXX_STANDARD 17 
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES 
     CXX_EXTENSIONS NO)
 

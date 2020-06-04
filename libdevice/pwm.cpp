@@ -1,4 +1,4 @@
-#include "digital/pwm.hpp"
+#include "pwm.hpp"
 
 #include "gpio.hpp"
 

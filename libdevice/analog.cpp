@@ -1,6 +1,6 @@
 #include "device.hpp"
 
-#include "analog/analog.hpp"
+#include "analog.hpp"
 
 #include "gpio.hpp"
 

@@ -70,9 +70,23 @@ endif()
 
 add_definitions(-DATM_COMPILATION)
 
+# Add PIGPIO lib or not
+set(RASPI_LIB "")
+
+EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE arch)
+
+if (${arch} MATCHES "^arm")
+  find_package(pigpio REQUIRED)
+  LIST(APPEND RASPI_LIB "pigpio")
+  LIST(APPEND RASPI_LIB "rt")
+else()
+  add_definitions(-DMOCK_GPIO)
+endif()
+
 find_package(Threads REQUIRED)
 
 add_subdirectory(libcore)
 add_subdirectory(libalgo)
 add_subdirectory(libdevice)
+add_subdirectory(libmechanism)
 add_subdirectory(app)

@@ -2,34 +2,79 @@
 
 #include "gpio.hpp"
 
-#include "analog/PCF8591.hpp"
-#include "analog/analog.hpp"
+#include "analog.hpp"
+#include "digital.hpp"
+#include "stepper.hpp"
 
-#include "digital/digital.hpp"
+#include "A4988.hpp"
+#include "PCF8591.hpp"
 
 NAMESPACE_BEGIN
 
 using namespace device;
 
 static ATM_STATUS initialize_analog_devices() {
-  return AnalogDeviceRegistry::get()->create<analog::PCF8591Device>("PCF8591");
+  auto analog_device_registry = AnalogDeviceRegistry::get();
+  return analog_device_registry->create<analog::PCF8591Device>("PCF8591");
 }
 
 static ATM_STATUS initialize_input_digital_devices() {
-  return DigitalInputDeviceRegistry::get()->create<DigitalInputDevice>("INPUT1",
-                                                                       0);
-}
-
-static ATM_STATUS initialize_output_digital_devices() {
   ATM_STATUS status = ATM_OK;
-  status = DigitalOutputDeviceRegistry::get()->create("OUTPUT1", 1);
+  auto       digital_input_registry = DigitalInputDeviceRegistry::get();
 
+  status = digital_input_registry->create("LIMIT_X", 1);
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
-  status = DigitalOutputDeviceRegistry::get()->create("OUTPUT2", 2);
+  status = digital_input_registry->create("LIMIT_Y", 2);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
 
+  status = digital_input_registry->create("LIMIT_Z", 3);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  return status;
+}
+
+static ATM_STATUS initialize_output_digital_devices() {
+  ATM_STATUS status = ATM_OK;
+  auto       digital_output_registry = DigitalOutputDeviceRegistry::get();
+
+  status = digital_output_registry->create("OUTPUT1", 4);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  status = digital_output_registry->create("OUTPUT2", 5);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  return status;
+}
+
+static ATM_STATUS initialize_stepper_devices() {
+  ATM_STATUS status = ATM_OK;
+  auto       stepper_registry = StepperRegistry::get();
+
+  status =
+      stepper_registry->create<LinearSpeedA4988Device>("STEPPER_X", 12, 13, 14);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  status =
+      stepper_registry->create<LinearSpeedA4988Device>("STEPPER_Y", 12, 13, 14);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  status =
+      stepper_registry->create<LinearSpeedA4988Device>("STEPPER_Z", 12, 13, 14);
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -44,37 +89,41 @@ ATM_STATUS initialize_device() {
   ATM_STATUS status = ATM_OK;
 
   status = AnalogDeviceRegistry::create();
-
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = DigitalInputDeviceRegistry::create();
-
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = DigitalOutputDeviceRegistry::create();
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
 
+  status = StepperRegistry::create();
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = initialize_analog_devices();
-
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = initialize_input_digital_devices();
-
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = initialize_output_digital_devices();
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
 
+  status = initialize_stepper_devices();
   if (status == ATM_ERR) {
     return ATM_ERR;
   }

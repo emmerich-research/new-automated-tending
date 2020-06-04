@@ -1,7 +1,7 @@
 #ifndef LIB_DEVICE_DIGITAL_STEPPER_A4988_INLINE_HPP_
 #define LIB_DEVICE_DIGITAL_STEPPER_A4988_INLINE_HPP_
 
-#include "stepper/A4988.hpp"
+#include "A4988.hpp"
 
 NAMESPACE_BEGIN
 
@@ -21,7 +21,7 @@ A4988Device<Speed>::A4988Device(PI_PIN        step_pin,
                                 PI_PIN        ms2_pin,
                                 PI_PIN        ms3_pin,
                                 stepper::step steps)
-    : StepperDevice<Speed>{step_pin, dir_pin, enable_pin, steps},
+    : impl::StepperDeviceImpl<Speed>{step_pin, dir_pin, enable_pin, steps},
       ms1_pin_{ms1_pin},
       ms2_pin_{ms2_pin},
       ms3_pin_{ms3_pin},
@@ -35,23 +35,26 @@ void A4988Device<Speed>::microsteps(const stepper::step& microsteps) {
     return;
   }
 
-  if (!ms1_device()->active() || !ms2_pin()->active() ||
+  if (!ms1_device()->active() || !ms2_device()->active() ||
       !ms3_device()->active()) {
     return;
   }
 
-  StepperDevice<Speed>::microsteps(microsteps);
+  impl::StepperDeviceImpl<Speed>::microsteps(microsteps);
 
   const stepper::step* table = ms_table();
   size_t               table_size = ms_table_size();
 
   unsigned short i = 0;
   while (i < table_size) {
-    if (StepperDevice<Speed>::microsteps() & (1 << i)) {
+    if (impl::StepperDeviceImpl<Speed>::microsteps() & (1 << i)) {
       const stepper::step mask = table[i];
-      ms3_device()->write(mask & 4);
-      ms2_device()->write(mask & 2);
-      ms1_device()->write(mask & 1);
+      ms3_device()->write(mask & 4 ? digital::value::high
+                                   : digital::value::low);
+      ms2_device()->write(mask & 2 ? digital::value::high
+                                   : digital::value::low);
+      ms1_device()->write(mask & 1 ? digital::value::high
+                                   : digital::value::low);
       break;
     }
     ++i;

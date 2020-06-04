@@ -5,14 +5,14 @@ ucm_add_files(
   "gpio.cpp"
 
   # analog devices
-  "analog/analog.cpp"
-  "analog/PCF8591.cpp"
+  "analog.cpp"
+  "PCF8591.cpp"
 
   # digital
-  "digital/pwm.cpp"
+  "pwm.cpp"
 
   # stepper
-  "stepper/stepper.cpp"
+  "stepper.cpp"
   TO SOURCES)
 
 ucm_add_target(
@@ -27,19 +27,6 @@ add_library("${PROJECT_NAMESPACE}::device" ALIAS device)
 target_include_directories(device PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-
-# Add PIGPIO lib or not
-set(RASPI_LIB "")
-
-EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE arch)
-
-if (${arch} MATCHES "^arm")
-  find_package(pigpio REQUIRED)
-  LIST(APPEND RASPI_LIB "pigpio")
-  LIST(APPEND RASPI_LIB "rt")
-else()
-  add_definitions(-DMOCK_GPIO)
-endif()
 
 target_link_libraries(device PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}

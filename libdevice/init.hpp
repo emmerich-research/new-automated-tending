@@ -3,6 +3,8 @@
 
 /** @file init.hpp
  *  @brief Devices initialization
+ *
+ *  Devices initialization
  */
 
 #include <libcore/core.hpp>

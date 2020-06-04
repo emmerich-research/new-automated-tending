@@ -35,17 +35,20 @@
 #include "init.hpp"
 
 // 4.1. Analog Device
-#include "analog/analog.hpp"
+#include "analog.hpp"
+
+#include "PCF8591.hpp"
 
 // 4.2. Digital Device
-#include "digital/digital.hpp"
-#include "digital/digital.inline.hpp"
-#include "digital/pwm.hpp"
+#include "digital.hpp"
+#include "digital.inline.hpp"
+#include "pwm.hpp"
 
 // 4.3. Stepper Device
-#include "stepper/A4988.hpp"
-#include "stepper/A4988.inline.hpp"
-#include "stepper/stepper.hpp"
-#include "stepper/stepper.inline.hpp"
+#include "stepper.hpp"
+#include "stepper.inline.hpp"
+
+#include "A4988.hpp"
+#include "A4988.inline.hpp"
 
 #endif  // LIB_DEVICE_DEVICE_HPP_

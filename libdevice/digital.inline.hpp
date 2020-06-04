@@ -1,7 +1,7 @@
 #ifndef LIB_DEVICE_DIGITAL_DIGITAL_INLINE_HPP_
 #define LIB_DEVICE_DIGITAL_DIGITAL_INLINE_HPP_
 
-#include "digital/digital.hpp"
+#include "digital.hpp"
 
 #include "gpio.hpp"
 
@@ -10,7 +10,7 @@ NAMESPACE_BEGIN
 namespace device {
 template <digital::mode Mode>
 DigitalDevice<Mode>::DigitalDevice(PI_PIN pin)
-    : pin_{pin}, mode_{Mode}, active_state_{true} {
+    : pin_{pin}, active_{true}, mode_{Mode}, active_state_{true} {
   DEBUG_ONLY(obj_name_ =
                  fmt::format("DigitalDevice<{}> pin {}", get_mode(Mode), pin));
 
