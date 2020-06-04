@@ -68,7 +68,7 @@ class InstanceRegistryImpl : public StackObj {
    * @tparam U           factory class which is base of T or T itself
    * @tparam Args        variadic template for arguments
    *
-   * @param  initalizers arguments that contain id and args to pass to
+   * @param  initializers arguments that contain id and args to pass to
    * constructor of
    * U
    */

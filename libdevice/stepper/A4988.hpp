@@ -16,19 +16,15 @@
 NAMESPACE_BEGIN
 
 namespace device {
-// forward declaration
-template <stepper::speed Speed>
-class A4988Device;
-
 template <stepper::speed Speed>
 class A4988Device : public StepperDevice<Speed> {
  public:
   /**
-   * Create shared_ptr<StepperDevice>
+   * Create shared_ptr<A4988Device>
    *
-   * Pass every args to StepperDevice()
+   * Pass every args to A4988Device()
    *
-   * @param args arguments that will be passed to StepperDevice()
+   * @param args arguments that will be passed to A4988Device()
    */
   MAKE_STD_SHARED(A4988Device)
 
