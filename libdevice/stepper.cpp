@@ -12,14 +12,17 @@ const time_unit StepperDevice::step_high_min = 1;
 StepperDevice::StepperDevice(PI_PIN        step_pin,
                              PI_PIN        dir_pin,
                              PI_PIN        enable_pin,
+                             double        rpm,
                              stepper::step steps)
     : step_pin_{step_pin},
       dir_pin_{dir_pin},
       enable_pin_{enable_pin},
+      rpm_{rpm},
       step_device_{DigitalOutputDevice::create(step_pin)},
       dir_device_{DigitalOutputDevice::create(dir_pin)},
       enable_device_{DigitalOutputDevice::create(enable_pin)},
       motor_steps_{steps} {
+  DEBUG_ONLY(obj_name_ = "StepperDevice");
   /* Movement mechanism variables initialization */
   last_move_end_ = 0;
   next_move_interval_ = 0;
@@ -63,6 +66,9 @@ namespace impl {
 template <>
 void StepperDeviceImpl<stepper::speed::constant>::start_move(long      steps,
                                                              time_unit time) {
+  if (steps == 0)
+    return;
+
   pre_start_move(steps);
   steps_to_cruise_ = 0;
   steps_to_brake_ = 0;
@@ -99,10 +105,8 @@ void StepperDeviceImpl<stepper::speed::linear>::start_move(long      steps,
     double t = static_cast<double>(time / (1e+6));  // convert to seconds
     double d = static_cast<double>(remaining_steps() /
                                    microsteps());  // convert to full steps
-    double a2 =
-        static_cast<double>(1.0 / acceleration() + 1.0 / deceleration());
-    double sqrt_candidate =
-        static_cast<double>(t * t - 2 * a2 * d);  // in √b^2-4ac
+    double a2 = 1.0 / acceleration() + 1.0 / deceleration();
+    double sqrt_candidate = t * t - 2.0 * a2 * d;  // in √b^2-4ac
 
     if (sqrt_candidate >= 0) {
       speed = std::min(
@@ -167,6 +171,49 @@ void StepperDeviceImpl<stepper::speed::linear>::calc_step_pulse() {
     default:
       break;  // no speed changes
   }
+}
+
+template <>
+const time_unit StepperDeviceImpl<stepper::speed::constant>::time_for_move(
+    long steps) {
+  if (steps == 0) {
+    return 0;
+  }
+
+  double t = std::abs(steps) *
+             calc_step_pulse_from_rpm(motor_steps(), microsteps(), rpm());
+  return static_cast<time_unit>(std::lround(t));
+}
+
+template <>
+const time_unit StepperDeviceImpl<stepper::speed::linear>::time_for_move(
+    long steps) {
+  if (steps == 0) {
+    return 0;
+  }
+
+  double t;
+
+  start_move(steps);
+
+  if (remaining_steps() >= steps_to_cruise() + steps_to_brake()) {
+    double speed =
+        static_cast<double>(rpm()) * motor_steps() / 60;  // full steps/s
+    LOG_DEBUG("Move rpm={} speed={} motor_steps={} microsteps={}", rpm(), speed,
+              motor_steps(), microsteps());
+    t = (static_cast<double>(std::abs(steps)) / (microsteps() * speed)) +
+        (speed / (2 * acceleration())) +
+        (speed / (2 * deceleration()));  // seconds
+  } else {
+    t = sqrt(2.0 * steps_to_cruise() / acceleration() /
+             static_cast<double>(microsteps())) +
+        sqrt(2.0 * steps_to_brake() / deceleration() /
+             static_cast<double>(microsteps()));
+  }
+
+  t *= (1e+6);  // seconds -> micros
+
+  return static_cast<time_unit>(std::lround(t));
 }
 }  // namespace impl
 }  // namespace device

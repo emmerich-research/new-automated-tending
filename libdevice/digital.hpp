@@ -183,8 +183,8 @@ class DigitalDevice : public StackObj {
 
   template <digital::mode Mode_ = Mode,
             typename = std::enable_if_t<Mode_ == digital::mode::input>>
-  static const digital::value& process_value(const int& value,
-                                             const bool active_state);
+  static const digital::value process_value(const int& value,
+                                            const bool active_state);
 
  protected:
   /**

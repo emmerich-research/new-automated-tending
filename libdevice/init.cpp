@@ -79,6 +79,17 @@ static ATM_STATUS initialize_stepper_devices() {
     return ATM_ERR;
   }
 
+  // set microsteps
+  auto stepper_x = stepper_registry->get("STEPPER_X");
+  DEBUG_ONLY(LOG_DEBUG("STEPPER_X = {}", stepper_x->obj_name()));
+  stepper_x->microsteps(1);
+
+  auto stepper_y = stepper_registry->get("STEPPER_Y");
+  stepper_y->microsteps(1);
+
+  auto stepper_z = stepper_registry->get("STEPPER_Z");
+  stepper_z->microsteps(1);
+
   return status;
 }
 

@@ -55,6 +55,7 @@ class A4988Device : public impl::StepperDeviceImpl<Speed> {
    * sheet for details
    * @param  ms3_pin    gpio pin, see Raspberry GPIO pinout and Pololu A4988
    * sheet for details
+   * @param  rpm        target motor rpm, preferrable 1-200
    * @param  steps      motor steps, usually 200 steps per revolution
    */
   A4988Device(PI_PIN        step_pin,
@@ -63,6 +64,7 @@ class A4988Device : public impl::StepperDeviceImpl<Speed> {
               PI_PIN        ms1_pin = PI_UNDEF_PIN,
               PI_PIN        ms2_pin = PI_UNDEF_PIN,
               PI_PIN        ms3_pin = PI_UNDEF_PIN,
+              double        rpm = 200.0,
               stepper::step steps = 200);
   /**
    * A4988Device Destructor

@@ -37,36 +37,6 @@ int main() {
     return throw_message();
   }
 
-  // init movement mechanism
-  status = emmerich::mechanism::MovementBuilder::create(10);
-  if (status == emmerich::ATM_ERR) {
-    return throw_message();
-  }
-
-  auto movement_builder = emmerich::mechanism::MovementBuilder::get();
-  status = movement_builder->setup_x("STEPPER_X", "LIMIT_X");
-  if (status == emmerich::ATM_ERR) {
-    return throw_message();
-  }
-
-  status = movement_builder->setup_y("STEPPER_Y", "LIMIT_Y");
-  if (status == emmerich::ATM_ERR) {
-    return throw_message();
-  }
-
-  status = movement_builder->setup_z("STEPPER_Z", "LIMIT_Z");
-  if (status == emmerich::ATM_ERR) {
-    return throw_message();
-  }
-
-  auto movement = movement_builder->build();
-
-  massert(movement->active(), "sanity");
-
-  movement->move_x<emmerich::mechanism::movement::unit::mm>(15);
-  movement->move_y<emmerich::mechanism::movement::unit::mm>(5);
-  movement->move_z<emmerich::mechanism::movement::unit::mm>(10);
-
   // TODO: run the program
 
   return status == emmerich::ATM_OK ? 0 : -1;

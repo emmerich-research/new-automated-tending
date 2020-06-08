@@ -4,6 +4,7 @@
 #include "stepper.hpp"
 
 #include <chrono>
+#include <cmath>
 #include <thread>
 
 NAMESPACE_BEGIN
@@ -15,8 +16,9 @@ template <stepper::speed Speed>
 StepperDeviceImpl<Speed>::StepperDeviceImpl(PI_PIN        step_pin,
                                             PI_PIN        dir_pin,
                                             PI_PIN        enable_pin,
+                                            double        rpm,
                                             stepper::step steps)
-    : StepperDevice{step_pin, dir_pin, enable_pin, steps} {
+    : StepperDevice{step_pin, dir_pin, enable_pin, rpm, steps} {
   /* Movement mechanism variables initialization */
   remaining_steps_ = 0;
   steps_to_cruise_ = 0;
@@ -44,12 +46,13 @@ const stepper::state StepperDeviceImpl<Speed>::state() const {
 }
 
 template <stepper::speed Speed>
-stepper::pulse StepperDeviceImpl<Speed>::calc_step_pulse_from_rpm(
+constexpr stepper::pulse StepperDeviceImpl<Speed>::calc_step_pulse_from_rpm(
     const stepper::step& steps,
     const stepper::step& microsteps,
     double               rpm) {
-  return static_cast<stepper::pulse>(60.0 * 1000000L / steps / microsteps /
-                                     rpm);
+  return static_cast<stepper::pulse>(
+      std::lround(60.0 * 1000000L / static_cast<double>(steps) /
+                  static_cast<double>(microsteps) / rpm));
 }
 
 template <stepper::speed Speed>
@@ -66,7 +69,12 @@ void StepperDeviceImpl<Speed>::pre_start_move(long steps) {
 }
 
 template <stepper::speed Speed>
-const bool StepperDeviceImpl<Speed>::yield_move(void) {
+const time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
+  if (stop_condition) {
+    stop();
+    return 0;
+  }
+
   if (remaining_steps() > 0) {
     // original code :delayMicros(next_action_interval, last_action_end);
     sleep_until<time_units::micros>(next_move_interval(), last_move_end());
@@ -108,13 +116,13 @@ const bool StepperDeviceImpl<Speed>::yield_move(void) {
     next_move_interval_ = 0;
   }
 
-  return next_move_interval() > 0;
+  return next_move_interval();
 }
 
 template <stepper::speed Speed>
-void StepperDeviceImpl<Speed>::move(long steps) {
+void StepperDeviceImpl<Speed>::move(long steps, bool stop_condition) {
   start_move(steps);
-  while (yield_move()) {
+  while (next(stop_condition)) {
     // noop
     LOG_DEBUG("MOVE {}", remaining_steps());
   }

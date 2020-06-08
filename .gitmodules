@@ -1,6 +1,3 @@
-[submodule "external/yaml"]
-	path = external/yaml
-	url = https://github.com/jbeder/yaml-cpp.git
 [submodule "external/doctest"]
 	path = external/doctest
 	url = https://github.com/onqtam/doctest.git
@@ -10,3 +7,6 @@
 [submodule "external/filesystem"]
 	path = external/filesystem
 	url = git@github.com:gulrak/filesystem.git
+[submodule "external/toml"]
+	path = external/toml
+	url = git@github.com:ToruNiina/toml11.git

@@ -87,8 +87,9 @@ class StepperDevice : public StackObj {
    * Move stepper motor at given steps
    *
    * @param steps steps to take
+   * @param stop_condition will stop if stop_condition is true
    */
-  virtual void move(long steps) = 0;
+  virtual void move(long steps, bool stop_condition = false) = 0;
   /**
    * Start move
    *
@@ -101,9 +102,11 @@ class StepperDevice : public StackObj {
    *
    * Will generate output to the stepper pins
    *
-   * @return still moves or not
+   * @param stop_condition will stop if stop_condition is true
+   *
+   * @return time until next change is needed
    */
-  virtual const bool yield_move(void) = 0;
+  virtual const time_unit next(bool stop_condition = false) = 0;
   /**
    * Stop stepper from moving
    *
@@ -116,6 +119,16 @@ class StepperDevice : public StackObj {
    * @return current state of stepper
    */
   virtual const stepper::state state() const = 0;
+  /**
+   * Get calculated time to complete move with given steps.
+   *
+   * This will invoke StepperDevice::start_move
+   *
+   * @param steps to take
+   *
+   * @return calculated time to complete given move
+   */
+  virtual const time_unit time_for_move(long steps) = 0;
   /**
    * Get remaining steps
    */
@@ -184,10 +197,14 @@ class StepperDevice : public StackObj {
   const stepper::step motor_steps() const { return motor_steps_; }
   /**
    * Get timestamp of ending of last move
+   *
+   * @return time of last move end
    */
   const time_unit& last_move_end() const { return last_move_end_; }
   /**
    * Get timestamp of ending of last action
+   *
+   * @return next move interval time
    */
   const time_unit& next_move_interval() const { return next_move_interval_; }
 
@@ -200,11 +217,13 @@ class StepperDevice : public StackObj {
    * @param  step_pin   gpio pin, see Raspberry GPIO pinout for details
    * @param  dir_pin    gpio pin, see Raspberry GPIO pinout for details
    * @param  enable_pin gpio pin, see Raspberry GPIO pinout for details
+   * @param  rpm        target motor rpm, preferrable 1-200
    * @param  steps      motor steps, usually 200 steps per revolution
    */
   StepperDevice(PI_PIN        step_pin,
                 PI_PIN        dir_pin,
                 PI_PIN        enable_pin,
+                double        rpm = 200.0,
                 stepper::step steps = 200);
   /**
    * StepperDevice Destructor
@@ -341,7 +360,7 @@ namespace impl {
  *
  * Modified by Ray Andrew to support Raspberry PI
  *
- * StepperDevice will uses at least two Digital Output Device
+ * StepperDevice will use at least two Digital Output Device
  * - step pin
  * - direction pin
  * - enable pin (optional, can be jumped through)
@@ -378,8 +397,9 @@ class StepperDeviceImpl : public StepperDevice {
    * Move stepper motor at given steps
    *
    * @param steps steps to take
+   * @param stop_condition will stop if stop_condition is true
    */
-  virtual void move(long steps) override;
+  virtual void move(long steps, bool stop_condition) override;
   /**
    * Start move
    *
@@ -392,9 +412,21 @@ class StepperDeviceImpl : public StepperDevice {
    *
    * Will generate output to the stepper pins
    *
-   * @return still moves or not
+   * @param stop_condition will stop if stop_condition is true
+   *
+   * @return time until next change is needed
    */
-  virtual const bool yield_move(void) override;
+  virtual const time_unit next(bool stop_condition = false) override;
+  /**
+   * Get calculated time to complete move with given steps.
+   *
+   * This will invoke StepperDeviceImpl::start_move
+   *
+   * @param steps to take
+   *
+   * @return calculated time to complete given move
+   */
+  virtual const time_unit time_for_move(long steps) override;
   /**
    * Stop stepper from moving
    *
@@ -411,11 +443,13 @@ class StepperDeviceImpl : public StepperDevice {
    * @param  step_pin   gpio pin, see Raspberry GPIO pinout for details
    * @param  dir_pin    gpio pin, see Raspberry GPIO pinout for details
    * @param  enable_pin gpio pin, see Raspberry GPIO pinout for details
+   * @param  rpm        target motor rpm, preferrable 1-200
    * @param  steps      motor steps, usually 200 steps per revolution
    */
   StepperDeviceImpl(PI_PIN        step_pin,
                     PI_PIN        dir_pin,
                     PI_PIN        enable_pin,
+                    double        rpm = 200,
                     stepper::step steps = 200);
   /**
    * StepperDeviceImpl Destructor
@@ -453,7 +487,7 @@ class StepperDeviceImpl : public StepperDevice {
    * calculate the step pulse in microseconds for a given rpm value.
    * 60[s/min] * 1000000[us/s] / microsteps / steps / rpm
    */
-  static stepper::pulse calc_step_pulse_from_rpm(
+  static constexpr stepper::pulse calc_step_pulse_from_rpm(
       const stepper::step& steps,
       const stepper::step& microsteps,
       double               rpm);

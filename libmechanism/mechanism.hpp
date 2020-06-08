@@ -9,6 +9,7 @@
  */
 
 // 1. STL
+#include <cmath>
 #include <memory>
 #include <string>
 #include <thread>

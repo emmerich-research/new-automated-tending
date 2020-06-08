@@ -107,7 +107,7 @@ const PI_RES DigitalDevice<Mode>::process_value(const digital::value& value,
 
 template <digital::mode Mode>
 template <digital::mode Mode_, typename>
-const digital::value& DigitalDevice<Mode>::process_value(
+const digital::value DigitalDevice<Mode>::process_value(
     const PI_RES& value,
     const bool    active_state) {
   if (active_state) {
