@@ -11,6 +11,7 @@
 // 1. STL
 #include <functional>
 #include <future>
+#include <map>
 #include <memory>
 #include <queue>
 #include <stdexcept>

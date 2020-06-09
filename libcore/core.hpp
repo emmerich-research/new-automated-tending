@@ -16,9 +16,9 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <thread>
 #include <type_traits>
 #include <utility>
-#include <thread>
 
 // 2. Vendors
 // 2.1. Spdlog
@@ -29,8 +29,8 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-// 2.2. YAML
-#include <yaml-cpp/yaml.h>
+// 2.2. TOML
+#include <toml.hpp>
 
 // 3. Local
 #include "common.hpp"

@@ -43,7 +43,7 @@ include(Misc)
 include(Spdlog)
 include(Ucm)
 include(Warnings)
-include(Yaml)
+include(Toml)
 
 ## GTKMM
 find_package(PkgConfig)

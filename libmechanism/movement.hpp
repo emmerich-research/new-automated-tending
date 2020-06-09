@@ -65,9 +65,9 @@ class MovementBuilderImpl : public StackObj {
    *
    * @return ATM_STATUS ATM_OK or ATM_ERR, but not both
    */
-  ATM_STATUS setup_x(const char*                  stepper_x_id,
+  ATM_STATUS setup_x(const std::string&           stepper_x_id,
                      const device::stepper::step& steps_per_mm,
-                     const const char*            limit_switch_x_id);
+                     const const std::string&     limit_switch_x_id);
   /**
    * Setup movement devices for Y-Axis
    *
@@ -78,9 +78,9 @@ class MovementBuilderImpl : public StackObj {
    *
    * @return ATM_STATUS ATM_OK or ATM_ERR, but not both
    */
-  ATM_STATUS setup_y(const char*                  stepper_y_id,
+  ATM_STATUS setup_y(const std::string&           stepper_y_id,
                      const device::stepper::step& steps_per_mm,
-                     const char*                  limit_switch_y_id);
+                     const std::string&           limit_switch_y_id);
   /**
    * Setup movement devices for Z-Axis
    *
@@ -91,16 +91,16 @@ class MovementBuilderImpl : public StackObj {
    *
    * @return ATM_STATUS ATM_OK or ATM_ERR, but not both
    */
-  ATM_STATUS setup_z(const char*                  stepper_z_id,
+  ATM_STATUS setup_z(const std::string&           stepper_z_id,
                      const device::stepper::step& steps_per_mm,
-                     const char*                  limit_switch_z_id);
+                     const std::string&           limit_switch_z_id);
 
   /**
    * Build movement mechanism
    *
    * @return shared_ptr of Movement
    */
-  std::shared_ptr<Movement> build();
+  std::shared_ptr<Movement>& build();
   /**
    * Get Steps per mm of x-axis
    *
@@ -161,6 +161,12 @@ class MovementBuilderImpl : public StackObj {
    * @return instance id of limit switch z
    */
   const std::string& limit_switch_z_id() const { return limit_switch_z_id_; }
+  /**
+   * Get movement mechanism instance
+   *
+   * @return instance of movement mechanism
+   */
+  std::shared_ptr<Movement> movement() { return movement_mechanism_instance_; }
 
  private:
   /**
@@ -177,6 +183,7 @@ class MovementBuilderImpl : public StackObj {
   ~MovementBuilderImpl() = default;
 
  private:
+  std::shared_ptr<Movement> movement_mechanism_instance_;
   /**
    * Conversion of mm to steps for x-axis
    *
@@ -221,6 +228,10 @@ class MovementBuilderImpl : public StackObj {
   std::string limit_switch_z_id_;
 };
 }  // namespace impl
+
+static auto movement_mechanism = []() {
+  return MovementBuilder::get()->movement();
+};
 
 class Movement : public StackObj {
  public:

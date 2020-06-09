@@ -15,15 +15,14 @@ NAMESPACE_BEGIN
 
 namespace impl {
 LoggerImpl::LoggerImpl(const impl::ConfigImpl* config)
-    : name_(std::move((*config)["general"]["name"].as<std::string>())) {
+    : name_(std::move(config->name())) {
   DEBUG_ONLY(obj_name_ = "LoggerImpl");
 
   spdlog::init_thread_pool(8192, 1);
 
-  bool debug = (*config)["general"]["debug"].as<bool>();
-
   auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-  stdout_sink->set_level(debug ? spdlog::level::debug : spdlog::level::info);
+  stdout_sink->set_level(config->debug() ? spdlog::level::debug
+                                         : spdlog::level::info);
 
   fs::create_directory(LOGS_DIR);
 

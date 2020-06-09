@@ -193,8 +193,9 @@ class DigitalDevice : public StackObj {
    * Initialize the digital device by opening GPIO
    *
    * @param  pin gpio pin, see Raspberry GPIO pinout for details
+   * @param  active_state
    */
-  DigitalDevice(PI_PIN pin);
+  DigitalDevice(PI_PIN pin, const bool& active_state = true);
   /**
    * DigitalDevice Destructor
    *

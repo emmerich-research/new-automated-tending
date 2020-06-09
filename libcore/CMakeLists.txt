@@ -31,7 +31,7 @@ target_link_libraries(${NAME} PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
   fs::fs
   spdlog::spdlog
-  yaml::yaml)
+  toml11::toml11)
 
 target_set_warnings(${NAME}
   ENABLE ALL

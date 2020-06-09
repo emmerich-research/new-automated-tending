@@ -32,6 +32,7 @@
 // 4. Local
 #include "gpio.hpp"
 
+#include "identifier.hpp"
 #include "init.hpp"
 
 // 4.1. Analog Device

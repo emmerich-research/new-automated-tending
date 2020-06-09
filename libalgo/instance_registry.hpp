@@ -7,6 +7,7 @@
  * Singleton registry class to hold specific class instances
  */
 
+#include <map>
 #include <memory>
 #include <string>
 #include <type_traits>

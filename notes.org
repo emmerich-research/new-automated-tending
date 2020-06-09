@@ -13,10 +13,11 @@
 *** Implement using machine state -> this is preferred
 *** Should be continueable
 *** Traceable
-** Mechanism [1/6]
-*** TODO Movement [1/3]
+** Mechanism [1/7]
+*** TODO Movement [1/4]
 **** DONE can move sync
-**** WAIT Should be continueable
+**** TODO Create paths
+***** WAIT Should be continueable
 **** HOLD Check limit of each axis
 *** HOLD Rotation [0/1]
 **** HOLD Read degree regularly via thread

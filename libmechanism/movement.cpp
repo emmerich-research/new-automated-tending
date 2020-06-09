@@ -12,9 +12,9 @@ namespace impl {
 MovementBuilderImpl::MovementBuilderImpl() {}
 
 ATM_STATUS MovementBuilderImpl::setup_x(
-    const char*                  stepper_x_id,
+    const std::string&           stepper_x_id,
     const device::stepper::step& steps_per_mm,
-    const char*                  limit_switch_x_id) {
+    const std::string&           limit_switch_x_id) {
   if (!device::StepperRegistry::get()->exist(stepper_x_id)) {
     return ATM_ERR;
   }
@@ -34,9 +34,9 @@ ATM_STATUS MovementBuilderImpl::setup_x(
 }
 
 ATM_STATUS MovementBuilderImpl::setup_y(
-    const char*                  stepper_y_id,
+    const std::string&           stepper_y_id,
     const device::stepper::step& steps_per_mm,
-    const char*                  limit_switch_y_id) {
+    const std::string&           limit_switch_y_id) {
   if (!device::StepperRegistry::get()->exist(stepper_y_id)) {
     return ATM_ERR;
   }
@@ -56,9 +56,9 @@ ATM_STATUS MovementBuilderImpl::setup_y(
 }
 
 ATM_STATUS MovementBuilderImpl::setup_z(
-    const char*                  stepper_z_id,
+    const std::string&           stepper_z_id,
     const device::stepper::step& steps_per_mm,
-    const char*                  limit_switch_z_id) {
+    const std::string&           limit_switch_z_id) {
   if (!device::StepperRegistry::get()->exist(stepper_z_id)) {
     return ATM_ERR;
   }
@@ -77,8 +77,14 @@ ATM_STATUS MovementBuilderImpl::setup_z(
   return ATM_OK;
 }
 
-std::shared_ptr<Movement> MovementBuilderImpl::build() {
-  return Movement::create(this);
+std::shared_ptr<Movement>& MovementBuilderImpl::build() {
+  if (movement_mechanism_instance_ == nullptr) {
+    movement_mechanism_instance_ = Movement::create(this);
+  }
+
+  massert(movement_mechanism_instance_ != nullptr, "sanity");
+
+  return movement_mechanism_instance_;
 }
 }  // namespace impl
 

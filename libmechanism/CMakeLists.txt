@@ -1,6 +1,8 @@
 project(mechanism)
 
 ucm_add_files(
+  "init.cpp"
+
   "movement.cpp"
   TO SOURCES)
 
@@ -8,7 +10,7 @@ ucm_add_target(
   NAME mechanism
   TYPE STATIC
   SOURCES ${SOURCES}
-  # UNITY CPP_PER_UNITY 20
+  UNITY CPP_PER_UNITY 20
   PCH_FILE "mechanism.hpp")
 
 add_library("${PROJECT_NAMESPACE}::mechanism" ALIAS mechanism)

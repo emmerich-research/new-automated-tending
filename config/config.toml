@@ -1,0 +1,83 @@
+# Emmerich Tending App Configurations
+# github.com/rayandrews
+# <raydreww@gmail.com>
+
+[general]
+name                         = "Emmerich Tending App"
+debug                        = true # will log all debugging things
+
+[devices]
+
+[devices.stepper]
+type                         = "A4988"
+
+# stepper x-axis
+[devices.stepper.x]
+key                          = "STEPPER-X"
+step-pin                     = 1
+step-active-state            = true
+dir-pin                      = 2
+dir-active-state             = true
+enable-pin                   = 3
+enable-active-state          = true
+steps-per-mm                 = 10
+microsteps                   = 16
+rpm                          = 50.0
+acceleration                 = 1000 # steps / s^2
+deceleration                 = 1000 # steps / s^2
+
+# stepper y-axis
+[devices.stepper.y]
+key                          = "STEPPER-Y"
+step-pin                     = 1
+step-active-state            = true
+dir-pin                      = 2
+dir-active-state             = true
+enable-pin                   = 3
+enable-active-state          = true
+steps-per-mm                 = 10
+microsteps                   = 16
+rpm                          = 50.0
+acceleration                 = 1000 # steps / s^2
+deceleration                 = 1000 # steps / s^2
+
+# stepper z-axis
+[devices.stepper.z]
+key                          = "STEPPER-Z"
+step-pin                     = 1
+step-active-state            = true
+dir-pin                      = 2
+dir-active-state             = true
+enable-pin                   = 3
+enable-active-state          = true
+steps-per-mm                 = 10
+microsteps                   = 16
+rpm                          = 20.0
+acceleration                 = 1000 # steps / s^2
+deceleration                 = 1000 # steps / s^2
+
+[devices.limit-switch]
+type                         = "input"
+
+# limit switch x-axis
+[devices.limit-switch.x]
+key                          = "LIMIT-X"
+pin                          = 21
+active-state                 = true
+
+# limit switch y-axis
+[devices.limit-switch.y]
+key                          = "LIMIT-Y"
+pin                          = 22
+active-state                 = true
+
+# limit swtich z-axis
+[devices.limit-switch.z]
+key                          = "LIMIT-Z"
+pin                          = 23
+active-state                 = true
+
+# analog
+[devices.analog]
+key                          = "PCF8591"
+rotary-encoder-pin           = 1

@@ -9,10 +9,10 @@ NAMESPACE_BEGIN
 
 namespace device {
 template <digital::mode Mode>
-DigitalDevice<Mode>::DigitalDevice(PI_PIN pin)
-    : pin_{pin}, active_{true}, mode_{Mode}, active_state_{true} {
-  DEBUG_ONLY(obj_name_ =
-                 fmt::format("DigitalDevice<{}> pin {}", get_mode(Mode), pin));
+DigitalDevice<Mode>::DigitalDevice(PI_PIN pin, const bool& active_state)
+    : pin_{pin}, active_{true}, mode_{Mode}, active_state_{active_state} {
+  DEBUG_ONLY(obj_name_ = fmt::format("DigitalDevice<{}> pin {} active_state {}",
+                                     get_mode(Mode), pin, active_state));
 
   if (pin == PI_UNDEF_PIN) {
     active_ = false;

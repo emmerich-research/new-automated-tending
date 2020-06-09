@@ -1,3 +1,5 @@
+#include "core.hpp"
+
 #include "init.hpp"
 
 #include "config.hpp"

@@ -8,14 +8,15 @@
 #include <libdevice/device.hpp>
 #include <libmechanism/mechanism.hpp>
 
+USE_NAMESPACE
+
 // forward declaration
 bool        stop = false;
 static void init();
 static void shutdown_hook();
 // static void       sigint_hook(int signal);  // for SIGINT
-static int        throw_message();
-static const bool menu(
-    const std::shared_ptr<emmerich::mechanism::Movement>& movement);
+static int throw_message();
+const bool menu(const std::shared_ptr<mechanism::Movement>& movement);
 
 static void init() {
   // struct sigaction sigint_handler;
@@ -34,8 +35,8 @@ static void init() {
 static void shutdown_hook() {
   stop = true;
   std::cout << "Shutting down..." << std::endl;
-  emmerich::destroy_device();
-  emmerich::destroy_core();
+  destroy_device();
+  destroy_core();
   std::cout << "Shutting down is completed!" << std::endl;
 }
 
@@ -45,11 +46,13 @@ static void shutdown_hook() {
 
 static int throw_message() {
   std::cerr << "Failed to initialize machine, something is wrong" << std::endl;
-  return emmerich::ATM_ERR;
+  return ATM_ERR;
 }
 
-static const bool menu(
-    const std::shared_ptr<emmerich::mechanism::Movement>& movement) {
+const bool menu() {
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
   std::cout << "Run stepper" << std::endl;
   std::cout << "1. X-axis" << std::endl;
   std::cout << "2. Y-axis" << std::endl;
@@ -67,7 +70,7 @@ static const bool menu(
   } else if (choice == 3) {
     return false;
   } else if (choice == 4) {
-    movement->homing();
+    mechanism::movement_mechanism()->homing();
     return false;
   } else if (choice == 0) {
     return true;
@@ -81,51 +84,29 @@ int main() {
 
   init();
 
-  emmerich::ATM_STATUS status = emmerich::ATM_OK;
+  ATM_STATUS status = ATM_OK;
 
   // initialize `core` such as config, logger, and state
-  status = emmerich::initialize_core();
-  if (status == emmerich::ATM_ERR) {
+  status = initialize_core();
+  if (status == ATM_ERR) {
     return throw_message();
   }
 
   // initialize `GPIO-based` devices such as analog, digital, and PWM
-  status = emmerich::initialize_device();
-  if (status == emmerich::ATM_ERR) {
+  status = initialize_device();
+  if (status == ATM_ERR) {
     return throw_message();
   }
 
-  // init movement mechanism
-  status = emmerich::mechanism::MovementBuilder::create();
-  if (status == emmerich::ATM_ERR) {
+  // initialize `mechanism`
+  status = initialize_mechanism();
+  if (status == ATM_ERR) {
     return throw_message();
   }
-
-  auto movement_builder = emmerich::mechanism::MovementBuilder::get();
-  status = movement_builder->setup_x("STEPPER_X", 10, "LIMIT_X");
-  if (status == emmerich::ATM_ERR) {
-    return throw_message();
-  }
-
-  status = movement_builder->setup_y("STEPPER_Y", 10, "LIMIT_Y");
-  if (status == emmerich::ATM_ERR) {
-    return throw_message();
-  }
-
-  status = movement_builder->setup_z("STEPPER_Z", 10, "LIMIT_Z");
-  if (status == emmerich::ATM_ERR) {
-    return throw_message();
-  }
-
-  auto movement = movement_builder->build();
-
-  massert(movement->active(), "sanity");
-
-  movement->move<emmerich::mechanism::movement::unit::mm>(100, 50, 10);
 
   do {
-    stop = menu(movement);
+    stop = menu();
   } while (!stop);
 
-  return status == emmerich::ATM_OK ? 0 : -1;
+  return status == ATM_OK ? 0 : -1;
 }
