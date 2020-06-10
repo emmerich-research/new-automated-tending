@@ -199,8 +199,6 @@ const time_unit StepperDeviceImpl<stepper::speed::linear>::time_for_move(
   if (remaining_steps() >= steps_to_cruise() + steps_to_brake()) {
     double speed =
         static_cast<double>(rpm()) * motor_steps() / 60;  // full steps/s
-    LOG_DEBUG("Move rpm={} speed={} motor_steps={} microsteps={}", rpm(), speed,
-              motor_steps(), microsteps());
     t = (static_cast<double>(std::abs(steps)) / (microsteps() * speed)) +
         (speed / (2 * acceleration())) +
         (speed / (2 * deceleration()));  // seconds

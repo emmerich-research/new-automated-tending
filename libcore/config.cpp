@@ -40,6 +40,14 @@ std::string ConfigImpl::stepper_type() const {
 
   return "A4988";
 }
+
+const ConfigImpl::path_container& ConfigImpl::path() {
+  if (movement_path_.empty()) {
+    movement_path_ =
+        find<ConfigImpl::path_container>("mechanisms", "movement", "path");
+  }
+  return movement_path_;
+}
 }  // namespace impl
 
 NAMESPACE_END

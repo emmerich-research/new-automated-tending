@@ -1,6 +1,6 @@
 #include "precompiled.hpp"
 
-// #include <csignal>
+#include <csignal>
 #include <cstdlib>
 #include <iostream>
 
@@ -14,7 +14,7 @@ USE_NAMESPACE
 bool        stop = false;
 static void init();
 static void shutdown_hook();
-// static void       sigint_hook(int signal);  // for SIGINT
+// static void sigint_hook(int signal);  // for SIGINT
 static int throw_message();
 const bool menu(const std::shared_ptr<mechanism::Movement>& movement);
 
@@ -32,6 +32,12 @@ static void init() {
   std::atexit(shutdown_hook);
 }
 
+// static void sigint_hook([[maybe_unused]] int signal) {
+//   destroy_device();
+//   destroy_core();
+//   exit(0);
+// }
+
 static void shutdown_hook() {
   stop = true;
   std::cout << "Shutting down..." << std::endl;
@@ -39,10 +45,6 @@ static void shutdown_hook() {
   destroy_core();
   std::cout << "Shutting down is completed!" << std::endl;
 }
-
-// static void sigint_hook(int signal) {
-//   std::cout << "Use 4 to exit!" << std::endl;
-// }
 
 static int throw_message() {
   std::cerr << "Failed to initialize machine, something is wrong" << std::endl;
@@ -53,24 +55,26 @@ const bool menu() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  std::cout << "Run stepper" << std::endl;
-  std::cout << "1. X-axis" << std::endl;
-  std::cout << "2. Y-axis" << std::endl;
-  std::cout << "3. Z-axis" << std::endl;
-  std::cout << "4. Homing" << std::endl;
-  std::cout << "0. Exit" << std::endl;
+  auto movement = mechanism::movement_mechanism();
+
+  LOG_INFO("----MENU-----");
+  LOG_INFO("1. According to path");
+  LOG_INFO("2. Homing");
+  LOG_INFO("0. Exit");
 
   unsigned int choice;
   std::cin >> choice;
 
   if (choice == 1) {
+    // try to move according to path
+    for (const auto& iter : Config::get()->path()) {
+      LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+      movement->move<mechanism::movement::unit::mm>(iter.first, iter.second,
+                                                    0.0);
+    }
     return false;
   } else if (choice == 2) {
-    return false;
-  } else if (choice == 3) {
-    return false;
-  } else if (choice == 4) {
-    mechanism::movement_mechanism()->homing();
+    movement->homing();
     return false;
   } else if (choice == 0) {
     return true;

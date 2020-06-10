@@ -71,7 +71,7 @@ key                          = "LIMIT-Y"
 pin                          = 22
 active-state                 = true
 
-# limit swtich z-axis
+# limit switch z-axis
 [devices.limit-switch.z]
 key                          = "LIMIT-Z"
 pin                          = 23
@@ -81,3 +81,29 @@ active-state                 = true
 [devices.analog]
 key                          = "PCF8591"
 rotary-encoder-pin           = 1
+
+[mechanisms]
+
+[mechanisms.movement]
+path = [
+  # x   y  (in mm, need to be in floating point)
+
+  # edge
+  [0.0,   0.0],
+  [0.0,   400.0],
+  [400.0, 400.0],
+  [400.0, 0.0],
+  [10.0,  40.0],
+
+  # zigzag
+  [0.0,   0.0],
+  [0.0,   400.0],
+  [100.0, 400.0],
+  [100.0, 0.0],
+  [200.0, 0.0],
+  [200.0, 400.0],
+  [300.0, 400.0],
+  [300.0, 0.0],
+  [400.0, 0.0],
+  [400.0, 400.0],
+]

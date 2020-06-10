@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <toml.hpp>
 
@@ -44,6 +45,7 @@ class ConfigImpl : public StackObj {
   friend ATM_STATUS StaticObj<ConfigImpl>::create(Args&&... args);
 
  public:
+  typedef std::vector<std::pair<double, double>> path_container;
   /**
    * Get name of app from config
    *
@@ -166,6 +168,17 @@ class ConfigImpl : public StackObj {
   inline T analog(Keys&&... keys) const {
     return find<T>("devices", "analog", std::forward<Keys>(keys)...);
   }
+  /**
+   * Get movement mechanism path
+   *
+   * It should be in key "mechanisms.movement.path"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return movement mechanism path
+   */
+  const path_container& path();
 
  private:
   /**
@@ -203,6 +216,10 @@ class ConfigImpl : public StackObj {
   }
 
  private:
+  /**
+   * Movement mechanism path
+   */
+  path_container movement_path_;
   /**
    * TOML config data
    */
