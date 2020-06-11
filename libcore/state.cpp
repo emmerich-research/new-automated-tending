@@ -7,12 +7,17 @@ NAMESPACE_BEGIN
 namespace impl {
 StateImpl::StateImpl() {
   DEBUG_ONLY(obj_name_ = "StateImpl");
+
+  path_id_ = 0;
 }
 
-void StateImpl::print() {
-  std::cout << "hello world" << std::endl;
+const unsigned int StateImpl::path_id() const {
+  return path_id_;
 }
 
+void StateImpl::path_id(unsigned int path_id) {
+  path_id_ = path_id;
+}
 }  // namespace impl
 
 NAMESPACE_END

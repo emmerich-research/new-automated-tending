@@ -93,12 +93,12 @@ Movement::Movement(const impl::MovementBuilderImpl* builder)
       // steps_per_mm_{builder->steps_per_mm()},
       thread_pool_{4} {
   active_ = true;
+  ready_ = true;
   next_move_interval_ = 0;
   last_move_end_ = 0;
   event_timer_x_ = 0;
   event_timer_y_ = 0;
   event_timer_z_ = 0;
-  ready_ = true;
 
   setup_stepper();
   if (active()) {

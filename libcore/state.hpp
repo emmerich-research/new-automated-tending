@@ -42,11 +42,17 @@ class StateImpl : public StackObj {
 
  public:
   /**
-   * Print Function
+   * Return the latest path movement id
    *
-   * @todo Deleted soon
+   * @return latest path id
    */
-  void print();
+  const unsigned int path_id() const;
+  /**
+   * Set the latest path id
+   *
+   * @param path_id  set the latest path id
+   */
+  void path_id(unsigned int path_id);
 
  private:
   /**
@@ -62,6 +68,12 @@ class StateImpl : public StackObj {
    *
    */
   ~StateImpl() = default;
+
+ private:
+  /**
+   * Latest path id
+   */
+  unsigned int path_id_;
 };
 }  // namespace impl
 
