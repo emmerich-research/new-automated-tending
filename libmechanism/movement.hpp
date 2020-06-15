@@ -67,7 +67,7 @@ class MovementBuilderImpl : public StackObj {
    */
   ATM_STATUS setup_x(const std::string&           stepper_x_id,
                      const device::stepper::step& steps_per_mm,
-                     const const std::string&     limit_switch_x_id);
+                     const std::string&           limit_switch_x_id);
   /**
    * Setup movement devices for Y-Axis
    *
