@@ -9,7 +9,7 @@ NAMESPACE_BEGIN
 // impl::ConfigImpl* Config::instance_ = nullptr;
 
 namespace impl {
-ConfigImpl::ConfigImpl(const std::string config_path)
+ConfigImpl::ConfigImpl(const std::string& config_path)
     : config_path_{std::move(config_path)},
       config_{std::move(toml::parse(config_path))} {
   DEBUG_ONLY(obj_name_ = "ConfigImpl");
