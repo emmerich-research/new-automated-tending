@@ -17,11 +17,11 @@ template <stepper::speed Speed>
 A4988Device<Speed>::A4988Device(PI_PIN        step_pin,
                                 PI_PIN        dir_pin,
                                 PI_PIN        enable_pin,
+                                double        rpm,
+                                stepper::step steps,
                                 PI_PIN        ms1_pin,
                                 PI_PIN        ms2_pin,
-                                PI_PIN        ms3_pin,
-                                double        rpm,
-                                stepper::step steps)
+                                PI_PIN        ms3_pin)
     : impl::StepperDeviceImpl<Speed>{step_pin, dir_pin, enable_pin, rpm, steps},
       ms1_pin_{ms1_pin},
       ms2_pin_{ms2_pin},

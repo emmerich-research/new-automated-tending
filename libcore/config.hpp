@@ -255,7 +255,7 @@ class ConfigImpl : public StackObj {
    *
    * @param config_path   config file path
    */
-  explicit ConfigImpl(const std::string config_path);
+  explicit ConfigImpl(const std::string& config_path);
   /**
    * ConfigImpl Destructor
    *
@@ -291,7 +291,6 @@ class ConfigImpl : public StackObj {
    * TOML config data
    */
   const toml::value config_;
-
   /**
    * Config file
    */

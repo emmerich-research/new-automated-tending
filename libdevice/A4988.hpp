@@ -61,11 +61,11 @@ class A4988Device : public impl::StepperDeviceImpl<Speed> {
   A4988Device(PI_PIN        step_pin,
               PI_PIN        dir_pin,
               PI_PIN        enable_pin,
+              double        rpm = 200.0,
+              stepper::step steps = 200,
               PI_PIN        ms1_pin = PI_UNDEF_PIN,
               PI_PIN        ms2_pin = PI_UNDEF_PIN,
-              PI_PIN        ms3_pin = PI_UNDEF_PIN,
-              double        rpm = 200.0,
-              stepper::step steps = 200);
+              PI_PIN        ms3_pin = PI_UNDEF_PIN);
   /**
    * A4988Device Destructor
    *
