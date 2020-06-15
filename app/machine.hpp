@@ -25,11 +25,12 @@ void shutdown_hook();
 namespace machine {
 struct TendingDef : public StackObj,
                     afsm::def::state_machine<TendingDef, std::mutex> {
-  using tending_fsm = ::afsm::state_machine<TendingDef>;
+  using tending_fsm = afsm::state_machine<TendingDef>;
 
   struct initial : state<initial> {};
   struct running : state<running> {};
   struct terminated : terminal_state<terminated> {};
+  // struct tending : afsm::state_machine<tending> {};
 
   using initial_state = initial;
   using transitions = transition_table<
