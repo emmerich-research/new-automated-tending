@@ -43,11 +43,11 @@ using AnalogDeviceRegistry = algo::InstanceRegistry<AnalogDevice>;
  * @date   April 2020
  */
 class AnalogDevice : public StackObj {
-  template <class AnalogDevice>
-  template <typename... Args>
-  friend ATM_STATUS
-  StaticObj<algo::impl::InstanceRegistryImpl<AnalogDevice>>::create(
-      Args&&... args);
+  // template <class AnalogDevice>
+  // template <typename... Args>
+  // friend ATM_STATUS
+  // StaticObj<algo::impl::InstanceRegistryImpl<AnalogDevice>>::create(
+  //     Args&&... args);
 
  public:
   /**

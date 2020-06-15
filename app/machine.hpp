@@ -30,7 +30,9 @@ struct TendingDef : public StackObj,
   struct initial : state<initial> {};
   struct running : state<running> {};
   struct terminated : terminal_state<terminated> {};
-  // struct tending : afsm::state_machine<tending> {};
+  // struct tending : state_machine<tending> {
+  //   using internal_transitions = transition_table<>;
+  // };
 
   using initial_state = initial;
   using transitions = transition_table<

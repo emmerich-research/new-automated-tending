@@ -50,11 +50,11 @@ namespace impl {
 class MovementBuilderImpl : public StackObj {
   friend class Movement;
 
- private:
   template <class MovementBuilderImpl>
   template <typename... Args>
   friend ATM_STATUS StaticObj<MovementBuilderImpl>::create(Args&&... args);
 
+ public:
   /**
    * Setup movement devices for X-Axis
    *
