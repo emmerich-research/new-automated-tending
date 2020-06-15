@@ -6,10 +6,10 @@
 	url = https://github.com/gabime/spdlog.git
 [submodule "external/filesystem"]
 	path = external/filesystem
-	url = git@github.com:gulrak/filesystem.git
+	url = https://github.com/gulrak/filesystem.git
 [submodule "external/toml"]
 	path = external/toml
-	url = git@github.com:ToruNiina/toml11.git
+	url = https://github.com/ToruNiina/toml11.git
 [submodule "external/afsm"]
 	path = external/afsm
-	url = git@github.com:zmij/afsm.git
+	url = https://github.com/zmij/afsm.git

@@ -21,15 +21,15 @@ int main() {
   // TODO: should be looping
   machine::tending tsm;
   try {
-    tsm.process_event(event::start{});
-    massert(tsm.is_in_state<machine::tending::running>(), "sanity");
+    tsm.start();
+    massert(tsm.is_running(), "sanity");
   } catch (std::runtime_error& e) {
-    tsm.process_event(event::stop{});
+    tsm.stop();
     std::cerr << e.what() << std::endl;
     return ATM_ERR;
   }
 
-  tsm.process_event(event::stop{});
+  tsm.stop();
   massert(tsm.is_in_state<machine::tending::terminated>(), "sanity");
 
   return ATM_OK;

@@ -25,6 +25,8 @@ void shutdown_hook();
 namespace machine {
 struct TendingDef : public StackObj,
                     afsm::def::state_machine<TendingDef, std::mutex> {
+  using tending_fsm = ::afsm::state_machine<TendingDef>;
+
   struct initial : state<initial> {};
   struct running : state<running> {};
   struct terminated : terminal_state<terminated> {};
@@ -34,6 +36,18 @@ struct TendingDef : public StackObj,
       /* State, Event, Next, Action */
       tr<initial, event::start, running, action::do_start>,
       tr<running, event::stop, terminated, action::do_stop>>;
+
+  // caller
+  tending_fsm&       rebind() { return static_cast<tending_fsm&>(*this); }
+  tending_fsm const& rebind() const {
+    return static_cast<tending_fsm const&>(*this);
+  }
+
+  void start();
+  void stop();
+
+  bool is_running();
+  bool is_terminated();
 
   static const int VERSION;
 };

@@ -12,7 +12,23 @@ void shutdown_hook() {
 }
 
 namespace machine {
-const int TendingDef::VERSION = 1;
+void TendingDef::start() {
+  rebind().process_event(event::start{});
 }
+
+void TendingDef::stop() {
+  rebind().process_event(event::stop{});
+}
+
+bool TendingDef::is_running() {
+  return rebind().is_in_state<running>();
+}
+
+bool TendingDef::is_terminated() {
+  return rebind().is_in_state<terminated>();
+}
+
+const int TendingDef::VERSION = 1;
+}  // namespace machine
 
 NAMESPACE_END
