@@ -10,3 +10,6 @@
 [submodule "external/toml"]
 	path = external/toml
 	url = git@github.com:ToruNiina/toml11.git
+[submodule "external/afsm"]
+	path = external/afsm
+	url = git@github.com:zmij/afsm.git

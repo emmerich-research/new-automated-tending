@@ -58,12 +58,19 @@ ATM_STATUS MovementBuilderImpl::setup_y(
 ATM_STATUS MovementBuilderImpl::setup_z(
     const std::string&           stepper_z_id,
     const device::stepper::step& steps_per_mm,
-    const std::string&           limit_switch_z_id) {
+    const std::string&           limit_switch_z_top_id,
+    const std::string&           limit_switch_z_bottom_id) {
   if (!device::StepperRegistry::get()->exist(stepper_z_id)) {
     return ATM_ERR;
   }
 
-  if (!device::DigitalInputDeviceRegistry::get()->exist(limit_switch_z_id)) {
+  if (!device::DigitalInputDeviceRegistry::get()->exist(
+          limit_switch_z_top_id)) {
+    return ATM_ERR;
+  }
+
+  if (!device::DigitalInputDeviceRegistry::get()->exist(
+          limit_switch_z_bottom_id)) {
     return ATM_ERR;
   }
 
@@ -72,7 +79,8 @@ ATM_STATUS MovementBuilderImpl::setup_z(
   }
 
   stepper_z_id_ = stepper_z_id;
-  limit_switch_z_id_ = limit_switch_z_id;
+  limit_switch_z_top_id_ = limit_switch_z_top_id;
+  limit_switch_z_bottom_id_ = limit_switch_z_bottom_id;
   steps_per_mm_z_ = steps_per_mm;
   return ATM_OK;
 }
@@ -173,15 +181,25 @@ void Movement::setup_limit_switch() {
 
   limit_switch_y_ = limit_switch_y;
 
-  auto limit_switch_z =
-      digital_input_registry->get(builder()->limit_switch_z_id());
+  auto limit_switch_z_top =
+      digital_input_registry->get(builder()->limit_switch_z_top_id());
 
-  if (!limit_switch_z) {
+  if (!limit_switch_z_top) {
     active_ = false;
     return;
   }
 
-  limit_switch_z_ = limit_switch_z;
+  limit_switch_z_top_ = limit_switch_z_top;
+
+  auto limit_switch_z_bottom =
+      digital_input_registry->get(builder()->limit_switch_z_bottom_id());
+
+  if (!limit_switch_z_bottom) {
+    active_ = false;
+    return;
+  }
+
+  limit_switch_z_bottom_ = limit_switch_z_bottom;
 }
 
 const device::stepper::step Movement::stop_x(void) {
@@ -288,9 +306,14 @@ const time_unit Movement::next() {
     //     limit_switch_z()->read().value_or(device::digital::value::low) ==
     //     device::digital::value::low);
     timer_z = thread_pool().enqueue([this] {
-      return stepper_z()->next(
-          limit_switch_z()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high);
+      const auto limit_switch_z_top_touched =
+          limit_switch_z_top()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high;
+      const auto limit_switch_z_bottom_touched =
+          limit_switch_z_bottom()->read().value_or(
+              device::digital::value::low) == device::digital::value::high;
+      return stepper_z()->next(limit_switch_z_top_touched ||
+                               limit_switch_z_bottom_touched);
     });
   } else {
     event_timer_z_ -= next_move_interval();
@@ -336,7 +359,7 @@ const time_unit Movement::next() {
 void Movement::homing() {
   LOG_DEBUG("Homing...");
   // homing z first
-  while (limit_switch_z()->read().value_or(device::digital::value::low) ==
+  while (limit_switch_z_top()->read().value_or(device::digital::value::low) ==
          device::digital::value::high) {
     LOG_DEBUG("Still homing...");
     stepper_z()->move(-20);

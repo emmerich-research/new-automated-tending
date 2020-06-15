@@ -21,25 +21,25 @@ static ATM_STATUS initialize_movement_mechanism() {
 
   auto movement_builder = MovementBuilder::get();
   status = movement_builder->setup_x(
-      device::id::stepper_x(),
+      device::id::stepper::x(),
       config->stepper_x<const device::stepper::step>("steps-per-mm"),
-      device::id::limit_switch_x());
+      device::id::limit_switch::x());
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = movement_builder->setup_y(
-      device::id::stepper_y(),
+      device::id::stepper::y(),
       config->stepper_y<const device::stepper::step>("steps-per-mm"),
-      device::id::limit_switch_y());
+      device::id::limit_switch::y());
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = movement_builder->setup_z(
-      device::id::stepper_z(),
+      device::id::stepper::z(),
       config->stepper_z<const device::stepper::step>("steps-per-mm"),
-      device::id::limit_switch_z());
+      device::id::limit_switch::z1(), device::id::limit_switch::z2());
   if (status == ATM_ERR) {
     return ATM_ERR;
   }

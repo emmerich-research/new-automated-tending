@@ -48,6 +48,12 @@ const ConfigImpl::path_container& ConfigImpl::path() {
   }
   return movement_path_;
 }
+
+const ConfigImpl::coordinate& ConfigImpl::path(size_t idx) {
+  const auto paths = path();
+  massert(idx < paths.size(), "sanity");
+  return paths[idx];
+}
 }  // namespace impl
 
 NAMESPACE_END

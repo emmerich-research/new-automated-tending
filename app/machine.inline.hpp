@@ -1,0 +1,10 @@
+#ifndef APP_MACHINE_INLINE_HPP_
+#define APP_MACHINE_INLINE_HPP_
+
+#include "machine.hpp"
+
+NAMESPACE_BEGIN
+
+NAMESPACE_END
+
+#endif  // APP_MACHINE_INLINE_HPP_

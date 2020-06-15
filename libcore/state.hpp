@@ -21,7 +21,6 @@ namespace impl {
 class StateImpl;
 }
 
-/** impl::StateImpl singleton class using StaticObj */
 using State = StaticObj<impl::StateImpl>;
 
 namespace impl {
@@ -30,7 +29,7 @@ namespace impl {
  *        This is a class wrapper that should not be instantiated and accessed
  * publicly.
  *
- * Machine's state that contains all the information regarding the machine
+ * Global state of machine (not machine state)
  *
  * @author Ray Andrew
  * @date   April 2020
@@ -76,6 +75,8 @@ class StateImpl : public StackObj {
   unsigned int path_id_;
 };
 }  // namespace impl
+
+/** impl::StateImpl singleton class using StaticObj */
 
 NAMESPACE_END
 

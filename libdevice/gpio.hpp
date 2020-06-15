@@ -211,6 +211,12 @@ using PI_PIN = unsigned char;
 #define PI_ALT4 3
 #define PI_ALT5 2
 
+/* pud: 0-2 */
+
+#define PI_PUD_OFF 0
+#define PI_PUD_DOWN 1
+#define PI_PUD_UP 2
+
 // General
 int  gpioInitialise(void);
 void gpioTerminate(void);
@@ -241,6 +247,8 @@ int gpioGetPWMfrequency(unsigned int user_gpio);
 int gpioHardwarePWM(unsigned int gpio,
                     unsigned int PWMfreq,
                     unsigned int PWMduty);
+
+int gpioSetPullUpDown(unsigned gpio, unsigned pud);
 
 #else
 

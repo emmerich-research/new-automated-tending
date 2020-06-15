@@ -84,17 +84,20 @@ class MovementBuilderImpl : public StackObj {
   /**
    * Setup movement devices for Z-Axis
    *
-   * @param stepper_z_id      instance id of stepper z in StepperDeviceRegistry
-   * @param steps_per_mm      steps conversion to mm
-   * @param limit_switch_z_id instance id of limit switch z in
-   * DigitalInputRegistry
+   * @param stepper_z_id             instance id of stepper z in
+   * StepperDeviceRegistry
+   * @param steps_per_mm             steps conversion to mm
+   * @param limit_switch_z_top_id    instance id of limit switch z (upper bound)
+   * in DigitalInputRegistry
+   * @param limit_switch_z_bottom_id instance id of limit switch z (lower bound)
+   * in DigitalInputRegistry
    *
    * @return ATM_STATUS ATM_OK or ATM_ERR, but not both
    */
   ATM_STATUS setup_z(const std::string&           stepper_z_id,
                      const device::stepper::step& steps_per_mm,
-                     const std::string&           limit_switch_z_id);
-
+                     const std::string&           limit_switch_z_top_id,
+                     const std::string&           limit_switch_z_bottom_id);
   /**
    * Build movement mechanism
    *
@@ -156,11 +159,21 @@ class MovementBuilderImpl : public StackObj {
    */
   const std::string& limit_switch_y_id() const { return limit_switch_y_id_; }
   /**
-   * Get limit switch Z instance ID
+   * Get limit switch Z (upper bound) instance ID
    *
-   * @return instance id of limit switch z
+   * @return instance id of limit switch z (upper bound)
    */
-  const std::string& limit_switch_z_id() const { return limit_switch_z_id_; }
+  const std::string& limit_switch_z_top_id() const {
+    return limit_switch_z_top_id_;
+  }
+  /**
+   * Get limit switch Z (lower bound) instance ID
+   *
+   * @return instance id of limit switch z (lower bound)
+   */
+  const std::string& limit_switch_z_bottom_id() const {
+    return limit_switch_z_bottom_id_;
+  }
   /**
    * Get movement mechanism instance
    *
@@ -223,9 +236,13 @@ class MovementBuilderImpl : public StackObj {
    */
   std::string limit_switch_y_id_;
   /**
-   * Instance id of limit switch z
+   * Instance id of limit switch z (upper bound)
    */
-  std::string limit_switch_z_id_;
+  std::string limit_switch_z_top_id_;
+  /**
+   * Instance id of limit switch z (lower bound)
+   */
+  std::string limit_switch_z_bottom_id_;
 };
 }  // namespace impl
 
@@ -391,12 +408,24 @@ class Movement : public StackObj {
     return limit_switch_y_;
   }
   /**
-   * Get Limit Switch Z instance of DigitalInputDevice that has been initialized
+   * Get Limit Switch Z (upper bound) instance of DigitalInputDevice that has
+   * been initialized
    *
    * @return shared_ptr of DigitalInputDevice
    */
-  const std::shared_ptr<device::DigitalInputDevice>& limit_switch_z() const {
-    return limit_switch_z_;
+  const std::shared_ptr<device::DigitalInputDevice>& limit_switch_z_top()
+      const {
+    return limit_switch_z_top_;
+  }
+  /**
+   * Get Limit Switch Z (lower bound) instance of DigitalInputDevice that has
+   * been initialized
+   *
+   * @return shared_ptr of DigitalInputDevice
+   */
+  const std::shared_ptr<device::DigitalInputDevice>& limit_switch_z_bottom()
+      const {
+    return limit_switch_z_bottom_;
   }
   /**
    * Setup all stepper devices
@@ -523,9 +552,13 @@ class Movement : public StackObj {
    */
   std::shared_ptr<device::DigitalInputDevice> limit_switch_y_;
   /**
-   * Get Limit Switch for Z-Axis that has been initialized
+   * Get Limit Switch for Z-Axis (Upper Bound) that has been initialized
    */
-  std::shared_ptr<device::DigitalInputDevice> limit_switch_z_;
+  std::shared_ptr<device::DigitalInputDevice> limit_switch_z_top_;
+  /**
+   * Get Limit Switch for Z-Axis (Lower Bound) that has been initialized
+   */
+  std::shared_ptr<device::DigitalInputDevice> limit_switch_z_bottom_;
 };
 }  // namespace mechanism
 

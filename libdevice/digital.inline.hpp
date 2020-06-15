@@ -31,6 +31,17 @@ DigitalDevice<Mode>::DigitalDevice(PI_PIN pin, const bool& active_state)
     active_ = false;
     return;
   }
+
+  res = gpioSetPullUpDown(pin_, PI_PUD_DOWN);
+
+  if (res != PI_OK) {
+    LOG_DEBUG(
+        "[FAILED] Failed to set DigitalDevice<{}> to PULL_DOWN using GPIO with "
+        "pin {}",
+        get_mode(Mode), pin);
+    active_ = false;
+    return;
+  }
 }
 
 template <digital::mode Mode>

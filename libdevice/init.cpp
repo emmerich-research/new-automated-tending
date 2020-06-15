@@ -33,6 +33,12 @@ static ATM_STATUS initialize_analog_devices() {
   return status;
 }
 
+static ATM_STATUS initialize_plc_to_pi_comm() {
+  ATM_STATUS status = ATM_OK;
+
+  return status;
+}
+
 static ATM_STATUS initialize_input_digital_devices() {
   auto       config = Config::get();
   ATM_STATUS status = ATM_OK;
@@ -45,25 +51,38 @@ static ATM_STATUS initialize_input_digital_devices() {
   auto digital_input_registry = DigitalInputDeviceRegistry::get();
 
   status = digital_input_registry->create(
-      id::limit_switch_x(), config->limit_switch_x<PI_PIN>("pin"),
+      id::limit_switch::x(), config->limit_switch_x<PI_PIN>("pin"),
       config->limit_switch_x<bool>("active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = digital_input_registry->create(
-      id::limit_switch_y(), config->limit_switch_y<PI_PIN>("pin"),
+      id::limit_switch::y(), config->limit_switch_y<PI_PIN>("pin"),
       config->limit_switch_y<bool>("active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = digital_input_registry->create(
-      id::limit_switch_z(), config->limit_switch_z<PI_PIN>("pin"),
-      config->limit_switch_z<bool>("active-state"));
+      id::limit_switch::z1(), config->limit_switch_z1<PI_PIN>("pin"),
+      config->limit_switch_z1<bool>("active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
+
+  status = digital_input_registry->create(
+      id::limit_switch::z2(), config->limit_switch_z2<PI_PIN>("pin"),
+      config->limit_switch_z2<bool>("active-state"));
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  return status;
+}
+
+static ATM_STATUS initialize_pi_to_plc_comm() {
+  ATM_STATUS status = ATM_OK;
 
   return status;
 }
@@ -103,7 +122,7 @@ static ATM_STATUS initialize_stepper_devices() {
   auto stepper_registry = StepperRegistry::get();
 
   status = stepper_registry->create<LinearSpeedA4988Device>(
-      id::stepper_x(), config->stepper_x<PI_PIN>("step-pin"),
+      id::stepper::x(), config->stepper_x<PI_PIN>("step-pin"),
       config->stepper_x<PI_PIN>("dir-pin"),
       config->stepper_x<PI_PIN>("enable-pin"));
   if (status == ATM_ERR) {
@@ -111,7 +130,7 @@ static ATM_STATUS initialize_stepper_devices() {
   }
 
   status = stepper_registry->create<LinearSpeedA4988Device>(
-      id::stepper_y(), config->stepper_y<PI_PIN>("step-pin"),
+      id::stepper::y(), config->stepper_y<PI_PIN>("step-pin"),
       config->stepper_y<PI_PIN>("dir-pin"),
       config->stepper_y<PI_PIN>("enable-pin"));
   if (status == ATM_ERR) {
@@ -119,7 +138,7 @@ static ATM_STATUS initialize_stepper_devices() {
   }
 
   status = stepper_registry->create<LinearSpeedA4988Device>(
-      id::stepper_z(), config->stepper_z<PI_PIN>("step-pin"),
+      id::stepper::z(), config->stepper_z<PI_PIN>("step-pin"),
       config->stepper_z<PI_PIN>("dir-pin"),
       config->stepper_z<PI_PIN>("enable-pin"));
   if (status == ATM_ERR) {
@@ -127,15 +146,15 @@ static ATM_STATUS initialize_stepper_devices() {
   }
 
   // set microsteps and rpm
-  auto stepper_x = stepper_registry->get(id::stepper_x());
+  auto stepper_x = stepper_registry->get(id::stepper::x());
   stepper_x->microsteps(config->stepper_x<const stepper::step>("microsteps"));
   stepper_x->rpm(config->stepper_x<double>("rpm"));
 
-  auto stepper_y = stepper_registry->get(id::stepper_y());
+  auto stepper_y = stepper_registry->get(id::stepper::y());
   stepper_y->microsteps(config->stepper_y<const stepper::step>("microsteps"));
   stepper_y->rpm(config->stepper_y<double>("rpm"));
 
-  auto stepper_z = stepper_registry->get(id::stepper_z());
+  auto stepper_z = stepper_registry->get(id::stepper::z());
   stepper_z->microsteps(config->stepper_z<const stepper::step>("microsteps"));
   stepper_z->rpm(config->stepper_z<double>("rpm"));
 

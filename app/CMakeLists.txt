@@ -1,19 +1,22 @@
 project(app)
 
 ucm_add_files(
+  "event.cpp"
+  "guard.cpp"
+  "machine.cpp"
+
   "main.cpp"
   TO SOURCES)
   
 ucm_add_target(
   NAME app
   TYPE EXECUTABLE
-  SOURCES ${SOURCES})
-  # UNITY CPP_PER_UNITY 20
-  # PCH_FILE "precompiled.hpp")
+  SOURCES ${SOURCES}
+  UNITY CPP_PER_UNITY 20
+  PCH_FILE "precompiled.hpp")
 
-# target_include_directories(${NAME} PRIVATE
-#   # ${PROJECT_SOURCE_DIR}
-#   ${CMAKE_BINARY_DIR})
+target_include_directories(app PUBLIC
+  "$<BUILD_INTERFACE:${AFSM_INCLUDE_DIRS}>")
 
 target_link_libraries(app PRIVATE
   "${PROJECT_NAMESPACE}::core"

@@ -5,7 +5,7 @@
 NAMESPACE_BEGIN
 
 namespace algo {
-ThreadPool::ThreadPool(size_t threads) : stop_(false) {
+ThreadPool::ThreadPool(std::size_t threads) : stop_(false) {
   for (size_t i = 0; i < threads; ++i)
     workers_.emplace_back([this] {
       for (;;) {

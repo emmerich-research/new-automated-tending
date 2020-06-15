@@ -45,7 +45,8 @@ class ConfigImpl : public StackObj {
   friend ATM_STATUS StaticObj<ConfigImpl>::create(Args&&... args);
 
  public:
-  typedef std::vector<std::pair<double, double>> path_container;
+  typedef std::pair<double, double> coordinate;
+  typedef std::vector<coordinate>   path_container;
   /**
    * Get name of app from config
    *
@@ -141,18 +142,49 @@ class ConfigImpl : public StackObj {
     return find<T>("devices", "limit-switch", "y", std::forward<Keys>(keys)...);
   }
   /**
-   * Get limit switch z-axis device info
+   * Get limit switch upper bound z-axis device info
    *
-   * It should be in key "devices.limit-switch.z"
+   * It should be in key "devices.limit-switch.z1"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
    *
-   * @return limit switch z-axis info with type T
+   * @return limit switch upper bound z-axis info with type T
    */
   template <typename T, typename... Keys>
-  inline T limit_switch_z(Keys&&... keys) const {
-    return find<T>("devices", "limit-switch", "z", std::forward<Keys>(keys)...);
+  inline T limit_switch_z1(Keys&&... keys) const {
+    return find<T>("devices", "limit-switch", "z1",
+                   std::forward<Keys>(keys)...);
+  }
+
+  /**
+   * Get limit switch lower bound z-axis device info
+   *
+   * It should be in key "devices.limit-switch.z2"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return limit switch lower bound z-axis info with type T
+   */
+  template <typename T, typename... Keys>
+  inline T limit_switch_z2(Keys&&... keys) const {
+    return find<T>("devices", "limit-switch", "z2",
+                   std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get spray device info
+   *
+   * It should be in key "devices.spray"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return spray device info with type T
+   */
+  template <typename T, typename... Keys>
+  inline T spray(Keys&&... keys) const {
+    return find<T>("devices", "spray", std::forward<Keys>(keys)...);
   }
   /**
    * Get analog device info
@@ -173,12 +205,47 @@ class ConfigImpl : public StackObj {
    *
    * It should be in key "mechanisms.movement.path"
    *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
    * @return movement mechanism path
    */
   const path_container& path();
+  /**
+   * Get movement mechanism path coordinate at specified index
+   *
+   * @param idx index to get
+   *
+   * @return movement mechanism path at specified index
+   */
+  const coordinate& path(size_t idx);
+  /**
+   * Get communication device from PLC to RaspberryPI
+   *
+   * It should be in key "devices.communication.input"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return communication device info from PLC to RaspberryPI with type T
+   */
+  template <typename T, typename... Keys>
+  inline T plc_to_pi(Keys&&... keys) const {
+    return find<T>("devices", "communication", "input",
+                   std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get communication device from RaspberryPI to PLC
+   *
+   * It should be in key "devices.communication.output"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return communication device info from RaspberryPI to PLC with type T
+   */
+  template <typename T, typename... Keys>
+  inline T pi_to_plc(Keys&&... keys) const {
+    return find<T>("devices", "communication", "output",
+                   std::forward<Keys>(keys)...);
+  }
 
  private:
   /**

@@ -37,6 +37,7 @@
  * <raydreww@gmail.com>
  */
 
+#include <cstddef>
 #include <functional>
 #include <future>
 #include <queue>
@@ -66,7 +67,7 @@ class ThreadPool : public StackObj {
    *
    * @param threads number of thread workers
    */
-  explicit ThreadPool(size_t threads);
+  explicit ThreadPool(std::size_t threads);
 
   /**
    * Add new task to the pool
