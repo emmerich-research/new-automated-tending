@@ -1,15 +1,11 @@
-#ifndef LIB_CORE_TIMER_HPP_
-#define LIB_CORE_TIMER_HPP_
+#ifndef LIB_UTIL_TIMER_HPP_
+#define LIB_UTIL_TIMER_HPP_
 
 /** @file timer.hpp
  *  @brief Timer helper definitions
  */
 
 #include <cstdlib>
-
-#include "common.hpp"
-
-NAMESPACE_BEGIN
 
 using time_unit = uint64_t;
 
@@ -69,7 +65,5 @@ void sleep_for(time_unit time);
  */
 template <time_units TimeUnits>
 void sleep_until(time_unit time, time_unit start_time = 0);
-
-NAMESPACE_END
 
 #endif  // LIB_CORE_TIMER_HPP_

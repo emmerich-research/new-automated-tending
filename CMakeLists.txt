@@ -84,6 +84,7 @@ endif()
 
 find_package(Threads REQUIRED)
 
+add_subdirectory(libutil)
 add_subdirectory(libcore)
 add_subdirectory(libalgo)
 add_subdirectory(libdevice)

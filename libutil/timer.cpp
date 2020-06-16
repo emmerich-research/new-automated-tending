@@ -1,11 +1,9 @@
-#include "core.hpp"
+#include "util.hpp"
 
 #include "timer.hpp"
 
 #include <chrono>
 #include <thread>
-
-NAMESPACE_BEGIN
 
 time_unit millis() {
   uint64_t ms =
@@ -81,5 +79,3 @@ void sleep_until<time_units::nanos>(time_unit time, time_unit start_time) {
   std::this_thread::sleep_until(std::chrono::high_resolution_clock::time_point{
       std::chrono::nanoseconds(start + time)});
 }
-
-NAMESPACE_END

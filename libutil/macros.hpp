@@ -1,5 +1,5 @@
-#ifndef LIB_CORE_MACROS_HPP_
-#define LIB_CORE_MACROS_HPP_
+#ifndef LIB_UTIL_MACROS_HPP_
+#define LIB_UTIL_MACROS_HPP_
 
 /** @file macros.hpp
  *  @brief Macros definitions
@@ -56,4 +56,4 @@ void _massert(const char* expr_str,
               int         line,
               const char* msg);
 
-#endif
+#endif  // LIB_UTIL_MACROS_HPP_

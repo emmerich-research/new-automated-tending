@@ -23,11 +23,11 @@ dir-pin                      = 13
 dir-active-state             = true
 enable-pin                   = 9
 enable-active-state          = true
-steps-per-mm                 = 10
-microsteps                   = 16
+steps-per-mm                 = 4
+microsteps                   = 1
 rpm                          = 50.0
-acceleration                 = 1000 # steps / s^2
-deceleration                 = 1000 # steps / s^2
+acceleration                 = 10 # steps / s^2
+deceleration                 = 10 # steps / s^2
 
 # stepper y-axis
 [devices.stepper.y]
@@ -38,11 +38,11 @@ dir-pin                      = 5
 dir-active-state             = true
 enable-pin                   = 9
 enable-active-state          = true
-steps-per-mm                 = 10
-microsteps                   = 16
+steps-per-mm                 = 4
+microsteps                   = 1
 rpm                          = 50.0
-acceleration                 = 1000 # steps / s^2
-deceleration                 = 1000 # steps / s^2
+acceleration                 = 10 # steps / s^2
+deceleration                 = 10 # steps / s^2
 
 # stepper z-axis
 [devices.stepper.z]
@@ -53,11 +53,11 @@ dir-pin                      = 26
 dir-active-state             = true
 enable-pin                   = 9
 enable-active-state          = true
-steps-per-mm                 = 10
-microsteps                   = 16
+steps-per-mm                 = 4
+microsteps                   = 1
 rpm                          = 20.0
-acceleration                 = 1000 # steps / s^2
-deceleration                 = 1000 # steps / s^2
+acceleration                 = 10 # steps / s^2
+deceleration                 = 10 # steps / s^2
 # ----------------------------------------------------------
 # End of Stepper Configuration
 # ----------------------------------------------------------

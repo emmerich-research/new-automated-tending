@@ -9,14 +9,12 @@
  */
 
 // 1. STL
-#include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <thread>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -33,9 +31,11 @@
 // 2.2. TOML
 #include <toml.hpp>
 
-// 3. Local
+// 3. Inside Project
+#include <libutil/util.hpp>
+
+// 4. Local
 #include "common.hpp"
-#include "macros.hpp"
 
 #include "init.hpp"
 
@@ -45,6 +45,5 @@
 #include "config.hpp"
 #include "logger.hpp"
 #include "state.hpp"
-#include "timer.hpp"
 
 #endif

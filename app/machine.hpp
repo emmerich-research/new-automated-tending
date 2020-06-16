@@ -40,6 +40,8 @@ struct TendingDef : public StackObj,
    * @date   June 2020
    */
   struct spraying : state_machine<spraying> {
+    spraying();
+
     struct idle : state<idle> {
       template <typename FSM>
       void on_enter(event::spraying::start&& event, FSM& fsm) const;
@@ -56,9 +58,14 @@ struct TendingDef : public StackObj,
     using initial_state = idle;
     using transitions = transition_table<
         /* State, Event, Next, Action, Guard */
-        tr<idle, event::spraying::prepare, preparation, guard::spraying_height>,
+        tr<idle,
+           event::spraying::prepare,
+           preparation,
+           guard::spraying::height>,
         tr<preparation, event::spraying::run, ongoing>,
         tr<ongoing, event::spraying::finish, idle>>;
+
+    bool spraying_ready_last_value_;
   };
 
   /**

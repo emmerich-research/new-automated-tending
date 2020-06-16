@@ -10,11 +10,15 @@ template <typename FSM>
 void TendingDef::spraying::idle::on_enter(event::spraying::start&& event,
                                           FSM&                     fsm) const {
   auto*  output_registry = device::DigitalOutputDeviceRegistry::get();
-  auto&& tending_ready =
-      output_registry->get(device::id::comm::pi::tending_ready());
+  auto&& spraying_ready =
+      output_registry->get(device::id::comm::pi::spraying_ready());
   // low for not ready, high for ready
   // always write not ready
-  tending_ready->write(device::digital::value::low);
+
+  // if (spraying_last_value_) {
+  spraying_ready->write(device::digital::value::low);
+  // } else {
+  // }
 }
 
 template <typename FSM>

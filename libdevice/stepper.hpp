@@ -10,8 +10,11 @@
 #include <cstdlib>
 #include <memory>
 
-#include <libalgo/algo.hpp>
+#include <libutil/util.hpp>
+
 #include <libcore/core.hpp>
+
+#include <libalgo/algo.hpp>
 
 #include "gpio.hpp"
 

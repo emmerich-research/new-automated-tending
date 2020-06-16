@@ -1,5 +1,5 @@
-#ifndef LIB_CORE_FILESYSTEM_HPP_
-#define LIB_CORE_FILESYSTEM_HPP_
+#ifndef LIB_UTIL_FILESYSTEM_HPP_
+#define LIB_UTIL_FILESYSTEM_HPP_
 
 /**
  * @file filesystem.hpp

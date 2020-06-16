@@ -14,10 +14,11 @@
 
 #include <toml.hpp>
 
+#include <libutil/util.hpp>
+
 #include "common.hpp"
 
 #include "allocation.hpp"
-#include "macros.hpp"
 
 NAMESPACE_BEGIN
 

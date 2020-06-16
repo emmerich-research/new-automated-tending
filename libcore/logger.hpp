@@ -14,10 +14,11 @@
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
 
+#include <libutil/util.hpp>
+
 #include "common.hpp"
 
 #include "allocation.hpp"
-#include "macros.hpp"
 
 #include "config.hpp"
 

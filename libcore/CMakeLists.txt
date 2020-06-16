@@ -4,11 +4,9 @@ configure_file(common.hpp.in common.hpp @ONLY)
 
 ucm_add_files(
   "init.cpp"
-  "macros.cpp"
   "config.cpp"
   "logger.cpp"
   "state.cpp"
-  "timer.cpp"
   TO SOURCES)
   
 ucm_add_target(
@@ -29,7 +27,8 @@ target_link_libraries(core PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
   fs::fs
   spdlog::spdlog
-  toml11::toml11)
+  toml11::toml11
+  "${PROJECT_NAMESPACE}::util")
 
 target_set_warnings(core
   ENABLE ALL

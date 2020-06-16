@@ -6,15 +6,34 @@
 NAMESPACE_BEGIN
 
 namespace guard {
-struct spraying_height {
-  template <typename FSM, typename State>
-  bool operator()(FSM const& fsm, State const&) const;
+struct guard_base : public StackObj {
+  virtual bool check() const = 0;
 };
 
-struct tending_height {
+struct homing : public guard_base {
   template <typename FSM, typename State>
   bool operator()(FSM const& fsm, State const&) const;
+
+  virtual bool check() const override;
 };
+
+namespace spraying {
+struct height : public guard_base {
+  template <typename FSM, typename State>
+  bool operator()(FSM const& fsm, State const&) const;
+
+  virtual bool check() const override;
+};
+}  // namespace spraying
+
+namespace tending {
+struct height : public guard_base {
+  template <typename FSM, typename State>
+  bool operator()(FSM const& fsm, State const&) const;
+
+  virtual bool check() const override;
+};
+}  // namespace tending
 }  // namespace guard
 
 NAMESPACE_END

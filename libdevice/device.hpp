@@ -25,6 +25,8 @@
 #endif  // MOCK_GPIO
 
 // 3. Inside projects
+#include <libutil/util.hpp>
+
 #include <libcore/core.hpp>
 
 #include <libalgo/algo.hpp>

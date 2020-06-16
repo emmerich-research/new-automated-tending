@@ -45,6 +45,9 @@ void TendingDef::start_spraying() {
 void TendingDef::finish_spraying() {
   rebind().process_event(event::spraying::start{});
 }
+
+// spraying
+TendingDef::spraying::spraying() : spraying_ready_last_value_{false} {}
 }  // namespace machine
 
 NAMESPACE_END
