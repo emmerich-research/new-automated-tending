@@ -259,8 +259,11 @@ void Movement::start_move(const long& x, const long& y, const long& z) {
   next_move_interval_ = 1;
 }
 
-const time_unit Movement::next() {
-  sleep_until<time_units::micros>(next_move_interval(), last_move_end());
+time_unit Movement::next() {
+  while ((micros() - last_move_end()) < next_move_interval()) {
+    // not yet running
+  }
+  // sleep_until<time_units::micros>(next_move_interval(), last_move_end());
 
   bool next_x = false;
   bool next_y = false;
@@ -272,69 +275,68 @@ const time_unit Movement::next() {
 
   if (event_timer_x() <= next_move_interval()) {
     next_x = true;
-    event_timer_x_ = stepper_x()->next(
-        limit_switch_x()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high);
+    // event_timer_x_ = stepper_x()->next(
+    //     limit_switch_x()->read().value_or(device::digital::value::low) ==
+    //     device::digital::value::high);
 
-    // timer_x = thread_pool().enqueue([this] {
-    //   return stepper_x()->next(
-    //       limit_switch_x()->read().value_or(device::digital::value::low) ==
-    //       device::digital::value::high);
-    // });
-    // event_timer_x_ = result.get();
+    timer_x = thread_pool().enqueue([this] {
+      return stepper_x()->next(
+          limit_switch_x()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high);
+    });
   } else {
     event_timer_x_ -= next_move_interval();
   }
 
   if (event_timer_y() <= next_move_interval()) {
     next_y = true;
-    event_timer_y_ = stepper_y()->next(
-        limit_switch_y()->read().value_or(device::digital::value::low) ==
-        device::digital::value::low);
-    // timer_y = thread_pool().enqueue([this] {
-    //   return stepper_y()->next(
-    //       limit_switch_y()->read().value_or(device::digital::value::low) ==
-    //       device::digital::value::high);
-    // });
+    // event_timer_y_ = stepper_y()->next(
+    //     limit_switch_y()->read().value_or(device::digital::value::low) ==
+    //     device::digital::value::low);
+    timer_y = thread_pool().enqueue([this] {
+      return stepper_y()->next(
+          limit_switch_y()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high);
+    });
   } else {
     event_timer_y_ -= next_move_interval();
   }
 
   if (event_timer_z() <= next_move_interval()) {
     next_z = true;
-    const auto limit_switch_z_top_touched =
-        limit_switch_z_top()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high;
-    const auto limit_switch_z_bottom_touched =
-        limit_switch_z_bottom()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high;
-    event_timer_z_ = stepper_z()->next(limit_switch_z_top_touched ||
-                                       limit_switch_z_bottom_touched);
-    // timer_z = thread_pool().enqueue([this] {
-    //   const auto limit_switch_z_top_touched =
-    //       limit_switch_z_top()->read().value_or(device::digital::value::low)
-    //       == device::digital::value::high;
-    //   const auto limit_switch_z_bottom_touched =
-    //       limit_switch_z_bottom()->read().value_or(
-    //           device::digital::value::low) == device::digital::value::high;
-    //   return stepper_z()->next(limit_switch_z_top_touched ||
-    //                            limit_switch_z_bottom_touched);
-    // });
+    // const auto limit_switch_z_top_touched =
+    //     limit_switch_z_top()->read().value_or(device::digital::value::low) ==
+    //     device::digital::value::high;
+    // const auto limit_switch_z_bottom_touched =
+    //     limit_switch_z_bottom()->read().value_or(device::digital::value::low)
+    //     == device::digital::value::high;
+    // event_timer_z_ = stepper_z()->next(limit_switch_z_top_touched ||
+    //                                    limit_switch_z_bottom_touched);
+    timer_z = thread_pool().enqueue([this] {
+      const auto limit_switch_z_top_touched =
+          limit_switch_z_top()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high;
+      const auto limit_switch_z_bottom_touched =
+          limit_switch_z_bottom()->read().value_or(
+              device::digital::value::low) == device::digital::value::high;
+      return stepper_z()->next(limit_switch_z_top_touched ||
+                               limit_switch_z_bottom_touched);
+    });
   } else {
     event_timer_z_ -= next_move_interval();
   }
 
-  // if (next_x) {
-  //   event_timer_x_ = timer_x.get();
-  // }
+  if (next_x) {
+    event_timer_x_ = timer_x.get();
+  }
 
-  // if (next_y) {
-  //   event_timer_y_ = timer_y.get();
-  // }
+  if (next_y) {
+    event_timer_y_ = timer_y.get();
+  }
 
-  // if (next_z) {
-  //   event_timer_z_ = timer_z.get();
-  // }
+  if (next_z) {
+    event_timer_z_ = timer_z.get();
+  }
 
   last_move_end_ = micros();
   next_move_interval_ = 0;

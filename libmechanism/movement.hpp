@@ -454,7 +454,7 @@ class Movement : public StackObj {
    *
    * @return time until next change is needed
    */
-  const time_unit next();
+  time_unit next();
   /**
    * Get event timers of x-axis stepper
    *
