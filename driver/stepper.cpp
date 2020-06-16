@@ -56,13 +56,18 @@ const bool menu() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
+  auto* stepper_registry = device::StepperRegistry::get();
+  massert(stepper_registry != nullptr, "sanity");
+
   auto&& movement = mechanism::movement_mechanism();
 
   LOG_INFO("----MENU-----");
   LOG_INFO("1. According to path");
   LOG_INFO("2. Homing");
-  LOG_INFO("3. Just X (Mechanism)");
-  LOG_INFO("4. Just X (Using Stepper)");
+  LOG_INFO("3. Just X");
+  LOG_INFO("4. Just Y");
+  LOG_INFO("5. Just Z");
+  LOG_INFO("6. X and Y");
   LOG_INFO("0. Exit");
 
   unsigned int choice;
@@ -80,10 +85,6 @@ const bool menu() {
     movement->homing();
     return false;
   } else if (choice == 3) {
-    movement->move<mechanism::movement::unit::mm>(50.0, 0.0, 0.0);
-  } else if (choice == 4) {
-    auto* stepper_registry = device::StepperRegistry::get();
-    massert(stepper_registry != nullptr, "sanity");
     auto&& stepper_x = stepper_registry->get(device::id::stepper::x());
     stepper_x->enable();
     for (size_t i = 0; i < 2; ++i) {
@@ -92,6 +93,26 @@ const bool menu() {
       stepper_x->move(-10000);
     }
     stepper_x->disable();
+  } else if (choice == 4) {
+    auto&& stepper_y = stepper_registry->get(device::id::stepper::y());
+    stepper_y->enable();
+    for (size_t i = 0; i < 2; ++i) {
+      stepper_y->move(10000);
+      sleep_for<time_units::millis>(200);
+      stepper_y->move(-10000);
+    }
+    stepper_y->disable();
+  } else if (choice == 5) {
+    auto&& stepper_z = stepper_registry->get(device::id::stepper::z());
+    stepper_z->enable();
+    for (size_t i = 0; i < 2; ++i) {
+      stepper_z->move(3000);
+      sleep_for<time_units::millis>(200);
+      stepper_z->move(-3000);
+    }
+    stepper_z->disable();
+  } else if (choice == 6) {
+    movement->move<mechanism::movement::unit::mm>(50.0, 50.0, 0.0);
   } else if (choice == 0) {
     return true;
   }
