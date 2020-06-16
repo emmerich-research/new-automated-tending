@@ -99,6 +99,29 @@ const std::optional<digital::value> DigitalDevice<Mode>::read() const {
 
 template <digital::mode Mode>
 template <digital::mode Mode_, typename>
+const bool DigitalDevice<Mode>::read_bool() const {
+  if (!active()) {
+    LOG_DEBUG(
+        "[FAILED] DigitalDevice<{}>::read with pin {}, device is not active!",
+        get_mode(Mode), pin_);
+    return false;
+  }
+
+  auto result = read();
+
+  if (result) {
+    if (result == digital::value::high) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+template <digital::mode Mode>
+template <digital::mode Mode_, typename>
 const PI_RES DigitalDevice<Mode>::process_value(const digital::value& value,
                                                 const bool active_state) {
   if (active_state) {

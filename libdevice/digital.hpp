@@ -116,11 +116,24 @@ class DigitalDevice : public StackObj {
    *
    * Only ENABLE if device mode is INPUT
    *
-   * @return ATM_OK or ATM_ERR, but not both
+   * @return digital::value HIGH or LOW
    */
   template <digital::mode Mode_ = Mode,
             typename = std::enable_if_t<Mode_ == digital::mode::input>>
   const std::optional<digital::value> read() const;
+  /**
+   * Read the HIGH/LOW data from GPIO via Pigpio lib
+   *
+   * Failed value will be denoted as "falsy"
+   *
+   * HIGH = true
+   * LOW  = false
+   *
+   * @return ATM_OK or ATM_ERR, but not both
+   */
+  template <digital::mode Mode_ = Mode,
+            typename = std::enable_if_t<Mode_ == digital::mode::input>>
+  const bool read_bool() const;
   /**
    * Get GPIO pin that has been initialized
    *

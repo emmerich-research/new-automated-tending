@@ -12,6 +12,16 @@ void shutdown_hook() {
 }
 
 namespace machine {
+const int TendingDef::VERSION = 1;
+
+TendingDef::tending_fsm& TendingDef::rebind() {
+  return static_cast<tending_fsm&>(*this);
+}
+
+TendingDef::tending_fsm const& TendingDef::rebind() const {
+  return static_cast<tending_fsm const&>(*this);
+}
+
 void TendingDef::start() {
   rebind().process_event(event::start{});
 }
@@ -28,7 +38,13 @@ bool TendingDef::is_terminated() {
   return rebind().is_in_state<terminated>();
 }
 
-const int TendingDef::VERSION = 1;
+void TendingDef::start_spraying() {
+  rebind().process_event(event::spraying::start{});
+}
+
+void TendingDef::finish_spraying() {
+  rebind().process_event(event::spraying::start{});
+}
 }  // namespace machine
 
 NAMESPACE_END

@@ -17,20 +17,39 @@ int throw_message() {
 }
 
 int main() {
+  ATM_STATUS status = ATM_OK;
   // run state machine
-  // TODO: should be looping
   machine::tending tsm;
+
+  // initialization
   try {
     tsm.start();
     massert(tsm.is_running(), "sanity");
   } catch (std::runtime_error& e) {
-    tsm.stop();
     std::cerr << e.what() << std::endl;
-    return ATM_ERR;
+    status = ATM_ERR;
   }
 
+  // early stopping
+  if (status == ATM_ERR) {
+    tsm.stop();
+    massert(tsm.is_terminated(), "sanity");
+    return status;
+  }
+
+  // main loop
+  while (!tsm.is_terminated()) {
+    // sequences:
+    // 1. spraying
+    // 2. tending
+
+    // if () {
+    // }
+  }
+
+  // stopping
   tsm.stop();
-  massert(tsm.is_in_state<machine::tending::terminated>(), "sanity");
+  massert(tsm.is_terminated(), "sanity");
 
   return ATM_OK;
 }

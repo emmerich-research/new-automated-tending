@@ -460,7 +460,7 @@ class StepperDeviceImpl : public StepperDevice {
   /**
    * Get step pulse
    */
-  const stepper::step& step_pulse() const { return step_pulse_; }
+  const stepper::pulse& step_pulse() const { return step_pulse_; }
   /**
    * Get rest steps
    */

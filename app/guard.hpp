@@ -5,7 +5,17 @@
 
 NAMESPACE_BEGIN
 
-namespace guard {}  // namespace guard
+namespace guard {
+struct spraying_height {
+  template <typename FSM, typename State>
+  bool operator()(FSM const& fsm, State const&) const;
+};
+
+struct tending_height {
+  template <typename FSM, typename State>
+  bool operator()(FSM const& fsm, State const&) const;
+};
+}  // namespace guard
 
 NAMESPACE_END
 
