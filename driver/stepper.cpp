@@ -7,6 +7,7 @@
 #include <libcore/core.hpp>
 #include <libdevice/device.hpp>
 #include <libmechanism/mechanism.hpp>
+#include <libutil/util.hpp>
 
 USE_NAMESPACE
 
@@ -85,8 +86,9 @@ const bool menu() {
     massert(stepper_registry != nullptr, "sanity");
     auto&& stepper_x = stepper_registry->get(device::id::stepper::x());
     stepper_x->enable();
-    for (size_t i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < 2; ++i) {
       stepper_x->move(250);
+      sleep_for<time_units::millis>(20);
       stepper_x->move(-250);
     }
     stepper_x->disable();
