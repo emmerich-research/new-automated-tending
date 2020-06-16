@@ -60,6 +60,20 @@ void StepperDeviceImpl<Speed>::pre_start_move(long steps) {
   // set direction
   direction_ =
       (steps >= 0) ? stepper::direction::forward : stepper::direction::backward;
+
+  // DIR pin is sampled on rising STEP edge, so it is set first
+  switch (direction()) {
+    case stepper::direction::forward:
+      dir_device()->write(digital::value::high);
+      break;
+    case stepper::direction::backward:
+      dir_device()->write(digital::value::low);
+      break;
+    default:
+      // noop
+      break;
+  }
+
   // setup timer
   last_move_end_ = 0;
   // initialize steps
@@ -77,20 +91,14 @@ const time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
 
   if (remaining_steps() > 0) {
     // original code : delayMicros(next_action_interval, last_action_end);
-    sleep_until<time_units::micros>(next_move_interval(), last_move_end());
-
-    // DIR pin is sampled on rising STEP edge, so it is set first
-    switch (direction()) {
-      case stepper::direction::forward:
-        dir_device()->write(digital::value::high);
-        break;
-      case stepper::direction::backward:
-        dir_device()->write(digital::value::low);
-        break;
-      default:
-        // noop
-        break;
+    LOG_DEBUG("NEXT_MOVE_INTERVAL {} LAST_MOVE_END {}", next_move_interval(),
+              last_move_end());
+    time_unit now = micros();
+    if (now < next_move_interval() + last_move_end()) {
+      // not yet running
+      return -1;
     }
+    // sleep_until<time_units::micros>(next_move_interval(), last_move_end());
 
     // start pulsing
     step_device()->write(digital::value::high);
