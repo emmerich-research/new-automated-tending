@@ -32,7 +32,7 @@ A4988Device<Speed>::A4988Device(PI_PIN        step_pin,
 
 template <stepper::speed Speed>
 void A4988Device<Speed>::microsteps(const stepper::step& microsteps) {
-  if (microsteps < 0 && microsteps > max_microsteps()) {
+  if (microsteps == 0 && microsteps > max_microsteps()) {
     return;
   }
 

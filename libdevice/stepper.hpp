@@ -109,7 +109,7 @@ class StepperDevice : public StackObj {
    *
    * @return time until next change is needed
    */
-  virtual const time_unit next(bool stop_condition = false) = 0;
+  virtual time_unit next(bool stop_condition = false) = 0;
   /**
    * Stop stepper from moving
    *
@@ -131,7 +131,7 @@ class StepperDevice : public StackObj {
    *
    * @return calculated time to complete given move
    */
-  virtual const time_unit time_for_move(long steps) = 0;
+  virtual time_unit time_for_move(long steps) = 0;
   /**
    * Get remaining steps
    */
@@ -161,7 +161,7 @@ class StepperDevice : public StackObj {
    *
    * @return current rpm
    */
-  const double rpm() const { return rpm_; }
+  double rpm() const { return rpm_; }
   /**
    * Set acceleration of stepper motor (steps / s^2)
    *
@@ -173,7 +173,7 @@ class StepperDevice : public StackObj {
    *
    * @return current acceleration
    */
-  const double acceleration() const { return acceleration_; }
+  double acceleration() const { return acceleration_; }
   /**
    * Set deceleration of stepper motor (steps / s^2)
    *
@@ -185,7 +185,7 @@ class StepperDevice : public StackObj {
    *
    * @return current deceleration
    */
-  const double deceleration() const { return deceleration_; }
+  double deceleration() const { return deceleration_; }
   /**
    * Set motor steps
    *
@@ -419,7 +419,7 @@ class StepperDeviceImpl : public StepperDevice {
    *
    * @return time until next change is needed
    */
-  virtual const time_unit next(bool stop_condition = false) override;
+  virtual time_unit next(bool stop_condition = false) override;
   /**
    * Get calculated time to complete move with given steps.
    *
@@ -429,7 +429,7 @@ class StepperDeviceImpl : public StepperDevice {
    *
    * @return calculated time to complete given move
    */
-  virtual const time_unit time_for_move(long steps) override;
+  virtual time_unit time_for_move(long steps) override;
   /**
    * Stop stepper from moving
    *

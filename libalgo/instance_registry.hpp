@@ -94,7 +94,7 @@ class InstanceRegistryImpl : public StackObj {
    *
    * @return exist or not
    */
-  inline const bool exist(const std::string& id) const;
+  inline bool exist(const std::string& id) const;
 
  private:
   /**

@@ -101,7 +101,7 @@ const std::optional<digital::value> DigitalDevice<Mode>::read() const {
 
 template <digital::mode Mode>
 template <digital::mode Mode_, typename>
-const bool DigitalDevice<Mode>::read_bool() const {
+bool DigitalDevice<Mode>::read_bool() const {
   if (!active()) {
     LOG_DEBUG(
         "[FAILED] DigitalDevice<{}>::read with pin {}, device is not active!",

@@ -56,7 +56,7 @@ inline const std::shared_ptr<T>& InstanceRegistryImpl<T>::get(
 }
 
 template <typename T>
-inline const bool InstanceRegistryImpl<T>::exist(const std::string& id) const {
+inline bool InstanceRegistryImpl<T>::exist(const std::string& id) const {
   try {
     [[maybe_unused]] auto instance = container_.at(id);
     return true;

@@ -17,7 +17,7 @@ using PI_RES = int;
  * @var using PI_RES = int
  * @brief Type definition for Pigpio returned value
  */
-using PI_PIN = unsigned char;
+using PI_PIN = int;
 
 /**
  * @def PI_OK

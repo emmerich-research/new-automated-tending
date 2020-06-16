@@ -92,13 +92,11 @@ class DigitalDevice : public StackObj {
    */
   MAKE_STD_UNIQUE(DigitalDevice<Mode>)
   /**
-   * DigitalDevice Destructor
-   *
    * Check if pin is active or not
    *
    * @return active status of GPIO pin
    */
-  const bool active() const { return active_; }
+  bool active() const { return active_; }
   /**
    * Write the HIGH/LOW data to GPIO via Pigpio lib
    *
@@ -133,7 +131,7 @@ class DigitalDevice : public StackObj {
    */
   template <digital::mode Mode_ = Mode,
             typename = std::enable_if_t<Mode_ == digital::mode::input>>
-  const bool read_bool() const;
+  bool read_bool() const;
   /**
    * Get GPIO pin that has been initialized
    *
@@ -170,7 +168,7 @@ class DigitalDevice : public StackObj {
    *
    * @return TRUE/FALSE
    */
-  inline const bool active_state() const { return active_state_; }
+  inline bool active_state() const { return active_state_; }
 
  private:
   /**

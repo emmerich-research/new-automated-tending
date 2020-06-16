@@ -83,7 +83,7 @@ void StepperDeviceImpl<Speed>::pre_start_move(long steps) {
 }
 
 template <stepper::speed Speed>
-const time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
+time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
   if (stop_condition) {
     stop();
     return 0;
@@ -93,8 +93,7 @@ const time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
     // original code : delayMicros(next_action_interval, last_action_end);
     LOG_DEBUG("NEXT_MOVE_INTERVAL {} LAST_MOVE_END {}", next_move_interval(),
               last_move_end());
-    time_unit now = micros();
-    if (now < next_move_interval() + last_move_end()) {
+    if ((micros() - last_move_end()) < next_move_interval()) {
       // not yet running
       return -1;
     }

@@ -174,7 +174,7 @@ void StepperDeviceImpl<stepper::speed::linear>::calc_step_pulse() {
 }
 
 template <>
-const time_unit StepperDeviceImpl<stepper::speed::constant>::time_for_move(
+time_unit StepperDeviceImpl<stepper::speed::constant>::time_for_move(
     long steps) {
   if (steps == 0) {
     return 0;
@@ -186,8 +186,7 @@ const time_unit StepperDeviceImpl<stepper::speed::constant>::time_for_move(
 }
 
 template <>
-const time_unit StepperDeviceImpl<stepper::speed::linear>::time_for_move(
-    long steps) {
+time_unit StepperDeviceImpl<stepper::speed::linear>::time_for_move(long steps) {
   if (steps == 0) {
     return 0;
   }
