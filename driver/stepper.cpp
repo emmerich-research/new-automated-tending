@@ -88,7 +88,7 @@ const bool menu() {
     stepper_x->enable();
     for (size_t i = 0; i < 2; ++i) {
       stepper_x->move(250);
-      sleep_for<time_units::millis>(20);
+      sleep_for<time_units::millis>(200);
       stepper_x->move(-250);
     }
     stepper_x->disable();
