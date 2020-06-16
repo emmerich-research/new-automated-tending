@@ -9,6 +9,11 @@ namespace mechanism {
 template <movement::unit Unit>
 void Movement::move(double x, double y, double z) {
   if (ready()) {
+    // enabling motor
+    stepper_x()->enable();
+    stepper_y()->enable();
+    stepper_z()->enable();
+
     const long steps_x =
         convert_length_to_steps<Unit>(x, builder()->steps_per_mm_x());
     const long steps_y =
@@ -32,6 +37,11 @@ void Movement::move(double x, double y, double z) {
     // this to simplify solution so we do not need any queue to implement with
     // if this line is deleted, then the move will be in race condition
     [[maybe_unused]] bool finished = result.get();
+
+    // disabling motor
+    stepper_x()->disable();
+    stepper_y()->disable();
+    stepper_z()->disable();
   }
 }
 }  // namespace mechanism

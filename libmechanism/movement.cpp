@@ -357,6 +357,11 @@ const time_unit Movement::next() {
 }
 
 void Movement::homing() {
+  // enabling motor
+  stepper_x()->enable();
+  stepper_y()->enable();
+  stepper_z()->enable();
+
   LOG_DEBUG("Homing...");
   // homing z first
   while (limit_switch_z_top()->read().value_or(device::digital::value::low) ==
@@ -398,6 +403,11 @@ void Movement::homing() {
           device::digital::value::low;
     }
   });
+
+  // disabling motor
+  stepper_x()->disable();
+  stepper_y()->disable();
+  stepper_z()->disable();
 
   LOG_DEBUG("Homing is finished...");
 }
