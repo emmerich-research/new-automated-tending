@@ -87,9 +87,9 @@ const bool menu() {
     auto&& stepper_x = stepper_registry->get(device::id::stepper::x());
     stepper_x->enable();
     for (size_t i = 0; i < 2; ++i) {
-      stepper_x->move(250);
+      stepper_x->move(2500);
       sleep_for<time_units::millis>(200);
-      stepper_x->move(-250);
+      stepper_x->move(-2500);
     }
     stepper_x->disable();
   } else if (choice == 0) {
