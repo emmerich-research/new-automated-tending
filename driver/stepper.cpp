@@ -55,11 +55,13 @@ const bool menu() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto movement = mechanism::movement_mechanism();
+  auto&& movement = mechanism::movement_mechanism();
 
   LOG_INFO("----MENU-----");
   LOG_INFO("1. According to path");
   LOG_INFO("2. Homing");
+  LOG_INFO("3. Just X (Mechanism)");
+  LOG_INFO("4. Just X (Using Stepper)");
   LOG_INFO("0. Exit");
 
   unsigned int choice;
@@ -76,6 +78,13 @@ const bool menu() {
   } else if (choice == 2) {
     movement->homing();
     return false;
+  } else if (choice == 3) {
+    movement->move<mechanism::movement::unit::mm>(50.0, 0.0, 0.0);
+  } else if (choice == 4) {
+    auto* stepper_registry = device::StepperRegistry::get();
+    massert(stepper_registry != nullptr, "sanity");
+    auto&& stepper_x = stepper_registry->get(device::id::stepper::x());
+    stepper_x->move(50);
   } else if (choice == 0) {
     return true;
   }

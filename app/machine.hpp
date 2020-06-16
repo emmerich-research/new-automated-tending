@@ -47,11 +47,11 @@ struct TendingDef : public StackObj,
       void on_enter(event::spraying::start&& event, FSM& fsm) const;
     };
     struct preparation : state<preparation> {
-      template <typename FSM>
-      void on_enter(event::spraying::prepare&& event, FSM& fsm) const;
+      template <typename Event, typename FSM>
+      void on_enter(Event&& event, FSM& fsm) const;
 
-      template <typename FSM>
-      void on_exit(event::spraying::run&& event, FSM& fsm) const;
+      template <typename Event, typename FSM>
+      void on_exit(Event&& event, FSM& fsm) const;
     };
     struct ongoing : state<ongoing> {};
 
@@ -59,11 +59,18 @@ struct TendingDef : public StackObj,
     using transitions = transition_table<
         /* State, Event, Next, Action, Guard */
         tr<idle,
-           event::spraying::prepare,
+           // event::spraying::prepare,
+           none,
            preparation,
+           action::do_homing,
            guard::spraying::height>,
-        tr<preparation, event::spraying::run, ongoing>,
-        tr<ongoing, event::spraying::finish, idle>>;
+        tr<preparation,
+           none,
+           // event::spraying::run,
+           ongoing,
+           action::do_spraying,
+           and_<guard::spraying::height, guard::homing>>,
+        tr<ongoing, event::spraying::finish, idle, none, none>>;
 
     bool spraying_ready_last_value_;
   };

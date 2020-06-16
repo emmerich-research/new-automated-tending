@@ -21,6 +21,30 @@ struct do_stop {
             typename TargetState>
   void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
 };
+
+struct do_homing {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
+};
+
+struct do_spraying {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
+};
+
+struct do_tending {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
+};
 }  // namespace action
 
 NAMESPACE_END

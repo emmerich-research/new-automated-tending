@@ -76,7 +76,7 @@ const time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
   }
 
   if (remaining_steps() > 0) {
-    // original code :delayMicros(next_action_interval, last_action_end);
+    // original code : delayMicros(next_action_interval, last_action_end);
     sleep_until<time_units::micros>(next_move_interval(), last_move_end());
 
     // DIR pin is sampled on rising STEP edge, so it is set first

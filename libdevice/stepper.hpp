@@ -189,7 +189,7 @@ class StepperDevice : public StackObj {
   /**
    * Set motor steps
    *
-   * @param rpm rpm to set
+   * @param motor_steps motor_steps to set
    */
   virtual void motor_steps(const stepper::step& motor_steps);
   /**

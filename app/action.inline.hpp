@@ -52,6 +52,45 @@ template <typename Event,
 void do_stop::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
   shutdown_hook();
 }
+
+template <typename Event,
+          typename FSM,
+          typename SourceState,
+          typename TargetState>
+void do_homing::operator()(Event const&,
+                           FSM&,
+                           SourceState&,
+                           TargetState&) const {
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
+  auto&&        movement = mechanism::movement_mechanism();
+  guard::homing homing;
+
+  while (!homing.check()) {
+    movement->homing();
+  }
+}
+
+template <typename Event,
+          typename FSM,
+          typename SourceState,
+          typename TargetState>
+void do_spraying::operator()(Event const&,
+                             FSM&,
+                             SourceState&,
+                             TargetState&) const {
+  LOG_INFO("Spraying is running...");
+}
+
+template <typename Event,
+          typename FSM,
+          typename SourceState,
+          typename TargetState>
+void do_tending::operator()(Event const&,
+                            FSM&,
+                            SourceState&,
+                            TargetState&) const {}
 }  // namespace action
 
 NAMESPACE_END

@@ -42,9 +42,7 @@ int main() {
     // sequences:
     // 1. spraying
     // 2. tending
-
-    // if () {
-    // }
+    tsm.start_spraying();
   }
 
   // stopping
