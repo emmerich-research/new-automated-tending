@@ -85,7 +85,10 @@ const bool menu() {
     massert(stepper_registry != nullptr, "sanity");
     auto&& stepper_x = stepper_registry->get(device::id::stepper::x());
     stepper_x->enable();
-    stepper_x->move(50);
+    for (size_t i = 0; i < 4; ++i) {
+      stepper_x->move(250);
+      stepper_x->move(-250);
+    }
     stepper_x->disable();
   } else if (choice == 0) {
     return true;
