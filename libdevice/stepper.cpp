@@ -54,11 +54,11 @@ void StepperDevice::deceleration(double deceleration) {
 }
 
 void StepperDevice::enable() {
-  step_device()->write(digital::value::high);
+  enable_device()->write(digital::value::high);
 }
 
 void StepperDevice::disable() {
-  step_device()->write(digital::value::low);
+  enable_device()->write(digital::value::low);
 }
 
 namespace impl {
