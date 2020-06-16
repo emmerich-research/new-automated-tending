@@ -91,8 +91,6 @@ time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
 
   if (remaining_steps() > 0) {
     // original code : delayMicros(next_action_interval, last_action_end);
-    LOG_DEBUG("NEXT_MOVE_INTERVAL {} LAST_MOVE_END {}", next_move_interval(),
-              last_move_end());
     if ((micros() - last_move_end()) < next_move_interval()) {
       // not yet running
       return -1;

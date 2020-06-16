@@ -58,8 +58,6 @@ ATM_STATUS DigitalDevice<Mode>::write(const digital::value& level) {
   switch (level) {
     case digital::value::low:
     case digital::value::high:
-      LOG_DEBUG("Writing {} to pin {}",
-                level == digital::value::low ? "LOW" : "HIGH", pin_);
       res = gpioWrite(pin_, process_value(level, active_state()));
       break;
     default:
