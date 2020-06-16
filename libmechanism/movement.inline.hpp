@@ -11,8 +11,8 @@ void Movement::move(double x, double y, double z) {
   if (ready()) {
     // enabling motor
     stepper_x()->enable();
-    stepper_y()->enable();
-    stepper_z()->enable();
+    // stepper_y()->enable();
+    // stepper_z()->enable();
 
     const long steps_x =
         convert_length_to_steps<Unit>(x, builder()->steps_per_mm_x());
@@ -40,8 +40,8 @@ void Movement::move(double x, double y, double z) {
 
     // disabling motor
     stepper_x()->disable();
-    stepper_y()->disable();
-    stepper_z()->disable();
+    // stepper_y()->disable();
+    // stepper_z()->disable();
   }
 }
 }  // namespace mechanism
