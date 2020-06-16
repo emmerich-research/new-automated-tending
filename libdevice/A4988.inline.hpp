@@ -36,12 +36,12 @@ void A4988Device<Speed>::microsteps(const stepper::step& microsteps) {
     return;
   }
 
+  impl::StepperDeviceImpl<Speed>::microsteps(microsteps);
+
   if (!ms1_device()->active() || !ms2_device()->active() ||
       !ms3_device()->active()) {
     return;
   }
-
-  impl::StepperDeviceImpl<Speed>::microsteps(microsteps);
 
   const stepper::step* table = ms_table();
   size_t               table_size = ms_table_size();
