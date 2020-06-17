@@ -268,18 +268,30 @@ static ATM_STATUS initialize_stepper_devices() {
     return ATM_ERR;
   }
 
-  // set microsteps and rpm
+  // set additional configurations
   auto&& stepper_x = stepper_registry->get(id::stepper::x());
   stepper_x->microsteps(config->stepper_x<const stepper::step>("microsteps"));
   stepper_x->rpm(config->stepper_x<double>("rpm"));
+  stepper_x->step_active_state(config->stepper_x<bool>("step-active-state"));
+  stepper_x->dir_active_state(config->stepper_x<bool>("dir-active-state"));
+  stepper_x->enable_active_state(
+      config->stepper_x<bool>("enable-active-state"));
 
   auto&& stepper_y = stepper_registry->get(id::stepper::y());
   stepper_y->microsteps(config->stepper_y<const stepper::step>("microsteps"));
   stepper_y->rpm(config->stepper_y<double>("rpm"));
+  stepper_y->step_active_state(config->stepper_y<bool>("step-active-state"));
+  stepper_y->dir_active_state(config->stepper_y<bool>("dir-active-state"));
+  stepper_y->enable_active_state(
+      config->stepper_y<bool>("enable-active-state"));
 
   auto&& stepper_z = stepper_registry->get(id::stepper::z());
   stepper_z->microsteps(config->stepper_z<const stepper::step>("microsteps"));
   stepper_z->rpm(config->stepper_z<double>("rpm"));
+  stepper_z->step_active_state(config->stepper_z<bool>("step-active-state"));
+  stepper_z->dir_active_state(config->stepper_z<bool>("dir-active-state"));
+  stepper_z->enable_active_state(
+      config->stepper_z<bool>("enable-active-state"));
 
   return status;
 }

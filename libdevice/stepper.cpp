@@ -61,6 +61,18 @@ void StepperDevice::disable() {
   enable_device()->write(digital::value::low);
 }
 
+void StepperDevice::step_active_state(const bool& active_state) {
+  step_device()->active_state(active_state);
+}
+
+void StepperDevice::enable_active_state(const bool& active_state) {
+  enable_device()->active_state(active_state);
+}
+
+void StepperDevice::dir_active_state(const bool& active_state) {
+  dir_device()->active_state(active_state);
+}
+
 namespace impl {
 /** For constant speed */
 template <>

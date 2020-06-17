@@ -210,6 +210,24 @@ class StepperDevice : public StackObj {
    * @return next move interval time
    */
   const time_unit& next_move_interval() const { return next_move_interval_; }
+  /**
+   * Set active state of step device
+   *
+   * @param active_state  true means HIGH as HIGH, false means LOW as HIGH
+   */
+  void step_active_state(const bool& active_state);
+  /**
+   * Set active state of enable device
+   *
+   * @param active_state  true means HIGH as HIGH, false means LOW as HIGH
+   */
+  void enable_active_state(const bool& active_state);
+  /**
+   * Set active state of direction
+   *
+   * @param active_state  true means HIGH as HIGH, false means LOW as HIGH
+   */
+  void dir_active_state(const bool& active_state);
 
  protected:
   /**
