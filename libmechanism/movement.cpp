@@ -281,11 +281,7 @@ time_unit Movement::next() {
     //     limit_switch_x()->read().value_or(device::digital::value::low) ==
     //     device::digital::value::high);
 
-    timer_x = thread_pool().enqueue([this] {
-      return stepper_x()->next(
-          limit_switch_x()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high);
-    });
+    timer_x = thread_pool().enqueue([this] { return stepper_x()->next(); });
   } else {
     event_timer_x_ -= next_move_interval();
   }
@@ -295,11 +291,7 @@ time_unit Movement::next() {
     // event_timer_y_ = stepper_y()->next(
     //     limit_switch_y()->read().value_or(device::digital::value::low) ==
     //     device::digital::value::low);
-    timer_y = thread_pool().enqueue([this] {
-      return stepper_y()->next(
-          limit_switch_y()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high);
-    });
+    timer_y = thread_pool().enqueue([this] { return stepper_y()->next(); });
   } else {
     event_timer_y_ -= next_move_interval();
   }
@@ -315,14 +307,13 @@ time_unit Movement::next() {
     // event_timer_z_ = stepper_z()->next(limit_switch_z_top_touched ||
     //                                    limit_switch_z_bottom_touched);
     timer_z = thread_pool().enqueue([this] {
-      const auto limit_switch_z_top_touched =
-          limit_switch_z_top()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high;
-      const auto limit_switch_z_bottom_touched =
-          limit_switch_z_bottom()->read().value_or(
-              device::digital::value::low) == device::digital::value::high;
-      return stepper_z()->next(limit_switch_z_top_touched ||
-                               limit_switch_z_bottom_touched);
+      // const auto limit_switch_z_top_touched =
+      //     limit_switch_z_top()->read().value_or(device::digital::value::low)
+      //     == device::digital::value::high;
+      // const auto limit_switch_z_bottom_touched =
+      //     limit_switch_z_bottom()->read().value_or(
+      //         device::digital::value::low) == device::digital::value::high;
+      return stepper_z()->next();
     });
   } else {
     event_timer_z_ -= next_move_interval();
