@@ -370,11 +370,11 @@ time_unit Movement::next() {
     event_timer_z_ = timer_z.get();
   }
 
-  update_position();
-  auto x = State::get()->x();
-  auto y = State::get()->y();
-  auto z = State::get()->z();
-  LOG_DEBUG("Position X {} Y {} Z {}", x, y, z);
+  // update_position();
+  // auto x = State::get()->x();
+  // auto y = State::get()->y();
+  // auto z = State::get()->z();
+  // LOG_DEBUG("Position X {} Y {} Z {}", x, y, z);
 
   last_move_end_ = micros();
   next_move_interval_ = 0;
