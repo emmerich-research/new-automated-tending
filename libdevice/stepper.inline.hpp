@@ -21,6 +21,7 @@ StepperDeviceImpl<Speed>::StepperDeviceImpl(PI_PIN        step_pin,
     : StepperDevice{step_pin, dir_pin, enable_pin, rpm, steps} {
   /* Movement mechanism variables initialization */
   remaining_steps_ = 0;
+  step_count_ = 0;
   steps_to_cruise_ = 0;
   steps_to_brake_ = 0;
   step_pulse_ = 0;

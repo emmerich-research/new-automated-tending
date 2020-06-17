@@ -261,6 +261,45 @@ void Movement::start_move(const long& x, const long& y, const long& z) {
   next_move_interval_ = 1;
 }
 
+void Movement::update_x() const {
+  auto steps = stepper_x()->step_count();
+  if ((steps > 0) && (steps % builder()->steps_per_mm_x()) == 0) {
+    if (stepper_x()->direction() == device::stepper::direction::forward) {
+      State::get()->inc_x();
+    } else {
+      State::get()->dec_x();
+    }
+  }
+}
+
+void Movement::update_y() const {
+  auto steps = stepper_y()->step_count();
+  if ((steps > 0) && (steps % builder()->steps_per_mm_y()) == 0) {
+    if (stepper_y()->direction() == device::stepper::direction::forward) {
+      State::get()->inc_y();
+    } else {
+      State::get()->dec_y();
+    }
+  }
+}
+
+void Movement::update_z() const {
+  auto steps = stepper_z()->step_count();
+  if ((steps > 0) && (steps % builder()->steps_per_mm_z()) == 0) {
+    if (stepper_z()->direction() == device::stepper::direction::forward) {
+      State::get()->inc_z();
+    } else {
+      State::get()->dec_z();
+    }
+  }
+}
+
+void Movement::update_position() const {
+  update_x();
+  update_y();
+  update_z();
+}
+
 time_unit Movement::next() {
   while ((micros() - last_move_end()) < next_move_interval()) {
     // not yet running
@@ -331,6 +370,12 @@ time_unit Movement::next() {
     event_timer_z_ = timer_z.get();
   }
 
+  update_position();
+  auto x = State::get()->x();
+  auto y = State::get()->y();
+  auto z = State::get()->z();
+  LOG_DEBUG("Position X {} Y {} Z {}", x, y, z);
+
   last_move_end_ = micros();
   next_move_interval_ = 0;
 
@@ -374,7 +419,7 @@ void Movement::homing() {
       stepper_z()->stop();
     } else {
       // stepper_z()->move(-80, z_completed);
-      start_move(0.0, 0.0, -1.0);
+      start_move(0, 0, -1);
       while (!ready()) {
         if (limit_switch_z_top()->read().value_or(
                 device::digital::value::low) == device::digital::value::high) {
@@ -458,9 +503,13 @@ void Movement::homing() {
     }
 
     auto* config = Config::get();
+    auto* state = State::get();
 
     stepper_x()->rpm(config->stepper_x<double>("rpm"));
     stepper_y()->rpm(config->stepper_y<double>("rpm"));
+
+    // set state to 0,0,0
+    state->coordinate({0.0, 0.0, 0.0});
 
     return is_x_completed && is_y_completed;
   });

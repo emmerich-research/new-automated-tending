@@ -150,7 +150,7 @@ void StepperDeviceImpl<stepper::speed::linear>::start_move(long      steps,
 template <>
 void StepperDeviceImpl<stepper::speed::linear>::calc_step_pulse() {
   // this should not be happening, but avoids strange calculations
-  if (remaining_steps() <= 0) {
+  if (remaining_steps() == 0) {
     return;
   }
 

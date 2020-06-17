@@ -48,7 +48,7 @@ enum class speed {
 enum class state { stopped, accelerating, cruising, decelerating };
 
 /** Stepper direction */
-enum class direction { forward, backward };
+enum class direction { forward = 1, backward = -1 };
 
 /**
  * @var using steps = unsigned long
@@ -134,8 +134,18 @@ class StepperDevice : public StackObj {
   virtual time_unit time_for_move(long steps) = 0;
   /**
    * Get remaining steps
+   *
+   * @return remaining steps
    */
-  const stepper::step& remaining_steps() const { return remaining_steps_; }
+  inline const stepper::step& remaining_steps() const {
+    return remaining_steps_;
+  }
+  /**
+   * Get step count
+   *
+   * @return step count
+   */
+  inline const stepper::step& step_count() const { return step_count_; }
   /**
    * Set stepper microsteps
    *
@@ -161,7 +171,7 @@ class StepperDevice : public StackObj {
    *
    * @return current rpm
    */
-  double rpm() const { return rpm_; }
+  inline double rpm() const { return rpm_; }
   /**
    * Set acceleration of stepper motor (steps / s^2)
    *
@@ -173,7 +183,7 @@ class StepperDevice : public StackObj {
    *
    * @return current acceleration
    */
-  double acceleration() const { return acceleration_; }
+  inline double acceleration() const { return acceleration_; }
   /**
    * Set deceleration of stepper motor (steps / s^2)
    *
@@ -185,7 +195,13 @@ class StepperDevice : public StackObj {
    *
    * @return current deceleration
    */
-  double deceleration() const { return deceleration_; }
+  inline double deceleration() const { return deceleration_; }
+  /**
+   * Get stepper direction
+   *
+   * @return current direction of stepper
+   */
+  inline const stepper::direction& direction() const { return direction_; }
   /**
    * Set motor steps
    *
@@ -197,19 +213,21 @@ class StepperDevice : public StackObj {
    *
    * @return current motor steps
    */
-  const stepper::step motor_steps() const { return motor_steps_; }
+  inline const stepper::step& motor_steps() const { return motor_steps_; }
   /**
    * Get timestamp of ending of last move
    *
    * @return time of last move end
    */
-  const time_unit& last_move_end() const { return last_move_end_; }
+  inline const time_unit& last_move_end() const { return last_move_end_; }
   /**
    * Get timestamp of ending of last action
    *
    * @return next move interval time
    */
-  const time_unit& next_move_interval() const { return next_move_interval_; }
+  inline const time_unit& next_move_interval() const {
+    return next_move_interval_;
+  }
   /**
    * Set active state of step device
    *
@@ -257,7 +275,7 @@ class StepperDevice : public StackObj {
    *
    * @return shared_ptr of DigitalOutputDevice
    */
-  const std::shared_ptr<DigitalOutputDevice>& step_device() const {
+  inline const std::shared_ptr<DigitalOutputDevice>& step_device() const {
     return step_device_;
   }
   /**
@@ -265,7 +283,7 @@ class StepperDevice : public StackObj {
    *
    * @return shared_ptr of DigitalOutputDevice
    */
-  const std::shared_ptr<DigitalOutputDevice>& dir_device() const {
+  inline const std::shared_ptr<DigitalOutputDevice>& dir_device() const {
     return dir_device_;
   }
   /**
@@ -273,7 +291,7 @@ class StepperDevice : public StackObj {
    *
    * @return shared_ptr of DigitalOutputDevice
    */
-  const std::shared_ptr<DigitalOutputDevice>& enable_device() const {
+  inline const std::shared_ptr<DigitalOutputDevice>& enable_device() const {
     return enable_device_;
   }
   /**
@@ -281,23 +299,19 @@ class StepperDevice : public StackObj {
    *
    * @return step GPIO pin
    */
-  const PI_PIN& step_pin() const { return step_pin_; }
+  inline const PI_PIN& step_pin() const { return step_pin_; }
   /**
    * Get Direction GPIO pin
    *
    * @return direction GPIO pin
    */
-  const PI_PIN& dir_pin() const { return dir_pin_; }
+  inline const PI_PIN& dir_pin() const { return dir_pin_; }
   /**
    * Get Enable GPIO pin
    *
    * @return enable GPIO pin
    */
-  const PI_PIN& enable_pin() const { return enable_pin_; }
-  /**
-   * Get stepper direction
-   */
-  const stepper::direction& direction() const { return direction_; }
+  inline const PI_PIN& enable_pin() const { return enable_pin_; }
 
  protected:
   /**
@@ -368,6 +382,10 @@ class StepperDevice : public StackObj {
    * Remaining steps
    */
   stepper::step remaining_steps_;
+  /**
+   * Step counter, will be resetted for each move sequence
+   */
+  stepper::step step_count_;
   /* End of movement mechanism variables */
 };
 
@@ -481,27 +499,27 @@ class StepperDeviceImpl : public StepperDevice {
   /**
    * Get step pulse
    */
-  const stepper::pulse& step_pulse() const { return step_pulse_; }
+  inline const stepper::pulse& step_pulse() const { return step_pulse_; }
   /**
    * Get rest steps
    */
-  const stepper::step& rest_steps() const { return rest_steps_; }
-  /**
-   * Get step count
-   */
-  const stepper::step& step_count() const { return step_count_; }
+  inline const stepper::step& rest_steps() const { return rest_steps_; }
   /**
    * Get steps to cruise
    */
-  const stepper::step& steps_to_cruise() const { return steps_to_cruise_; }
+  inline const stepper::step& steps_to_cruise() const {
+    return steps_to_cruise_;
+  }
   /**
    * Get steps to brake
    */
-  const stepper::step& steps_to_brake() const { return steps_to_brake_; }
+  inline const stepper::step& steps_to_brake() const { return steps_to_brake_; }
   /**
    * Get remaining steps
    */
-  const stepper::pulse& cruise_step_pulse() const { return cruise_step_pulse_; }
+  inline const stepper::pulse& cruise_step_pulse() const {
+    return cruise_step_pulse_;
+  }
 
   /* Movement mechanism */
   /**
@@ -531,10 +549,6 @@ class StepperDeviceImpl : public StepperDevice {
    * (Atmel DOC8017)
    */
   stepper::step rest_steps_;
-  /**
-   * Step counter, will be resetted for each move sequence
-   */
-  stepper::step step_count_;
   /**
    * Steps to cruise
    */

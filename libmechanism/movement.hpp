@@ -109,7 +109,7 @@ class MovementBuilderImpl : public StackObj {
    *
    * @return steps_per_mm
    */
-  const device::stepper::step& steps_per_mm_x() const {
+  inline const device::stepper::step& steps_per_mm_x() const {
     return steps_per_mm_x_;
   }
   /**
@@ -117,7 +117,7 @@ class MovementBuilderImpl : public StackObj {
    *
    * @return steps_per_mm
    */
-  const device::stepper::step& steps_per_mm_y() const {
+  inline const device::stepper::step& steps_per_mm_y() const {
     return steps_per_mm_y_;
   }
   /**
@@ -125,7 +125,7 @@ class MovementBuilderImpl : public StackObj {
    *
    * @return steps_per_mm
    */
-  const device::stepper::step& steps_per_mm_z() const {
+  inline const device::stepper::step& steps_per_mm_z() const {
     return steps_per_mm_z_;
   }
   /**
@@ -133,37 +133,41 @@ class MovementBuilderImpl : public StackObj {
    *
    * @return instance id of stepper x
    */
-  const std::string& stepper_x_id() const { return stepper_x_id_; }
+  inline const std::string& stepper_x_id() const { return stepper_x_id_; }
   /**
    * Get Stepper Y instance ID
    *
    * @return instance id of stepper y
    */
-  const std::string& stepper_y_id() const { return stepper_y_id_; }
+  inline const std::string& stepper_y_id() const { return stepper_y_id_; }
   /**
    * Get Stepper Z instance ID
    *
    * @return instance id of stepper z
    */
-  const std::string& stepper_z_id() const { return stepper_z_id_; }
+  inline const std::string& stepper_z_id() const { return stepper_z_id_; }
   /**
    * Get limit switch X instance ID
    *
    * @return instance id of stepper x
    */
-  const std::string& limit_switch_x_id() const { return limit_switch_x_id_; }
+  inline const std::string& limit_switch_x_id() const {
+    return limit_switch_x_id_;
+  }
   /**
    * Get limit switch Y instance ID
    *
    * @return instance id of limit_switch y
    */
-  const std::string& limit_switch_y_id() const { return limit_switch_y_id_; }
+  inline const std::string& limit_switch_y_id() const {
+    return limit_switch_y_id_;
+  }
   /**
    * Get limit switch Z (upper bound) instance ID
    *
    * @return instance id of limit switch z (upper bound)
    */
-  const std::string& limit_switch_z_top_id() const {
+  inline const std::string& limit_switch_z_top_id() const {
     return limit_switch_z_top_id_;
   }
   /**
@@ -171,7 +175,7 @@ class MovementBuilderImpl : public StackObj {
    *
    * @return instance id of limit switch z (lower bound)
    */
-  const std::string& limit_switch_z_bottom_id() const {
+  inline const std::string& limit_switch_z_bottom_id() const {
     return limit_switch_z_bottom_id_;
   }
   /**
@@ -179,7 +183,9 @@ class MovementBuilderImpl : public StackObj {
    *
    * @return instance of movement mechanism
    */
-  std::shared_ptr<Movement> movement() { return movement_mechanism_instance_; }
+  inline std::shared_ptr<Movement> movement() {
+    return movement_mechanism_instance_;
+  }
 
  private:
   /**
@@ -270,28 +276,7 @@ class Movement : public StackObj {
    * @param z  length of z-axis
    */
   template <movement::unit Unit>
-  void move(double x, double y, double z);
-  /**
-   * Move only stepper x
-   *
-   * @param length  length of x-axis
-   */
-  // template <movement::unit Unit>
-  // void move_x(double length);
-  /**
-   * Move only stepper y
-   *
-   * @param length  length of y-axis
-   */
-  // template <movement::unit Unit>
-  // void move_y(double length);
-  /**
-   * Move only stepper z
-   *
-   * @param length  length of z-axis
-   */
-  // template <movement::unit Unit>
-  // void move_z(double length);
+  void move(Point x, Point y, Point z);
   /**
    * Stop only stepper x
    *
@@ -319,7 +304,7 @@ class Movement : public StackObj {
    *
    * @return active (true/false)
    */
-  const bool active() const { return active_; };
+  inline const bool active() const { return active_; };
   /**
    * Homing all stepper
    */
@@ -354,25 +339,19 @@ class Movement : public StackObj {
    *
    * @return instance of algo::ThreadPool
    */
-  algo::ThreadPool& thread_pool() { return thread_pool_; }
+  inline algo::ThreadPool& thread_pool() { return thread_pool_; }
   /**
    * Get instance of impl::MovementBuilderImpl
    *
    * @return pointer of impl::MovementBuilderImpl
    */
-  const impl::MovementBuilderImpl* builder() const { return builder_; }
-  /**
-   * Get Steps per mm
-   *
-   * @return steps_per_mm
-   */
-  // const device::stepper::step& steps_per_mm() const { return steps_per_mm_; }
+  inline const impl::MovementBuilderImpl* builder() const { return builder_; }
   /**
    * Get Stepper X instance of StepperDevice that has been initialized
    *
    * @return shared_ptr of StepperDevice
    */
-  const std::shared_ptr<device::StepperDevice>& stepper_x() const {
+  inline const std::shared_ptr<device::StepperDevice>& stepper_x() const {
     return stepper_x_;
   }
   /**
@@ -380,7 +359,7 @@ class Movement : public StackObj {
    *
    * @return shared_ptr of StepperDevice
    */
-  const std::shared_ptr<device::StepperDevice>& stepper_y() const {
+  inline const std::shared_ptr<device::StepperDevice>& stepper_y() const {
     return stepper_y_;
   }
   /**
@@ -388,7 +367,7 @@ class Movement : public StackObj {
    *
    * @return shared_ptr of StepperDevice
    */
-  const std::shared_ptr<device::StepperDevice>& stepper_z() const {
+  inline const std::shared_ptr<device::StepperDevice>& stepper_z() const {
     return stepper_z_;
   }
   /**
@@ -396,7 +375,8 @@ class Movement : public StackObj {
    *
    * @return shared_ptr of DigitalInputDevice
    */
-  const std::shared_ptr<device::DigitalInputDevice>& limit_switch_x() const {
+  inline const std::shared_ptr<device::DigitalInputDevice>& limit_switch_x()
+      const {
     return limit_switch_x_;
   }
   /**
@@ -404,7 +384,8 @@ class Movement : public StackObj {
    *
    * @return shared_ptr of DigitalInputDevice
    */
-  const std::shared_ptr<device::DigitalInputDevice>& limit_switch_y() const {
+  inline const std::shared_ptr<device::DigitalInputDevice>& limit_switch_y()
+      const {
     return limit_switch_y_;
   }
   /**
@@ -413,7 +394,7 @@ class Movement : public StackObj {
    *
    * @return shared_ptr of DigitalInputDevice
    */
-  const std::shared_ptr<device::DigitalInputDevice>& limit_switch_z_top()
+  inline const std::shared_ptr<device::DigitalInputDevice>& limit_switch_z_top()
       const {
     return limit_switch_z_top_;
   }
@@ -423,8 +404,8 @@ class Movement : public StackObj {
    *
    * @return shared_ptr of DigitalInputDevice
    */
-  const std::shared_ptr<device::DigitalInputDevice>& limit_switch_z_bottom()
-      const {
+  inline const std::shared_ptr<device::DigitalInputDevice>&
+  limit_switch_z_bottom() const {
     return limit_switch_z_bottom_;
   }
   /**
@@ -460,37 +441,39 @@ class Movement : public StackObj {
    *
    * @return timer of x-axis stepper
    */
-  const time_unit& event_timer_x() const { return event_timer_x_; }
+  inline const time_unit& event_timer_x() const { return event_timer_x_; }
   /**
    * Get event timers of y-axis stepper
    *
    * @return timer of y-axis stepper
    */
-  const time_unit& event_timer_y() const { return event_timer_y_; }
+  inline const time_unit& event_timer_y() const { return event_timer_y_; }
   /**
    * Get event timers of z-axis stepper
    *
    * @return timer of z-axis stepper
    */
-  const time_unit& event_timer_z() const { return event_timer_z_; }
+  inline const time_unit& event_timer_z() const { return event_timer_z_; }
   /**
    * Get timestamp of ending of last move
    *
    * @return time of last move end
    */
-  const time_unit& last_move_end() const { return last_move_end_; }
+  inline const time_unit& last_move_end() const { return last_move_end_; }
   /**
    * Get timestamp of ending of last action
    *
    * @return next move interval time
    */
-  const time_unit& next_move_interval() const { return next_move_interval_; }
+  inline const time_unit& next_move_interval() const {
+    return next_move_interval_;
+  }
   /**
    * Get status of ready to start a new move or not
    *
    * @return ready or not
    */
-  const bool& ready() const { return ready_; }
+  inline const bool& ready() const { return ready_; }
   /**
    * Enable all motors
    */
@@ -499,6 +482,22 @@ class Movement : public StackObj {
    * Disable all motors
    */
   void disable_motors() const;
+  /**
+   * Update position of x
+   */
+  void update_x() const;
+  /**
+   * Update position of y
+   */
+  void update_y() const;
+  /**
+   * Update position of z
+   */
+  void update_z() const;
+  /**
+   * Update position
+   */
+  void update_position() const;
 
  private:
   /**
