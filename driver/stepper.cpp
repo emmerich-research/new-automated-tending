@@ -106,9 +106,9 @@ const bool menu() {
     auto&& stepper_z = stepper_registry->get(device::id::stepper::z());
     stepper_z->enable();
     for (size_t i = 0; i < 2; ++i) {
-      stepper_z->move(3000);
+      stepper_z->move(1600);
       sleep_for<time_units::millis>(200);
-      stepper_z->move(-3000);
+      stepper_z->move(-1600);
     }
     stepper_z->disable();
   } else if (choice == 6) {
