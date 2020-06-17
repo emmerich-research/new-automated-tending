@@ -120,8 +120,8 @@ bool DigitalDevice<Mode>::read_bool() const {
 
 template <digital::mode Mode>
 template <digital::mode Mode_, typename>
-const PI_RES DigitalDevice<Mode>::process_value(const digital::value& value,
-                                                const bool active_state) {
+PI_RES DigitalDevice<Mode>::process_value(const digital::value& value,
+                                          const bool            active_state) {
   if (active_state) {
     if (value == digital::value::high) {
       return PI_HIGH;
@@ -139,9 +139,8 @@ const PI_RES DigitalDevice<Mode>::process_value(const digital::value& value,
 
 template <digital::mode Mode>
 template <digital::mode Mode_, typename>
-const digital::value DigitalDevice<Mode>::process_value(
-    const PI_RES& value,
-    const bool    active_state) {
+digital::value DigitalDevice<Mode>::process_value(const PI_RES& value,
+                                                  const bool    active_state) {
   if (active_state) {
     if (value == PI_HIGH) {
       return digital::value::high;
@@ -173,7 +172,7 @@ ATM_STATUS DigitalDevice<Mode>::pull_up() {
         get_mode(Mode), pin());
   }
 
-  return res;
+  return res;       
 }
 
 template <digital::mode Mode>

@@ -46,7 +46,7 @@ class StateImpl : public StackObj {
    *
    * @return latest path id
    */
-  const unsigned int path_id() const;
+  unsigned int path_id() const;
   /**
    * Set the latest path id
    *

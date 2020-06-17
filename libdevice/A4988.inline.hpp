@@ -46,7 +46,7 @@ void A4988Device<Speed>::microsteps(const stepper::step& microsteps) {
   const stepper::step* table = ms_table();
   size_t               table_size = ms_table_size();
 
-  unsigned short i = 0;
+  size_t i = 0;
   while (i < table_size) {
     if (impl::StepperDeviceImpl<Speed>::microsteps() & (1 << i)) {
       const stepper::step mask = table[i];

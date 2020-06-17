@@ -17,7 +17,7 @@ static void init();
 static void shutdown_hook();
 // static void sigint_hook(int signal);  // for SIGINT
 static int throw_message();
-const bool menu(const std::shared_ptr<mechanism::Movement>& movement);
+bool       menu(const std::shared_ptr<mechanism::Movement>& movement);
 
 static void init() {
   // struct sigaction sigint_handler;
@@ -52,7 +52,7 @@ static int throw_message() {
   return ATM_ERR;
 }
 
-const bool menu() {
+bool menu() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 

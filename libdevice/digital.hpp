@@ -197,13 +197,13 @@ class DigitalDevice : public StackObj {
 
   template <digital::mode Mode_ = Mode,
             typename = std::enable_if_t<Mode_ == digital::mode::output>>
-  static const int process_value(const digital::value& value,
-                                 const bool            active_state);
+  static PI_RES process_value(const digital::value& value,
+                              const bool            active_state);
 
   template <digital::mode Mode_ = Mode,
             typename = std::enable_if_t<Mode_ == digital::mode::input>>
-  static const digital::value process_value(const int& value,
-                                            const bool active_state);
+  static digital::value process_value(const int& value,
+                                      const bool active_state);
 
  protected:
   /**

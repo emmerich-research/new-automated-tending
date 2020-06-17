@@ -11,7 +11,7 @@ StateImpl::StateImpl() {
   path_id_ = 0;
 }
 
-const unsigned int StateImpl::path_id() const {
+unsigned int StateImpl::path_id() const {
   return path_id_;
 }
 
