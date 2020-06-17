@@ -10,8 +10,8 @@
 using time_unit = uint64_t;
 
 enum class time_units {
-  micros,
   millis,
+  micros,
   nanos,
 };
 

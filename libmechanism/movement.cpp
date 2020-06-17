@@ -401,12 +401,9 @@ time_unit Movement::next() {
   return next_move_interval();
 }
 
-void Movement::homing() {
-  LOG_INFO("Homing is started...");
-  // enabling motor
-  enable_motors();
+void Movement::move_finger_up() {
+  LOG_INFO("Lifting finger...");
 
-  // homing z
   bool z_completed =
       limit_switch_z_top()->read().value_or(device::digital::value::low) ==
       device::digital::value::high;
@@ -414,11 +411,9 @@ void Movement::homing() {
     z_completed =
         limit_switch_z_top()->read().value_or(device::digital::value::low) ==
         device::digital::value::high;
-    LOG_DEBUG("Still homing Z-Axis...");
     if (z_completed) {
       stepper_z()->stop();
     } else {
-      // stepper_z()->move(-80, z_completed);
       start_move(0, 0, -1);
       while (!ready()) {
         if (limit_switch_z_top()->read().value_or(
@@ -432,6 +427,128 @@ void Movement::homing() {
       }
     }
   }
+
+  State::get()->z(0.0);
+}
+
+void Movement::move_to_spraying_position() {
+  LOG_INFO("Move to spraying position...");
+  const auto& iter = Config::get()->tending_position();
+  move<movement::unit::mm>(iter.first, iter.second, 0.0);
+}
+
+void Movement::move_to_tending_position() {
+  LOG_INFO("Move to tending position...");
+  const auto& iter = Config::get()->tending_position();
+  move<movement::unit::mm>(iter.first, iter.second, 0.0);
+}
+
+void Movement::spraying_motor_params() const {
+  auto* config = Config::get();
+
+  LOG_INFO("Configuring motors' parameters to spraying...");
+  stepper_x()->rpm(config->spraying_stepper_x<double>("rpm"));
+  stepper_x()->acceleration(config->spraying_stepper_x<double>("acceleration"));
+  stepper_x()->deceleration(config->spraying_stepper_x<double>("acceleration"));
+
+  stepper_y()->rpm(config->spraying_stepper_y<double>("rpm"));
+  stepper_y()->acceleration(config->spraying_stepper_y<double>("acceleration"));
+  stepper_y()->deceleration(config->spraying_stepper_y<double>("acceleration"));
+}
+
+void Movement::follow_spraying_paths() {
+  spraying_motor_params();
+
+  LOG_INFO("Following spraying paths...");
+  for (const auto& iter : Config::get()->spraying_path()) {
+    LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+    move<movement::unit::mm>(iter.first, iter.second, 0.0);
+  }
+
+  revert_motor_params();
+}
+
+void Movement::tending_motor_params() const {
+  auto* config = Config::get();
+
+  LOG_INFO("Configuring motors' parameters to tending...");
+  stepper_x()->rpm(config->tending_stepper_x<double>("rpm"));
+  stepper_x()->acceleration(config->tending_stepper_x<double>("acceleration"));
+  stepper_x()->deceleration(config->tending_stepper_x<double>("acceleration"));
+
+  stepper_y()->rpm(config->tending_stepper_y<double>("rpm"));
+  stepper_y()->acceleration(config->tending_stepper_y<double>("acceleration"));
+  stepper_y()->deceleration(config->tending_stepper_y<double>("acceleration"));
+}
+
+void Movement::follow_tending_paths() {
+  LOG_INFO("Following tending paths...");
+
+  tending_motor_params();
+
+  for (const auto& iter : Config::get()->tending_path()) {
+    LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+    move<movement::unit::mm>(iter.first, iter.second, 0.0);
+  }
+
+  revert_motor_params();
+}
+
+void Movement::revert_motor_params() const {
+  auto* config = Config::get();
+
+  LOG_INFO("Reverting to default motors' parameters...");
+  stepper_x()->rpm(config->stepper_x<double>("rpm"));
+  stepper_x()->acceleration(config->stepper_x<double>("acceleration"));
+  stepper_x()->deceleration(config->stepper_x<double>("acceleration"));
+
+  stepper_y()->rpm(config->stepper_y<double>("rpm"));
+  stepper_y()->acceleration(config->stepper_y<double>("acceleration"));
+  stepper_y()->deceleration(config->stepper_y<double>("acceleration"));
+
+  stepper_z()->rpm(config->stepper_z<double>("rpm"));
+  stepper_z()->acceleration(config->stepper_z<double>("acceleration"));
+  stepper_z()->deceleration(config->stepper_z<double>("acceleration"));
+}
+
+void Movement::move_finger_down() {
+  LOG_INFO("Lowering finger...");
+
+  bool z_completed =
+      limit_switch_z_bottom()->read().value_or(device::digital::value::low) ==
+      device::digital::value::high;
+
+  while (!z_completed) {
+    z_completed =
+        limit_switch_z_bottom()->read().value_or(device::digital::value::low) ==
+        device::digital::value::high;
+    if (z_completed) {
+      stepper_z()->stop();
+    } else {
+      start_move(0, 0, 4);
+      while (!ready()) {
+        if (limit_switch_z_bottom()->read().value_or(
+                device::digital::value::low) == device::digital::value::high) {
+          stepper_z()->stop();
+          z_completed = true;
+          ready_ = true;
+        } else {
+          next();
+        }
+      }
+    }
+  }
+
+  State::get()->z(52);
+}
+
+void Movement::homing() {
+  LOG_INFO("Homing is started...");
+  // enabling motor
+  enable_motors();
+
+  // homing z
+  move_finger_up();
 
   // homing x and y
   auto result = thread_pool().enqueue([this] {
@@ -489,12 +606,6 @@ void Movement::homing() {
           next();
         }
       }
-      // is_x_completed =
-      //     limit_switch_x()->read().value_or(device::digital::value::low) ==
-      //     device::digital::value::high;
-      // is_y_completed =
-      //     limit_switch_y()->read().value_or(device::digital::value::low) ==
-      //     device::digital::value::high;
     }
 
     start_move(5, 5, 5);

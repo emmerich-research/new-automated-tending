@@ -73,6 +73,7 @@ struct TendingDef : public StackObj,
         tr<ongoing, event::spraying::finish, idle, none, none>>;
 
     bool spraying_ready_last_value_;
+    bool is_homing_expired_;
   };
 
   /**

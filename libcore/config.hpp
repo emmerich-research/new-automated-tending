@@ -216,21 +216,113 @@ class ConfigImpl : public StackObj {
     return find<T>("devices", "analog", std::forward<Keys>(keys)...);
   }
   /**
-   * Get movement mechanism path
+   * Get spraying position
    *
-   * It should be in key "mechanisms.movement.path"
+   * It should be in key "mechanisms.spraying.position"
    *
-   * @return movement mechanism path
+   * @return spraying position
    */
-  const path_container& path();
+  const coordinate& spraying_position();
   /**
-   * Get movement mechanism path coordinate at specified index
+   * Get spraying movement path
+   *
+   * It should be in key "mechanisms.spraying.path"
+   *
+   * @return spraying movement path
+   */
+  const path_container& spraying_path();
+  /**
+   * Get stepper x-axis info for spraying mechanism
+   *
+   * It should be in key "devices.communication.spraying.stepper.x"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return stepper x-axis info for spraying mechanism
+   */
+  template <typename T, typename... Keys>
+  inline T spraying_stepper_x(Keys&&... keys) const {
+    return find<T>("mechanisms", "spraying", "stepper", "x",
+                   std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get stepper y-axis info for spraying mechanism
+   *
+   * It should be in key "devices.communication.spraying.stepper.y"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return stepper y-axis info for spraying mechanism
+   */
+  template <typename T, typename... Keys>
+  inline T spraying_stepper_y(Keys&&... keys) const {
+    return find<T>("mechanisms", "spraying", "stepper", "y",
+                   std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get spraying movement path coordinate at specified index
    *
    * @param idx index to get
    *
-   * @return movement mechanism path at specified index
+   * @return spraying movement path at specified index
    */
-  const coordinate& path(size_t idx);
+  const coordinate& spraying_path(size_t idx);
+  /**
+   * Get tending position
+   *
+   * It should be in key "mechanisms.tending.position"
+   *
+   * @return tending position
+   */
+  const coordinate& tending_position();
+  /**
+   * Get tending movement path
+   *
+   * It should be in key "mechanisms.tending.path"
+   *
+   * @return tending movement path
+   */
+  const path_container& tending_path();
+  /**
+   * Get tending movement path coordinate at specified index
+   *
+   * @param idx index to get
+   *
+   * @return tending movement path at specified index
+   */
+  const coordinate& tending_path(size_t idx);
+  /**
+   * Get stepper x-axis info for tending mechanism
+   *
+   * It should be in key "devices.communication.tending.stepper.x"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return stepper x-axis info for tending mechanism
+   */
+  template <typename T, typename... Keys>
+  inline T tending_stepper_x(Keys&&... keys) const {
+    return find<T>("mechanisms", "tending", "stepper", "x",
+                   std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get stepper y-axis info for tending mechanism
+   *
+   * It should be in key "devices.communication.tending.stepper.y"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return stepper y-axis info for tending mechanism
+   */
+  template <typename T, typename... Keys>
+  inline T tending_stepper_y(Keys&&... keys) const {
+    return find<T>("mechanisms", "tending", "stepper", "y",
+                   std::forward<Keys>(keys)...);
+  }
   /**
    * Get communication device from PLC to RaspberryPI
    *
@@ -299,9 +391,21 @@ class ConfigImpl : public StackObj {
 
  private:
   /**
-   * Movement mechanism path
+   * Spraying movement path
    */
-  path_container movement_path_;
+  path_container spraying_path_;
+  /**
+   * Spraying position
+   */
+  coordinate spraying_position_;
+  /**
+   * Tending movement path
+   */
+  path_container tending_path_;
+  /**
+   * Tending position
+   */
+  coordinate tending_position_;
   /**
    * TOML config data
    */

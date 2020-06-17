@@ -62,29 +62,30 @@ bool menu() {
   auto&& movement = mechanism::movement_mechanism();
 
   LOG_INFO("----MENU-----");
-  LOG_INFO("1. According to path");
-  LOG_INFO("2. Homing");
-  LOG_INFO("3. Just X");
-  LOG_INFO("4. Just Y");
-  LOG_INFO("5. Just Z");
-  LOG_INFO("6. X and Y");
+  LOG_INFO("1. Spraying path");
+  LOG_INFO("2. Tending path");
+  LOG_INFO("3. Homing");
+  LOG_INFO("4. Just X");
+  LOG_INFO("5. Just Y");
+  LOG_INFO("6. Just Z");
+  LOG_INFO("7. X and Y");
   LOG_INFO("0. Exit");
 
   unsigned int choice;
   std::cin >> choice;
 
   if (choice == 1) {
-    // try to move according to path
-    for (const auto& iter : Config::get()->path()) {
-      LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
-      movement->move<mechanism::movement::unit::mm>(iter.first, iter.second,
-                                                    0.0);
-    }
+    movement->move_to_spraying_position();
+    movement->follow_spraying_paths();
     return false;
   } else if (choice == 2) {
-    movement->homing();
+    movement->move_to_tending_position();
+    movement->follow_tending_paths();
     return false;
   } else if (choice == 3) {
+    movement->homing();
+    return false;
+  } else if (choice == 4) {
     auto&& stepper_x = stepper_registry->get(device::id::stepper::x());
     stepper_x->enable();
     for (size_t i = 0; i < 2; ++i) {
@@ -93,7 +94,7 @@ bool menu() {
       stepper_x->move(-10000);
     }
     stepper_x->disable();
-  } else if (choice == 4) {
+  } else if (choice == 5) {
     auto&& stepper_y = stepper_registry->get(device::id::stepper::y());
     stepper_y->enable();
     for (size_t i = 0; i < 2; ++i) {
@@ -102,7 +103,7 @@ bool menu() {
       stepper_y->move(-10000);
     }
     stepper_y->disable();
-  } else if (choice == 5) {
+  } else if (choice == 6) {
     auto&& stepper_z = stepper_registry->get(device::id::stepper::z());
     stepper_z->enable();
     for (size_t i = 0; i < 2; ++i) {
@@ -111,7 +112,7 @@ bool menu() {
       stepper_z->move(-500);
     }
     stepper_z->disable();
-  } else if (choice == 6) {
+  } else if (choice == 7) {
     movement->move<mechanism::movement::unit::mm>(50.0, 50.0, 0.0);
   } else if (choice == 0) {
     return true;

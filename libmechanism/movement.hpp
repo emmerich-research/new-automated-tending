@@ -309,6 +309,30 @@ class Movement : public StackObj {
    * Homing all stepper
    */
   void homing();
+  /**
+   * Move finger down
+   */
+  void move_finger_down();
+  /**
+   * Move finger up
+   */
+  void move_finger_up();
+  /**
+   * Move to position zero spraying
+   */
+  void move_to_spraying_position();
+  /**
+   * Move to position zero tending
+   */
+  void move_to_tending_position();
+  /**
+   * Move according to spraying paths
+   */
+  void follow_spraying_paths();
+  /**
+   * Move according to tending paths
+   */
+  void follow_tending_paths();
 
  private:
   /**
@@ -498,6 +522,18 @@ class Movement : public StackObj {
    * Update position
    */
   void update_position() const;
+  /**
+   * Change motor params to spraying params
+   */
+  void spraying_motor_params() const;
+  /**
+   * Change motor params to tending params
+   */
+  void tending_motor_params() const;
+  /**
+   * Reverting motor params
+   */
+  void revert_motor_params() const;
 
  private:
   /**

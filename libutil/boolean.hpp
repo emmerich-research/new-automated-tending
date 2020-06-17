@@ -4,7 +4,7 @@
 /** @file boolean.hpp
  *  @brief Boolean helper definitions
  */
-namespace op {
+namespace util {
 template <typename... Args>
 static bool or_(const Args&&... values) {
   auto loop = [&](auto&& value) {
@@ -36,6 +36,6 @@ static bool and_(const Args&&... values) {
     return return_val;
   }
 }
-}  // namespace op
+}  // namespace util
 
 #endif  // LIB_UTIL_BOOLEAN_HPP_

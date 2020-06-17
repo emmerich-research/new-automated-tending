@@ -2,6 +2,8 @@
 #define APP_ACTION_INLINE_HPP_
 
 #include <libcore/core.hpp>
+#include <libdevice/device.hpp>
+#include <libutil/util.hpp>
 
 #include "action.hpp"
 
@@ -64,11 +66,15 @@ void do_homing::operator()(Event const&,
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
+  LOG_INFO("Homing to make sure task ready...");
+
   auto&&        movement = mechanism::movement_mechanism();
   guard::homing homing;
 
   while (!homing.check()) {
     movement->homing();
+    LOG_DEBUG("Still doing homing, retrying homing for 400ms...");
+    sleep_for<time_units::millis>(400);
   }
 }
 
@@ -80,6 +86,14 @@ void do_spraying::operator()(Event const&,
                              FSM&,
                              SourceState&,
                              TargetState&) const {
+  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
+  auto*  output_registry = device::DigitalOutputDeviceRegistry::get();
+  auto&& spraying_running =
+      output_registry->get(device::id::comm::pi::spraying_running());
+  spraying_running->write(device::digital::value::high);
   LOG_INFO("Spraying is running...");
 }
 

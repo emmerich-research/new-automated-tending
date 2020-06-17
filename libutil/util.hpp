@@ -22,6 +22,7 @@
 #include "boolean.hpp"
 #include "filesystem.hpp"
 #include "macros.hpp"
+#include "pair.hpp"
 #include "timer.hpp"
 
 #endif  // LIBUTIL_UTIL_HPP_
