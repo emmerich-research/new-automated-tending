@@ -152,6 +152,9 @@ bool menu() {
     tending_running->write(device::digital::value::high);
 
     movement->move_to_tending_position();
+    sleep_for<time_units::millis>(3000);
+    movement->move_finger_down();
+    sleep_for<time_units::millis>(3000);
     movement->follow_tending_paths();
     movement->homing();
 
