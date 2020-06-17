@@ -418,7 +418,8 @@ void Movement::homing() {
         is_x_completed = true;
         stepper_x()->stop();
       } else {
-        steps_x = -20;
+        steps_x = convert_length_to_steps<movement::unit::mm>(
+            -20.0, builder()->steps_per_mm_x());
       }
 
       if (limit_switch_y()->read().value_or(device::digital::value::low) ==
@@ -426,7 +427,8 @@ void Movement::homing() {
         is_y_completed = true;
         stepper_y()->stop();
       } else {
-        steps_y = -20;
+        steps_y = convert_length_to_steps<movement::unit::mm>(
+            -20.0, builder()->steps_per_mm_y());
       }
 
       start_move(steps_x, steps_y, 0.0);
