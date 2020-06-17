@@ -75,7 +75,6 @@ static ATM_STATUS initialize_plc_to_pi_comm() {
 
 static ATM_STATUS initialize_limit_switches() {
   // all limit switches are pulled up by default
-
   auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
 
@@ -135,7 +134,7 @@ static ATM_STATUS initialize_input_digital_devices() {
 }
 
 static ATM_STATUS initialize_pi_to_plc_comm() {
-  auto       config = Config::get();
+  auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
 
   auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
@@ -192,9 +191,19 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
 }
 
 static ATM_STATUS initialize_output_digital_devices() {
+  auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
 
   status = DigitalOutputDeviceRegistry::create();
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
+
+  status =
+      digital_output_registry->create(id::spray(), config->spray<PI_PIN>("pin"),
+                                      config->spray<bool>("active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -208,7 +217,7 @@ static ATM_STATUS initialize_output_digital_devices() {
 }
 
 static ATM_STATUS initialize_pwm_devices() {
-  auto       config = Config::get();
+  auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
 
   status = PWMDeviceRegistry::create();
@@ -218,23 +227,24 @@ static ATM_STATUS initialize_pwm_devices() {
 
   auto* pwm_registry = PWMDeviceRegistry::get();
 
-  status = pwm_registry->create(id::spray(), config->spray<PI_PIN>("pin"),
-                                config->spray<bool>("active-state"));
+  status = pwm_registry->create(id::finger(), config->finger<PI_PIN>("pin"),
+                                config->finger<bool>("active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
-  auto&& spray = pwm_registry->get(id::spray());
+  // auto&& spray = pwm_registry->get(id::spray());
 
-  if (spray->duty_cycle(config->spray<unsigned int>("duty-cycle")) == ATM_ERR) {
-    LOG_INFO("Cannot set spray duty cycle...");
-  }
+  // if (spray->duty_cycle(config->spray<unsigned int>("duty-cycle")) ==
+  // ATM_ERR) {
+  //   LOG_INFO("Cannot set spray duty cycle...");
+  // }
 
   return status;
 }
 
 static ATM_STATUS initialize_stepper_devices() {
-  auto       config = Config::get();
+  auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
 
   status = StepperRegistry::create();

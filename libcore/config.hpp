@@ -188,6 +188,20 @@ class ConfigImpl : public StackObj {
     return find<T>("devices", "spray", std::forward<Keys>(keys)...);
   }
   /**
+   * Get finger device info
+   *
+   * It should be in key "devices.finger"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return finger device info with type T
+   */
+  template <typename T, typename... Keys>
+  inline T finger(Keys&&... keys) const {
+    return find<T>("devices", "finger", std::forward<Keys>(keys)...);
+  }
+  /**
    * Get analog device info
    *
    * It should be in key "devices.analog"

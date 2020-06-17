@@ -90,6 +90,14 @@ static auto        spray = []() {
   return spray_;
 };
 
+static std::string finger_;
+static auto        finger = []() {
+  if (finger_.empty()) {
+    finger_ = Config::get()->finger<std::string>("key");
+  }
+  return finger_;
+};
+
 namespace comm {
 namespace plc {
 static std::string tending_height_;

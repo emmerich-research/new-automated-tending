@@ -70,6 +70,11 @@ deceleration                 = 10 # steps / s^2
 [devices.spray]
 key                          = "SPRAY"
 pin                          = 21
+active-state                 = true
+
+[devices.finger]
+key                          = "FINGER"
+pin                          = 12
 duty-cycle                   = 127
 active-state                 = true
 
