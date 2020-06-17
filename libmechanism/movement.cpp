@@ -462,7 +462,7 @@ void Movement::follow_tending_paths() {
 
   for (const auto& iter : Config::get()->tending_path()) {
     LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
-    move<movement::unit::mm>(iter.first, iter.second, Config::get()->z());
+    move<movement::unit::mm>(iter.first, iter.second, State::get()->z());
   }
 
   revert_motor_params();
