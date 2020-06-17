@@ -12,8 +12,8 @@ bool homing::check() const {
   auto&& limit_switch_x = input_registry->get(device::id::limit_switch::x());
   auto&& limit_switch_y = input_registry->get(device::id::limit_switch::y());
   auto&& limit_switch_z2 = input_registry->get(device::id::limit_switch::z2());
-  return and_(limit_switch_x->read_bool(), limit_switch_y->read_bool(),
-              limit_switch_z2->read_bool());
+  return op::and_(limit_switch_x->read_bool(), limit_switch_y->read_bool(),
+                  limit_switch_z2->read_bool());
 }
 
 namespace spraying {
