@@ -75,12 +75,16 @@ bool menu() {
   std::cin >> choice;
 
   if (choice == 1) {
+    movement->homing();
     movement->move_to_spraying_position();
     movement->follow_spraying_paths();
+    movement->homing();
     return false;
   } else if (choice == 2) {
+    movement->homing();
     movement->move_to_tending_position();
     movement->follow_tending_paths();
+    movement->homing();
     return false;
   } else if (choice == 3) {
     movement->homing();
