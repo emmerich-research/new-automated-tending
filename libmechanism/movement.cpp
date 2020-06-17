@@ -563,9 +563,6 @@ void Movement::homing() {
         limit_switch_y()->read().value_or(device::digital::value::low) ==
         device::digital::value::high;
 
-    stepper_x()->rpm(120.0);
-    stepper_x()->rpm(120.0);
-
     while (!is_x_completed || !is_y_completed) {
       long steps_x = 0;
       long steps_y = 0;
@@ -617,11 +614,7 @@ void Movement::homing() {
       next();
     }
 
-    auto* config = Config::get();
     auto* state = State::get();
-
-    stepper_x()->rpm(config->stepper_x<double>("rpm"));
-    stepper_y()->rpm(config->stepper_y<double>("rpm"));
 
     // set state to 0,0,0
     state->coordinate({0.0, 0.0, 0.0});
