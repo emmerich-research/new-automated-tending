@@ -64,6 +64,32 @@ bool menu() {
 
   auto&& movement = mechanism::movement_mechanism();
 
+  auto&& spraying_ready =
+      output_registry->get(device::id::comm::pi::spraying_ready());
+  auto&& spraying_running =
+      output_registry->get(device::id::comm::pi::spraying_running());
+  auto&& spraying_complete =
+      output_registry->get(device::id::comm::pi::spraying_complete());
+
+  auto&& tending_ready =
+      output_registry->get(device::id::comm::pi::tending_ready());
+  auto&& tending_running =
+      output_registry->get(device::id::comm::pi::tending_running());
+  auto&& tending_complete =
+      output_registry->get(device::id::comm::pi::tending_complete());
+
+  auto&& spray = output_registry->get(device::id::spray());
+
+  spraying_ready->write(device::digital::value::low);
+  spraying_running->write(device::digital::value::low);
+  spraying_complete->write(device::digital::value::low);
+
+  tending_ready->write(device::digital::value::low);
+  tending_running->write(device::digital::value::low);
+  tending_complete->write(device::digital::value::low);
+
+  spray->write(device::digital::value::low);
+
   LOG_INFO("----MENU-----");
   LOG_INFO("1. Spraying path");
   LOG_INFO("2. Tending path");
@@ -78,13 +104,6 @@ bool menu() {
   std::cin >> choice;
 
   if (choice == 1) {
-    auto&& spraying_ready =
-        output_registry->get(device::id::comm::pi::spraying_ready());
-    auto&& spraying_running =
-        output_registry->get(device::id::comm::pi::spraying_running());
-    auto&& spraying_complete =
-        output_registry->get(device::id::comm::pi::spraying_complete());
-
     spraying_ready->write(device::digital::value::low);
     spraying_running->write(device::digital::value::low);
     spraying_complete->write(device::digital::value::low);
@@ -100,7 +119,17 @@ bool menu() {
     spraying_running->write(device::digital::value::high);
 
     movement->move_to_spraying_position();
+
+    sleep_for<time_units::millis>(3000);
+
+    spray->write(device::digital::value::high);
+
+    sleep_for<time_units::millis>(3000);
+
     movement->follow_spraying_paths();
+
+    spray->write(device::digital::value::low);
+
     movement->homing();
 
     spraying_ready->write(device::digital::value::high);
@@ -108,13 +137,6 @@ bool menu() {
     spraying_complete->write(device::digital::value::high);
     return false;
   } else if (choice == 2) {
-    auto&& tending_ready =
-        output_registry->get(device::id::comm::pi::tending_ready());
-    auto&& tending_running =
-        output_registry->get(device::id::comm::pi::tending_running());
-    auto&& tending_complete =
-        output_registry->get(device::id::comm::pi::tending_complete());
-
     tending_ready->write(device::digital::value::low);
     tending_running->write(device::digital::value::low);
     tending_complete->write(device::digital::value::low);
