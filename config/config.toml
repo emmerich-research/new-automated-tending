@@ -70,7 +70,7 @@ deceleration                 = 10 # steps / s^2
 [devices.spray]
 key                          = "SPRAY"
 pin                          = 21
-active-state                 = true
+active-state                 = false
 
 [devices.finger]
 key                          = "FINGER"
@@ -147,32 +147,32 @@ active-state                 = true
 [devices.communication.output.tending-ready]
 key                          = "OUTPUT-PI-TENDING-READY"
 pin                          = 22
-active-state                 = true
+active-state                 = false
 
 [devices.communication.output.spraying-ready]
 key                          = "OUTPUT-PI-SPRAYING-READY"
 pin                          = 4
-active-state                 = true
+active-state                 = false
 
 [devices.communication.output.tending-running]
 key                          = "OUTPUT-PI-TENDING-RUNNING"
 pin                          = 23
-active-state                 = true
+active-state                 = false
 
 [devices.communication.output.spraying-running]
 key                          = "OUTPUT-PI-SPRAYING-RUNNING"
 pin                          = 24
-active-state                 = true
+active-state                 = false
 
 [devices.communication.output.tending-complete]
 key                          = "OUTPUT-PI-TENDING-COMPLETE"
 pin                          = 25
-active-state                 = true
+active-state                 = false
 
 [devices.communication.output.spraying-complete]
 key                          = "OUTPUT-PI-SPRAYING-COMPLETE"
 pin                          = 20
-active-state                 = true
+active-state                 = false
 # ----------------------------------------------------------
 # End of Communication
 # ----------------------------------------------------------
