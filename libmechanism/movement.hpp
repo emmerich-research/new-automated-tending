@@ -304,7 +304,7 @@ class Movement : public StackObj {
    *
    * @return active (true/false)
    */
-  inline const bool active() const { return active_; };
+  inline bool active() const { return active_; };
   /**
    * Homing all stepper
    */
