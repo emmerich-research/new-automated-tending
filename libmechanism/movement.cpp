@@ -419,7 +419,7 @@ void Movement::homing() {
         stepper_x()->stop();
       } else {
         steps_x = convert_length_to_steps<movement::unit::mm>(
-            -20.0, builder()->steps_per_mm_x());
+            -1500.0, builder()->steps_per_mm_x());
       }
 
       if (limit_switch_y()->read().value_or(device::digital::value::low) ==
@@ -428,10 +428,10 @@ void Movement::homing() {
         stepper_y()->stop();
       } else {
         steps_y = convert_length_to_steps<movement::unit::mm>(
-            -20.0, builder()->steps_per_mm_y());
+            -1200.0, builder()->steps_per_mm_y());
       }
 
-      start_move(steps_x, steps_y, 0.0);
+      start_move(steps_x, steps_y, 0);
       while (!ready()) {
         bool x_complete =
             limit_switch_x()->read().value_or(device::digital::value::low) ==
@@ -453,13 +453,17 @@ void Movement::homing() {
           next();
         }
       }
-
       // is_x_completed =
       //     limit_switch_x()->read().value_or(device::digital::value::low) ==
       //     device::digital::value::high;
       // is_y_completed =
       //     limit_switch_y()->read().value_or(device::digital::value::low) ==
       //     device::digital::value::high;
+    }
+
+    start_move(5, 5, 5);
+    while (!ready()) {
+      next();
     }
 
     auto* config = Config::get();
