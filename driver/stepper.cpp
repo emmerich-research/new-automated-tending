@@ -150,7 +150,6 @@ bool menu() {
     sleep_for<time_units::millis>(3000);
 
     tending_running->write(device::digital::value::high);
-    sleep_for<time_units::millis>(3000);
     movement->move_to_tending_position();
     sleep_for<time_units::millis>(3000);
     movement->move_finger_down();
