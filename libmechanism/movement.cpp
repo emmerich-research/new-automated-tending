@@ -5,6 +5,8 @@
 #include <cmath>
 #include <thread>
 
+#include <libutil/util.hpp>
+
 NAMESPACE_BEGIN
 
 namespace mechanism {
@@ -368,7 +370,7 @@ void Movement::homing() {
   // enabling motor
   enable_motors();
 
-  // homing z first
+  // homing z
   bool z_completed =
       limit_switch_z_top()->read().value_or(device::digital::value::low) ==
       device::digital::value::high;
@@ -380,8 +382,8 @@ void Movement::homing() {
     stepper_z()->move(-400, z_completed);
   }
 
-  // homing  x and y
-  thread_pool().enqueue([this] {
+  // homing x and y
+  auto result = thread_pool().enqueue([this] {
     bool is_x_completed =
         limit_switch_x()->read().value_or(device::digital::value::low) ==
         device::digital::value::high;
@@ -412,7 +414,11 @@ void Movement::homing() {
           limit_switch_y()->read().value_or(device::digital::value::low) ==
           device::digital::value::high;
     }
+
+    return is_x_completed && is_y_completed;
   });
+
+  [[maybe_unused]] bool finished = result.get();
 
   // disabling motor
   disable_motors();

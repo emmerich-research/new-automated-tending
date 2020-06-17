@@ -60,7 +60,7 @@ enable-pin                   = 9
 enable-active-state          = true
 steps-per-mm                 = 4
 microsteps                   = 1
-rpm                          = 20.0
+rpm                          = 10.0
 acceleration                 = 10 # steps / s^2
 deceleration                 = 10 # steps / s^2
 # ----------------------------------------------------------
@@ -83,25 +83,25 @@ type                         = "input"
 [devices.limit-switch.x]
 key                          = "LIMIT-X"
 pin                          = 7
-active-state                 = true
+active-state                 = false
 
 # limit switch y-axis
 [devices.limit-switch.y]
 key                          = "LIMIT-Y"
 pin                          = 8
-active-state                 = true
+active-state                 = false
 
 # limit switch z-axis upper bound
 [devices.limit-switch.z1]
 key                          = "LIMIT-Z1"
-pin                          = 16
-active-state                 = true
+pin                          = 15
+active-state                 = false
 
 # limit switch z-axis lower bound
 [devices.limit-switch.z2]
 key                          = "LIMIT-Z2"
-pin                          = 15
-active-state                 = true
+pin                          = 16
+active-state                 = false
 # ----------------------------------------------------------
 # End of Limit Switch
 # ----------------------------------------------------------

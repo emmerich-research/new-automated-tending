@@ -22,6 +22,7 @@ target_include_directories(mechanism PUBLIC
 target_link_libraries(mechanism PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
   ${RASPI_LIB}
+  "${PROJECT_NAMESPACE}::util"
   "${PROJECT_NAMESPACE}::core"
   "${PROJECT_NAMESPACE}::algo"
   "${PROJECT_NAMESPACE}::device")
