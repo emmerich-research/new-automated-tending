@@ -401,36 +401,6 @@ time_unit Movement::next() {
   return next_move_interval();
 }
 
-void Movement::move_finger_up() {
-  LOG_INFO("Lifting finger...");
-
-  bool z_completed =
-      limit_switch_z_top()->read().value_or(device::digital::value::low) ==
-      device::digital::value::high;
-  while (!z_completed) {
-    z_completed =
-        limit_switch_z_top()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high;
-    if (z_completed) {
-      stepper_z()->stop();
-    } else {
-      start_move(0, 0, -1);
-      while (!ready()) {
-        if (limit_switch_z_top()->read().value_or(
-                device::digital::value::low) == device::digital::value::high) {
-          stepper_z()->stop();
-          z_completed = true;
-          ready_ = true;
-        } else {
-          next();
-        }
-      }
-    }
-  }
-
-  State::get()->z(0.0);
-}
-
 void Movement::move_to_spraying_position() {
   LOG_INFO("Move to spraying position...");
   const auto& iter = Config::get()->tending_position();
@@ -515,8 +485,47 @@ void Movement::revert_motor_params() const {
   stepper_z()->deceleration(config->stepper_z<double>("deceleration"));
 }
 
+void Movement::move_finger_up() {
+  LOG_INFO("Lifting finger...");
+
+  // enabling motor
+  enable_motors();
+
+  bool z_completed =
+      limit_switch_z_top()->read().value_or(device::digital::value::low) ==
+      device::digital::value::high;
+  while (!z_completed) {
+    z_completed =
+        limit_switch_z_top()->read().value_or(device::digital::value::low) ==
+        device::digital::value::high;
+    if (z_completed) {
+      stepper_z()->stop();
+    } else {
+      start_move(0, 0, -1);
+      while (!ready()) {
+        if (limit_switch_z_top()->read().value_or(
+                device::digital::value::low) == device::digital::value::high) {
+          stepper_z()->stop();
+          z_completed = true;
+          ready_ = true;
+        } else {
+          next();
+        }
+      }
+    }
+  }
+
+  // disabling motor
+  disable_motors();
+
+  State::get()->z(0.0);
+}
+
 void Movement::move_finger_down() {
   LOG_INFO("Lowering finger...");
+
+  // enabling motor
+  enable_motors();
 
   bool z_completed =
       limit_switch_z_bottom()->read().value_or(device::digital::value::low) ==
@@ -543,16 +552,20 @@ void Movement::move_finger_down() {
     }
   }
 
-  State::get()->z(52);
+  // disable motor
+  disable_motors();
+
+  State::get()->z(52.0);
 }
 
 void Movement::homing() {
   LOG_INFO("Homing is started...");
-  // enabling motor
-  enable_motors();
 
   // homing z
   move_finger_up();
+
+  // enabling motor
+  enable_motors();
 
   // homing x and y
   auto result = thread_pool().enqueue([this] {
