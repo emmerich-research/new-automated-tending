@@ -141,7 +141,7 @@ void Movement::setup_stepper() {
 
   stepper_x_ = stepper_x;
 
-  auto stepper_y = stepper_registry->get(builder()->stepper_x_id());
+  auto stepper_y = stepper_registry->get(builder()->stepper_y_id());
 
   if (!stepper_y) {
     active_ = false;
@@ -150,7 +150,7 @@ void Movement::setup_stepper() {
 
   stepper_y_ = stepper_y;
 
-  auto stepper_z = stepper_registry->get(builder()->stepper_x_id());
+  auto stepper_z = stepper_registry->get(builder()->stepper_z_id());
 
   if (!stepper_z) {
     active_ = false;
@@ -224,8 +224,8 @@ void Movement::stop(void) {
 
 void Movement::start_move(const long& x, const long& y, const long& z) {
   const time_unit time_x = stepper_x()->time_for_move(x);
-  const time_unit time_y = stepper_x()->time_for_move(y);
-  const time_unit time_z = stepper_x()->time_for_move(z);
+  const time_unit time_y = stepper_y()->time_for_move(y);
+  const time_unit time_z = stepper_z()->time_for_move(z);
 
   // find which motor would take the longest to finish,
   const time_unit move_time = std::max(time_x, std::max(time_y, time_z));
