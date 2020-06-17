@@ -59,6 +59,9 @@ bool menu() {
   auto* stepper_registry = device::StepperRegistry::get();
   massert(stepper_registry != nullptr, "sanity");
 
+  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
+  massert(output_registry != nullptr, "sanity");
+
   auto&& movement = mechanism::movement_mechanism();
 
   LOG_INFO("----MENU-----");
@@ -75,16 +78,64 @@ bool menu() {
   std::cin >> choice;
 
   if (choice == 1) {
+    auto&& spraying_ready =
+        output_registry->get(device::id::comm::pi::spraying_ready());
+    auto&& spraying_running =
+        output_registry->get(device::id::comm::pi::spraying_running());
+    auto&& spraying_complete =
+        output_registry->get(device::id::comm::pi::spraying_complete());
+
+    spraying_ready->write(device::digital::value::low);
+    spraying_running->write(device::digital::value::low);
+    spraying_complete->write(device::digital::value::low);
+
     movement->homing();
+
+    spraying_ready->write(device::digital::value::high);
+    spraying_running->write(device::digital::value::low);
+    spraying_complete->write(device::digital::value::low);
+
+    sleep_for<time_units::millis>(3000);
+
+    spraying_running->write(device::digital::value::high);
+
     movement->move_to_spraying_position();
     movement->follow_spraying_paths();
     movement->homing();
+
+    spraying_ready->write(device::digital::value::high);
+    spraying_running->write(device::digital::value::low);
+    spraying_complete->write(device::digital::value::high);
     return false;
   } else if (choice == 2) {
+    auto&& tending_ready =
+        output_registry->get(device::id::comm::pi::tending_ready());
+    auto&& tending_running =
+        output_registry->get(device::id::comm::pi::tending_running());
+    auto&& tending_complete =
+        output_registry->get(device::id::comm::pi::tending_complete());
+
+    tending_ready->write(device::digital::value::low);
+    tending_running->write(device::digital::value::low);
+    tending_complete->write(device::digital::value::low);
+
     movement->homing();
+
+    tending_ready->write(device::digital::value::high);
+    tending_running->write(device::digital::value::low);
+    tending_complete->write(device::digital::value::low);
+
+    sleep_for<time_units::millis>(3000);
+
+    tending_running->write(device::digital::value::high);
+
     movement->move_to_tending_position();
     movement->follow_tending_paths();
     movement->homing();
+
+    tending_ready->write(device::digital::value::high);
+    tending_running->write(device::digital::value::low);
+    tending_complete->write(device::digital::value::high);
     return false;
   } else if (choice == 3) {
     movement->homing();
