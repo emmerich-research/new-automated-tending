@@ -379,7 +379,22 @@ void Movement::homing() {
         limit_switch_z_top()->read().value_or(device::digital::value::low) ==
         device::digital::value::high;
     LOG_DEBUG("Still homing Z-Axis...");
-    stepper_z()->move(-400, z_completed);
+    if (z_completed) {
+      stepper_z()->stop();
+    } else {
+      // stepper_z()->move(-80, z_completed);
+      start_move(0.0, 0.0, -1.0);
+      while (!ready()) {
+        if (limit_switch_z_top()->read().value_or(
+                device::digital::value::low) == device::digital::value::high) {
+          stepper_z()->stop();
+          z_completed = true;
+          ready_ = true;
+        } else {
+          next();
+        }
+      }
+    }
   }
 
   // homing x and y
@@ -391,29 +406,64 @@ void Movement::homing() {
         limit_switch_y()->read().value_or(device::digital::value::low) ==
         device::digital::value::high;
 
+    stepper_x()->rpm(120.0);
+    stepper_x()->rpm(120.0);
+
     while (!is_x_completed || !is_y_completed) {
       long steps_x = 0;
       long steps_y = 0;
 
-      if (!is_x_completed) {
+      if (limit_switch_x()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high) {
+        is_x_completed = true;
+        stepper_x()->stop();
+      } else {
         steps_x = -20;
       }
-      if (!is_y_completed) {
+
+      if (limit_switch_y()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high) {
+        is_y_completed = true;
+        stepper_y()->stop();
+      } else {
         steps_y = -20;
       }
 
       start_move(steps_x, steps_y, 0.0);
       while (!ready()) {
-        next();
+        bool x_complete =
+            limit_switch_x()->read().value_or(device::digital::value::low) ==
+            device::digital::value::high;
+        bool y_complete =
+            limit_switch_y()->read().value_or(device::digital::value::low) ==
+            device::digital::value::high;
+        if (x_complete) {
+          is_x_completed = true;
+          stepper_x()->stop();
+        }
+        if (y_complete) {
+          is_y_completed = true;
+          stepper_y()->stop();
+        }
+        if (x_complete && y_complete) {
+          ready_ = true;
+        } else {
+          next();
+        }
       }
 
-      is_x_completed =
-          limit_switch_x()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high;
-      is_y_completed =
-          limit_switch_y()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high;
+      // is_x_completed =
+      //     limit_switch_x()->read().value_or(device::digital::value::low) ==
+      //     device::digital::value::high;
+      // is_y_completed =
+      //     limit_switch_y()->read().value_or(device::digital::value::low) ==
+      //     device::digital::value::high;
     }
+
+    auto* config = Config::get();
+
+    stepper_x()->rpm(config->stepper_x<double>("rpm"));
+    stepper_y()->rpm(config->stepper_y<double>("rpm"));
 
     return is_x_completed && is_y_completed;
   });
