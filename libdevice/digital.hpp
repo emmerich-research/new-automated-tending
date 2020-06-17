@@ -98,6 +98,14 @@ class DigitalDevice : public StackObj {
    */
   bool active() const { return active_; }
   /**
+   * Pull up at specified pin
+   */
+  ATM_STATUS pull_up();
+  /**
+   * Pull down at specified pin
+   */
+  ATM_STATUS pull_down();
+  /**
    * Write the HIGH/LOW data to GPIO via Pigpio lib
    *
    * Only ENABLE if device mode is OUTPUT
@@ -204,9 +212,13 @@ class DigitalDevice : public StackObj {
    * Initialize the digital device by opening GPIO
    *
    * @param  pin gpio pin, see Raspberry GPIO pinout for details
-   * @param  active_state
+   * @param  active_state whether the pin active state is reversed or not
+   * @param  pull         whether the pin is pulled up, down, or off (default
+   * down)
    */
-  DigitalDevice(PI_PIN pin, const bool& active_state = true);
+  DigitalDevice(PI_PIN        pin,
+                const bool&   active_state = true,
+                const PI_PUD& pull = PI_PUD_DOWN);
   /**
    * DigitalDevice Destructor
    *

@@ -15,9 +15,15 @@ using PI_RES = int;
 
 /**
  * @var using PI_RES = int
- * @brief Type definition for Pigpio returned value
+ * @brief Type definition for Pigpio PIN
  */
 using PI_PIN = int;
+
+/**
+ * @var using PI_PULL = int
+ * @brief Type definition for Pigpio PULL UP / PULL DOWN
+ */
+using PI_PUD = int;
 
 /**
  * @def PI_OK

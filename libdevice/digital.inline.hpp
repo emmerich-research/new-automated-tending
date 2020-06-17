@@ -9,7 +9,9 @@ NAMESPACE_BEGIN
 
 namespace device {
 template <digital::mode Mode>
-DigitalDevice<Mode>::DigitalDevice(PI_PIN pin, const bool& active_state)
+DigitalDevice<Mode>::DigitalDevice(PI_PIN        pin,
+                                   const bool&   active_state,
+                                   const PI_PUD& pull)
     : pin_{pin}, active_{true}, mode_{Mode}, active_state_{active_state} {
   DEBUG_ONLY(obj_name_ = fmt::format("DigitalDevice<{}> pin {} active_state {}",
                                      get_mode(Mode), pin, active_state));
@@ -32,15 +34,11 @@ DigitalDevice<Mode>::DigitalDevice(PI_PIN pin, const bool& active_state)
     return;
   }
 
-  res = gpioSetPullUpDown(pin_, PI_PUD_DOWN);
-
-  if (res != PI_OK) {
-    LOG_DEBUG(
-        "[FAILED] Failed to set DigitalDevice<{}> to PULL_DOWN using GPIO with "
-        "pin {}",
-        get_mode(Mode), pin);
-    active_ = false;
-    return;
+  // it is ok if fail as long as set mode is not fail
+  if (pull == PI_PUD_DOWN) {
+    (void)pull_down();
+  } else {
+    (void)pull_up();
   }
 }
 
@@ -162,6 +160,34 @@ const digital::value DigitalDevice<Mode>::process_value(
 template <digital::mode Mode>
 void DigitalDevice<Mode>::active_state(bool active_state) {
   active_state_ = active_state;
+}
+
+template <digital::mode Mode>
+ATM_STATUS DigitalDevice<Mode>::pull_up() {
+  ATM_STATUS res = gpioSetPullUpDown(pin_, PI_PUD_UP);
+
+  if (res != PI_OK) {
+    LOG_DEBUG(
+        "[FAILED] Failed to PULL UP DigitalDevice<{}> using GPIO with "
+        "pin {}",
+        get_mode(Mode), pin());
+  }
+
+  return res;
+}
+
+template <digital::mode Mode>
+ATM_STATUS DigitalDevice<Mode>::pull_down() {
+  ATM_STATUS res = gpioSetPullUpDown(pin_, PI_PUD_DOWN);
+
+  if (res != PI_OK) {
+    LOG_DEBUG(
+        "[FAILED] Failed to PULL DOWN DigitalDevice<{}> using GPIO with "
+        "pin {}",
+        get_mode(Mode), pin());
+  }
+
+  return res;
 }
 }  // namespace device
 

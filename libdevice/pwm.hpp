@@ -17,12 +17,18 @@
 NAMESPACE_BEGIN
 
 namespace device {
+// forward declaration
+class PWMDevice;
+
+/** device::DigitalOutputDevice registry singleton class using
+ * algo::InstanceRegistry
+ */
+using PWMDeviceRegistry = algo::InstanceRegistry<PWMDevice>;
+
 /**
- * @brief Digital Device implementation.
+ * @brief PWM Device implementation.
  *
- * DigitalDevice will instantiate GPIO Device
- *
- * @tparam Mode digital device mode can be input, output, or pwm
+ * PWM will instantiate GPIO Device using the device::DigitalOutputDevice
  *
  * @author Ray Andrew
  * @date   May 2020
@@ -30,20 +36,13 @@ namespace device {
 class PWMDevice : public DigitalOutputDevice {
  public:
   /**
-   * PWMDevice Constructor
+   * Create shared_ptr<PWMDevice>
    *
-   * Initialize the pwm device by opening GPIO
+   * Pass every args to PWMDevice()
    *
-   * @param  pin gpio pin, see Raspberry GPIO pinout for details
+   * @param args arguments that will be passed to PWMDevice()
    */
-  PWMDevice(unsigned char pin);
-
-  /**
-   * PWMDevice Constructor
-   *
-   * Close the pwm device that has been initialized
-   */
-  ~PWMDevice() = default;
+  MAKE_STD_SHARED(PWMDevice)
   /**
    * Set PWM duty cycle for specific pin
    *
@@ -101,6 +100,23 @@ class PWMDevice : public DigitalOutputDevice {
    * @return ATM_OK or ATM_ERR, but not both
    */
   ATM_STATUS hardware(unsigned int frequency, unsigned int duty_cycle);
+
+ private:
+  /**
+   * PWMDevice Constructor
+   *
+   * Initialize the pwm device by opening GPIO
+   *
+   * @param  pin gpio pin, see Raspberry GPIO pinout for details
+   * @param  active_state whether the active state is reversed or not
+   */
+  PWMDevice(unsigned char pin, const bool& active_state = true);
+  /**
+   * PWMDevice Constructor
+   *
+   * Close the pwm device that has been initialized
+   */
+  ~PWMDevice() = default;
 };
 }  // namespace device
 

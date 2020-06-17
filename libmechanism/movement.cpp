@@ -364,27 +364,30 @@ time_unit Movement::next() {
 }
 
 void Movement::homing() {
+  LOG_INFO("Homing is started...");
   // enabling motor
-  stepper_x()->enable();
-  // stepper_y()->enable();
-  // stepper_z()->enable();
+  enable_motors();
 
-  LOG_DEBUG("Homing...");
   // homing z first
-  while (limit_switch_z_top()->read().value_or(device::digital::value::low) ==
-         device::digital::value::high) {
-    LOG_DEBUG("Still homing...");
-    stepper_z()->move(-20);
+  bool z_completed =
+      limit_switch_z_top()->read().value_or(device::digital::value::low) ==
+      device::digital::value::high;
+  while (!z_completed) {
+    z_completed =
+        limit_switch_z_top()->read().value_or(device::digital::value::low) ==
+        device::digital::value::high;
+    LOG_DEBUG("Still homing Z-Axis...");
+    stepper_z()->move(-400, z_completed);
   }
 
   // homing  x and y
   thread_pool().enqueue([this] {
     bool is_x_completed =
         limit_switch_x()->read().value_or(device::digital::value::low) ==
-        device::digital::value::low;
+        device::digital::value::high;
     bool is_y_completed =
         limit_switch_y()->read().value_or(device::digital::value::low) ==
-        device::digital::value::low;
+        device::digital::value::high;
 
     while (!is_x_completed || !is_y_completed) {
       long steps_x = 0;
@@ -397,26 +400,38 @@ void Movement::homing() {
         steps_y = -20;
       }
 
-      start_move(steps_x, steps_y, 0);
+      start_move(steps_x, steps_y, 0.0);
       while (!ready()) {
         next();
       }
 
       is_x_completed =
           limit_switch_x()->read().value_or(device::digital::value::low) ==
-          device::digital::value::low;
+          device::digital::value::high;
       is_y_completed =
           limit_switch_y()->read().value_or(device::digital::value::low) ==
-          device::digital::value::low;
+          device::digital::value::high;
     }
   });
 
   // disabling motor
-  stepper_x()->disable();
-  // stepper_y()->disable();
-  // stepper_z()->disable();
+  disable_motors();
 
-  LOG_DEBUG("Homing is finished...");
+  LOG_INFO("Homing is finished...");
+}
+
+void Movement::enable_motors() const {
+  LOG_INFO("Enabling motors...");
+  stepper_x()->enable();
+  stepper_y()->enable();
+  stepper_z()->enable();
+}
+
+void Movement::disable_motors() const {
+  LOG_INFO("Disabling motors...");
+  stepper_x()->disable();
+  stepper_y()->disable();
+  stepper_z()->disable();
 }
 }  // namespace mechanism
 

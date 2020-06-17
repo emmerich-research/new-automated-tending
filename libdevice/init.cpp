@@ -6,6 +6,7 @@
 
 #include "analog.hpp"
 #include "digital.hpp"
+#include "pwm.hpp"
 #include "stepper.hpp"
 
 #include "A4988.hpp"
@@ -72,6 +73,45 @@ static ATM_STATUS initialize_plc_to_pi_comm() {
   return status;
 }
 
+static ATM_STATUS initialize_limit_switches() {
+  // all limit switches are pulled up by default
+
+  auto*      config = Config::get();
+  ATM_STATUS status = ATM_OK;
+
+  auto* digital_input_registry = DigitalInputDeviceRegistry::get();
+
+  status = digital_input_registry->create(
+      id::limit_switch::x(), config->limit_switch_x<PI_PIN>("pin"),
+      config->limit_switch_x<bool>("active-state"), PI_PUD_UP);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  status = digital_input_registry->create(
+      id::limit_switch::y(), config->limit_switch_y<PI_PIN>("pin"),
+      config->limit_switch_y<bool>("active-state"), PI_PUD_UP);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  status = digital_input_registry->create(
+      id::limit_switch::z1(), config->limit_switch_z1<PI_PIN>("pin"),
+      config->limit_switch_z1<bool>("active-state"), PI_PUD_UP);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  status = digital_input_registry->create(
+      id::limit_switch::z2(), config->limit_switch_z2<PI_PIN>("pin"),
+      config->limit_switch_z2<bool>("active-state"), PI_PUD_UP);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  return status;
+}
+
 static ATM_STATUS initialize_input_digital_devices() {
   auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
@@ -81,38 +121,12 @@ static ATM_STATUS initialize_input_digital_devices() {
     return ATM_ERR;
   }
 
-  auto* digital_input_registry = DigitalInputDeviceRegistry::get();
-
-  status = digital_input_registry->create(
-      id::limit_switch::x(), config->limit_switch_x<PI_PIN>("pin"),
-      config->limit_switch_x<bool>("active-state"));
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
-
-  status = digital_input_registry->create(
-      id::limit_switch::y(), config->limit_switch_y<PI_PIN>("pin"),
-      config->limit_switch_y<bool>("active-state"));
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
-
-  status = digital_input_registry->create(
-      id::limit_switch::z1(), config->limit_switch_z1<PI_PIN>("pin"),
-      config->limit_switch_z1<bool>("active-state"));
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
-
-  status = digital_input_registry->create(
-      id::limit_switch::z2(), config->limit_switch_z2<PI_PIN>("pin"),
-      config->limit_switch_z2<bool>("active-state"));
+  status = initialize_limit_switches();
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = initialize_plc_to_pi_comm();
-
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -185,11 +199,35 @@ static ATM_STATUS initialize_output_digital_devices() {
     return ATM_ERR;
   }
 
-  auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
-
   status = initialize_pi_to_plc_comm();
   if (status == ATM_ERR) {
     return ATM_ERR;
+  }
+
+  return status;
+}
+
+static ATM_STATUS initialize_pwm_devices() {
+  auto       config = Config::get();
+  ATM_STATUS status = ATM_OK;
+
+  status = PWMDeviceRegistry::create();
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  auto* pwm_registry = PWMDeviceRegistry::get();
+
+  status = pwm_registry->create(id::spray(), config->spray<PI_PIN>("pin"),
+                                config->spray<bool>("active-state"));
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  auto&& spray = pwm_registry->get(id::spray());
+
+  if (spray->duty_cycle(config->spray<unsigned int>("duty-cycle")) == ATM_ERR) {
+    LOG_INFO("Cannot set spray duty cycle...");
   }
 
   return status;
@@ -253,21 +291,31 @@ ATM_STATUS initialize_device() {
 
   ATM_STATUS status = ATM_OK;
 
+  LOG_INFO("Initializing analog devices...");
   status = initialize_analog_devices();
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
+  LOG_INFO("Initializing input digital devices...");
   status = initialize_input_digital_devices();
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
+  LOG_INFO("Initializing output digital devices...");
   status = initialize_output_digital_devices();
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
+  LOG_INFO("Initializing pwm devices...");
+  status = initialize_pwm_devices();
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  LOG_INFO("Initializing stepper devices...");
   status = initialize_stepper_devices();
   if (status == ATM_ERR) {
     return ATM_ERR;

@@ -491,6 +491,14 @@ class Movement : public StackObj {
    * @return ready or not
    */
   const bool& ready() const { return ready_; }
+  /**
+   * Enable all motors
+   */
+  void enable_motors() const;
+  /**
+   * Disable all motors
+   */
+  void disable_motors() const;
 
  private:
   /**

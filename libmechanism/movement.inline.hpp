@@ -10,9 +10,7 @@ template <movement::unit Unit>
 void Movement::move(double x, double y, double z) {
   if (ready()) {
     // enabling motor
-    stepper_x()->enable();
-    // stepper_y()->enable();
-    // stepper_z()->enable();
+    enable_motors();
 
     const long steps_x =
         convert_length_to_steps<Unit>(x, builder()->steps_per_mm_x());
@@ -22,13 +20,13 @@ void Movement::move(double x, double y, double z) {
         convert_length_to_steps<Unit>(z, builder()->steps_per_mm_z());
 
     auto result = thread_pool().enqueue([this, steps_x, steps_y, steps_z] {
-      LOG_DEBUG("Starting to move steps_x={}, steps_y={}, steps_z={}...",
-                steps_x, steps_y, steps_z);
+      LOG_INFO("Starting to move steps_x={}, steps_y={}, steps_z={}...",
+               steps_x, steps_y, steps_z);
       start_move(steps_x, steps_y, steps_z);  // will trigger ready to false
       while (!ready()) {
         next();
       }
-      LOG_DEBUG("Move is finished");
+      LOG_INFO("Move is finished");
       return true;
     });
 
@@ -39,9 +37,7 @@ void Movement::move(double x, double y, double z) {
     [[maybe_unused]] bool finished = result.get();
 
     // disabling motor
-    stepper_x()->disable();
-    // stepper_y()->disable();
-    // stepper_z()->disable();
+    disable_motors();
   }
 }
 }  // namespace mechanism
