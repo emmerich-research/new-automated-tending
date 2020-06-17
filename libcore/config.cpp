@@ -60,7 +60,7 @@ const ConfigImpl::coordinate& ConfigImpl::tending_position() {
 const ConfigImpl::path_container& ConfigImpl::spraying_path() {
   if (spraying_path_.empty()) {
     spraying_path_ =
-        find<ConfigImpl::path_container>("mechanisms", "tending", "path");
+        find<ConfigImpl::path_container>("mechanisms", "spraying", "path");
   }
   return spraying_path_;
 }
