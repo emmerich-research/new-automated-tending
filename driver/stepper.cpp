@@ -150,12 +150,13 @@ bool menu() {
     sleep_for<time_units::millis>(3000);
 
     tending_running->write(device::digital::value::high);
-
+    sleep_for<time_units::millis>(3000);
     movement->move_to_tending_position();
     sleep_for<time_units::millis>(3000);
+    movement->move_finger_down();
     sleep_for<time_units::millis>(3000);
     movement->follow_tending_paths();
-    movement->move_finger_down();
+    sleep_for<time_units::millis>(1000);
     movement->homing();
 
     tending_ready->write(device::digital::value::high);
