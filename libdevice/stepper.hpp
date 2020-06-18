@@ -115,7 +115,7 @@ class StepperDevice : public StackObj {
    *
    * @return remaining steps
    */
-  virtual const stepper::step stop(void) = 0;
+  virtual stepper::step stop(void) = 0;
   /**
    * Get current state of stepper
    *
