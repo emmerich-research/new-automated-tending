@@ -56,6 +56,9 @@ bool menu() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
+  auto* config = Config::get();
+  massert(config != nullptr, "sanity");
+
   auto* output_registry = device::DigitalOutputDeviceRegistry::get();
   massert(output_registry != nullptr, "sanity");
 
