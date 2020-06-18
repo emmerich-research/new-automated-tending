@@ -2,18 +2,29 @@
 
 #include "guard.hpp"
 
+#include <libmechanism/mechanism.hpp>
 #include <libutil/util.hpp>
 
 NAMESPACE_BEGIN
 
 namespace guard {
 bool homing::check() const {
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
+  return mechanism::movement_mechanism()->is_home();
+}
+
+bool e_stop::check() const {
   auto*  input_registry = device::DigitalInputDeviceRegistry::get();
-  auto&& limit_switch_x = input_registry->get(device::id::limit_switch::x());
-  auto&& limit_switch_y = input_registry->get(device::id::limit_switch::y());
-  auto&& limit_switch_z2 = input_registry->get(device::id::limit_switch::z2());
-  return util::and_(limit_switch_x->read_bool(), limit_switch_y->read_bool(),
-                    limit_switch_z2->read_bool());
+  auto&& e_stop = input_registry->get(device::id::comm::plc::e_stop());
+  return e_stop->read_bool();
+}
+
+bool reset::check() const {
+  auto*  input_registry = device::DigitalInputDeviceRegistry::get();
+  auto&& reset = input_registry->get(device::id::comm::plc::reset());
+  return reset->read_bool();
 }
 
 namespace spraying {

@@ -41,6 +41,8 @@ stepper::state StepperDeviceImpl<Speed>::state() const {
     } else {
       state = stepper::state::cruising;
     }
+  } else {
+    state = stepper::state::stopped;
   }
 
   return state;

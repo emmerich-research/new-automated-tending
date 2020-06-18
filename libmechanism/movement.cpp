@@ -101,7 +101,7 @@ std::shared_ptr<Movement>& MovementBuilderImpl::build() {
 Movement::Movement(const impl::MovementBuilderImpl* builder)
     : builder_{builder},
       // steps_per_mm_{builder->steps_per_mm()},
-      thread_pool_{4} {
+      thread_pool_{8} {
   active_ = true;
   ready_ = true;
   next_move_interval_ = 0;
@@ -204,15 +204,15 @@ void Movement::setup_limit_switch() {
   limit_switch_z_bottom_ = limit_switch_z_bottom;
 }
 
-const device::stepper::step Movement::stop_x(void) {
+device::stepper::step Movement::stop_x(void) {
   return stepper_x()->stop();
 }
 
-const device::stepper::step Movement::stop_y(void) {
+device::stepper::step Movement::stop_y(void) {
   return stepper_y()->stop();
 }
 
-const device::stepper::step Movement::stop_z(void) {
+device::stepper::step Movement::stop_z(void) {
   return stepper_z()->stop();
 }
 
@@ -223,20 +223,44 @@ void Movement::stop(void) {
 }
 
 void Movement::start_move(const long& x, const long& y, const long& z) {
-  const time_unit time_x = stepper_x()->time_for_move(x);
-  const time_unit time_y = stepper_y()->time_for_move(y);
-  const time_unit time_z = stepper_z()->time_for_move(z);
+  // const time_unit time_x = stepper_x()->time_for_move(x);
+  // const time_unit time_y = stepper_y()->time_for_move(y);
+  // const time_unit time_z = stepper_z()->time_for_move(z);
 
-  // find which motor would take the longest to finish,
-  const time_unit move_time = std::max(time_x, std::max(time_y, time_z));
+  // // find which motor would take the longest to finish,
+  // const time_unit move_time = std::max(time_x, std::max(time_y, time_z));
 
-  LOG_DEBUG("Will move about {} micros", move_time);
+  // LOG_DEBUG("Will move about {} micros", move_time);
+
+  // // start moving x
+  // if (x == 0) {
+  //   event_timer_x_ = 0;
+  // } else {
+  //   stepper_x()->start_move(x, move_time);
+  //   event_timer_x_ = 1;
+  // }
+
+  // // start moving y
+  // if (y == 0) {
+  //   event_timer_y_ = 0;
+  // } else {
+  //   stepper_y()->start_move(y, move_time);
+  //   event_timer_y_ = 1;
+  // }
+
+  // // start moving z
+  // if (z == 0) {
+  //   event_timer_z_ = 0;
+  // } else {
+  //   stepper_z()->start_move(z, move_time);
+  //   event_timer_z_ = 1;
+  // }
 
   // start moving x
   if (x == 0) {
     event_timer_x_ = 0;
   } else {
-    stepper_x()->start_move(x, move_time);
+    stepper_x()->start_move(x);
     event_timer_x_ = 1;
   }
 
@@ -244,7 +268,7 @@ void Movement::start_move(const long& x, const long& y, const long& z) {
   if (y == 0) {
     event_timer_y_ = 0;
   } else {
-    stepper_y()->start_move(y, move_time);
+    stepper_y()->start_move(y);
     event_timer_y_ = 1;
   }
 
@@ -252,7 +276,7 @@ void Movement::start_move(const long& x, const long& y, const long& z) {
   if (z == 0) {
     event_timer_z_ = 0;
   } else {
-    stepper_z()->start_move(z, move_time);
+    stepper_z()->start_move(z);
     event_timer_z_ = 1;
   }
 
@@ -668,6 +692,12 @@ void Movement::disable_motors() const {
   stepper_x()->disable();
   stepper_y()->disable();
   stepper_z()->disable();
+}
+
+bool Movement::is_home() const {
+  return util::and_(limit_switch_x()->read_bool(),
+                    limit_switch_y()->read_bool(),
+                    limit_switch_z_top()->read_bool());
 }
 }  // namespace mechanism
 

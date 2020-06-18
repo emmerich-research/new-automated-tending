@@ -6,7 +6,9 @@
 NAMESPACE_BEGIN
 
 namespace action {
-struct do_start {
+void shutdown_hook();
+
+struct start : public StackObj {
   template <typename Event,
             typename FSM,
             typename SourceState,
@@ -14,7 +16,7 @@ struct do_start {
   void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
 };
 
-struct do_stop {
+struct stop : public StackObj {
   template <typename Event,
             typename FSM,
             typename SourceState,
@@ -22,7 +24,18 @@ struct do_stop {
   void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
 };
 
-struct do_homing {
+struct homing : public StackObj {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
+
+  void act() const;
+};
+
+namespace spraying {
+struct job : public StackObj {
   template <typename Event,
             typename FSM,
             typename SourceState,
@@ -30,7 +43,17 @@ struct do_homing {
   void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
 };
 
-struct do_spraying {
+struct complete : public StackObj {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&);
+};
+}  // namespace spraying
+
+namespace tending {
+struct job : public StackObj {
   template <typename Event,
             typename FSM,
             typename SourceState,
@@ -38,13 +61,14 @@ struct do_spraying {
   void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
 };
 
-struct do_tending {
+struct complete : public StackObj {
   template <typename Event,
             typename FSM,
             typename SourceState,
             typename TargetState>
-  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
+  void operator()(Event const&, FSM&, SourceState&, TargetState&);
 };
+}  // namespace tending
 }  // namespace action
 
 NAMESPACE_END

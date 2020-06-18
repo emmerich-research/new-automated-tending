@@ -3,51 +3,116 @@
 
 #include "machine.hpp"
 
+#include <libdevice/device.hpp>
 #include <libmechanism/mechanism.hpp>
 #include <libutil/util.hpp>
 
 NAMESPACE_BEGIN
 
 namespace machine {
-template <typename FSM>
-void TendingDef::spraying::idle::on_enter(event::spraying::start&& event,
-                                          FSM&                     fsm) const {
+template <typename Event, typename FSM>
+void TendingDef::initial::on_enter(Event const&& event, FSM& fsm) const {}
+
+template <typename Event, typename FSM>
+void TendingDef::running::no_task::on_enter(Event const&& event,
+                                            FSM&          fsm) const {
+  fsm.is_spraying_completed_ = false;
+  fsm.is_tending_completed_ = false;
+}
+
+/**
+ * Beginning of spraying
+ */
+template <typename Event, typename FSM>
+void TendingDef::running::spraying::idle::on_enter(Event const&& event,
+                                                   FSM&          fsm) const {
   LOG_INFO("Entering spraying mode, waiting for signal for spraying height");
-  // auto*  output_registry = device::DigitalOutputDeviceRegistry::get();
-  // auto&& spraying_ready =
-  //     output_registry->get(device::id::comm::pi::spraying_ready());
-
-  // low for not ready, high for ready
-  // always write not ready
-
-  // if (spraying_last_value_) {
-  // spraying_ready->write(device::digital::value::low);
-  // } else {
-  // }
+  fsm.initialize();
 }
 
 template <typename Event, typename FSM>
-void TendingDef::spraying::preparation::on_enter(Event&& event,
-                                                 FSM&    fsm) const {
-  // massert(mechanism::movement_mechanism() != nullptr, "sanity");
-  // massert(mechanism::movement_mechanism()->active(), "sanity");
+void TendingDef::running::spraying::preparation::on_enter(Event&& event,
+                                                          FSM&    fsm) {
+  LOG_INFO("Spraying preparation...");
 
-  // auto* movement = mechanism::movement_mechanism();
-  // movement->homing();
+  fsm.spraying_ready->write(device::digital::value::low);
+  fsm.spraying_running->write(device::digital::value::low);
+  fsm.spraying_complete->write(device::digital::value::low);
+
+  LOG_INFO("Homing to make sure task ready...");
+
+  action::homing homing;
+  homing.act();
+  root_machine(fsm).run_spraying();
 }
 
 template <typename Event, typename FSM>
-void TendingDef::spraying::preparation::on_exit(Event&& event, FSM& fsm) const {
-  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
-  auto*  output_registry = device::DigitalOutputDeviceRegistry::get();
-  auto&& spraying_ready =
-      output_registry->get(device::id::comm::pi::spraying_ready());
+void TendingDef::running::spraying::preparation::on_exit(Event&&    event,
+                                                         FSM const& fsm) const {
+  fsm.spraying_ready->write(device::digital::value::high);
+  fsm.spraying_running->write(device::digital::value::low);
+  fsm.spraying_complete->write(device::digital::value::low);
 
-  spraying_ready->write(device::digital::value::high);
   LOG_INFO("Spraying is ready, waiting for 3 seconds...");
   sleep_for<time_units::millis>(3000);
-  fsm.spraying_ready_last_value_ = true;
 }
+
+// template <typename FSM>
+// void TendingDef::running::spraying::ongoing::on_enter(
+//     event::spraying::run const&& event,
+//     FSM&                         fsm) const {
+//   LOG_INFO("Spraying...");
+//   sleep_for<time_units::millis>(3000);
+//   fsm.enclosing_fsm().is_spraying_completed_ = true;
+// }
+
+// template <typename Event, typename FSM>
+// void TendingDef::running::spraying::ongoing::on_exit(Event const&& event,
+//                                                      FSM const&    fsm) const
+//                                                      {
+//   LOG_INFO("Done spraying...");
+// }
+/**
+ * End of spraying
+ */
+
+/**
+ * Beginning of tending
+ */
+template <typename Event, typename FSM>
+void TendingDef::running::tending::idle::on_enter(Event const&& event,
+                                                  FSM&          fsm) const {
+  LOG_INFO("Entering tending mode, waiting for signal for tending height");
+  fsm.initialize();
+}
+
+template <typename Event, typename FSM>
+void TendingDef::running::tending::preparation::on_enter(Event&& event,
+                                                         FSM&    fsm) {
+  LOG_INFO("Tending preparation...");
+
+  fsm.tending_ready->write(device::digital::value::low);
+  fsm.tending_running->write(device::digital::value::low);
+  fsm.tending_complete->write(device::digital::value::low);
+
+  action::homing homing;
+  homing.act();
+  root_machine(fsm).run_tending();
+}
+
+template <typename Event, typename FSM>
+void TendingDef::running::tending::preparation::on_exit(Event&&    event,
+                                                        FSM const& fsm) const {
+  fsm.tending_ready->write(device::digital::value::high);
+  fsm.tending_running->write(device::digital::value::low);
+  fsm.tending_complete->write(device::digital::value::low);
+
+  LOG_INFO("Tending is ready, waiting for 3 seconds...");
+  sleep_for<time_units::millis>(3000);
+}
+/**
+ * End of tending
+ */
 }  // namespace machine
 
 NAMESPACE_END

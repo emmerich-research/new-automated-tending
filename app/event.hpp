@@ -9,21 +9,14 @@ namespace event {
 struct start {};
 struct stop {};
 
+struct task_complete {};
+
 namespace spraying {
-// get into the state
-struct start {};
-// preparing
-struct prepare {};
-// run real job
 struct run {};
-// finishing job
-struct finish {};
 }  // namespace spraying
 
 namespace tending {
-struct start {};
-struct prepare {};
-struct finish {};
+struct run {};
 }  // namespace tending
 }  // namespace event
 

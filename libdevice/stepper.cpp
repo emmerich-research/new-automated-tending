@@ -214,10 +214,10 @@ time_unit StepperDeviceImpl<stepper::speed::linear>::time_for_move(long steps) {
         (speed / (2 * acceleration())) +
         (speed / (2 * deceleration()));  // seconds
   } else {
-    t = sqrt(2.0 * steps_to_cruise() / acceleration() /
-             static_cast<double>(microsteps())) +
-        sqrt(2.0 * steps_to_brake() / deceleration() /
-             static_cast<double>(microsteps()));
+    t = std::sqrt(2.0 * steps_to_cruise() / acceleration() /
+                  static_cast<double>(microsteps())) +
+        std::sqrt(2.0 * steps_to_brake() / deceleration() /
+                  static_cast<double>(microsteps()));
   }
 
   t *= (1e+6);  // seconds -> micros

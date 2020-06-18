@@ -18,11 +18,13 @@ int throw_message() {
 
 int main() {
   ATM_STATUS status = ATM_OK;
+  std::cerr << 1 << std::endl;
   // run state machine
   machine::tending tsm;
 
   // initialization
   try {
+    std::cerr << 2 << std::endl;
     tsm.start();
     massert(tsm.is_running(), "sanity");
   } catch (std::runtime_error& e) {
@@ -42,7 +44,6 @@ int main() {
     // sequences:
     // 1. spraying
     // 2. tending
-    tsm.start_spraying();
   }
 
   // stopping

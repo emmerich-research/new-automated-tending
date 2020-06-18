@@ -282,19 +282,19 @@ class Movement : public StackObj {
    *
    * @return remaining steps of stepper x
    */
-  const device::stepper::step stop_x(void);
+  device::stepper::step stop_x(void);
   /**
    * Stop only stepper y
    *
    * @return remaining steps of stepper y
    */
-  const device::stepper::step stop_y(void);
+  device::stepper::step stop_y(void);
   /**
    * Stop only z stepper
    *
    * @return remaining steps of stepper z
    */
-  const device::stepper::step stop_z(void);
+  device::stepper::step stop_z(void);
   /**
    * Stop all steppers
    */
@@ -309,6 +309,12 @@ class Movement : public StackObj {
    * Homing all stepper
    */
   void homing();
+  /**
+   * Check is home or not
+   *
+   * @return is home or not
+   */
+  bool is_home() const;
   /**
    * Move finger down
    */

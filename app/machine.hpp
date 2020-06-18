@@ -20,117 +20,264 @@ NAMESPACE_BEGIN
 //   virtual void do_b(int) = 0;
 // };
 
-void shutdown_hook();
-
 namespace machine {
+/**
+ * @brief Machine State Machine Definition.
+ *
+ * Definition of Machine State
+ *
+ * @author Ray Andrew
+ * @date   June 2020
+ */
 struct TendingDef : public StackObj,
                     afsm::def::state_machine<TendingDef, std::mutex> {
-  using tending_fsm = afsm::state_machine<TendingDef>;
-
-  struct initial : state<initial> {};
-  struct running : state<running> {};
-  struct terminated : terminal_state<terminated> {};
-
   /**
-   * @brief Spaying Machine State implementation.
-   *
-   * Machine state of spraying action
-   *
-   * @author Ray Andrew
-   * @date   June 2020
-   */
-  struct spraying : state_machine<spraying> {
-    spraying();
+   * A type alias for actual state machine, that will be passed
+   * to actions and guards
+   **/
+  using tending_fsm = afsm::state_machine<TendingDef>;
+  using history = afsm::def::tags::has_history;
 
-    struct idle : state<idle> {
-      template <typename FSM>
-      void on_enter(event::spraying::start&& event, FSM& fsm) const;
-    };
-    struct preparation : state<preparation> {
-      template <typename Event, typename FSM>
-      void on_enter(Event&& event, FSM& fsm) const;
-
-      template <typename Event, typename FSM>
-      void on_exit(Event&& event, FSM& fsm) const;
-    };
-    struct ongoing : state<ongoing> {};
-
-    using initial_state = idle;
-    using transitions = transition_table<
-        /* State, Event, Next, Action, Guard */
-        tr<idle,
-           // event::spraying::prepare,
-           none,
-           preparation,
-           action::do_homing,
-           guard::spraying::height>,
-        tr<preparation,
-           none,
-           // event::spraying::run,
-           ongoing,
-           action::do_spraying,
-           and_<guard::spraying::height, guard::homing>>,
-        tr<ongoing, event::spraying::finish, idle, none, none>>;
-
-    bool spraying_ready_last_value_;
-    bool is_homing_expired_;
+  struct initial : state<initial> {
+    template <typename Event, typename FSM>
+    void on_enter(Event const&& event, FSM& fsm) const;
   };
 
-  /**
-   * @brief Tending Machine State implementation.
-   *
-   * Machine state of tending action
-   *
-   * @author Ray Andrew
-   * @date   June 2020
-   */
-  // struct tending : state_machine<tending> {
-  //   struct idle : state<idle> {};
-  //   struct preparation : state<preparation> {
-  //     template <typename FSM>
-  //     void on_enter(event::tending::prepare&& prepare, FSM& fsm) const;
+  struct stopped : state<stopped> {};
+                             
+  struct terminated : terminal_state<terminated> {};
 
-  //     template <typename FSM>
-  //     void on_exit(event::tending::prepare&& prepare, FSM& fsm) const;
-  //   };
-  //   struct ongoing : state<ongoing> {};
+  struct running : state_machine<running, history> {
+    /**
+     * A type alias for actual state machine, that will be passed
+     * to actions and guards
+     **/
+    using running_fsm = afsm::inner_state_machine<running, tending_fsm>;
 
-  //   using initial_state = idle;
-  //   using transitions = transition_table<
-  //       /* State, Event, Next, Action, Guard */
-  //       tr<idle, event::tending::prepare, preparation,
-  //       guard::tending_height>, tr<preparation, event::tending::finish,
-  //       idle>>;
-  // };
+    struct no_task : state<no_task> {
+      template <typename Event, typename FSM>
+      void on_enter(Event const&& event, FSM& fsm) const;
+    };
+
+    /**
+     * @brief Spraying Machine State implementation.
+     *
+     * Machine state of spraying action
+     *
+     * @author Ray Andrew
+     * @date   June 2020
+     */
+    struct spraying : state_machine<spraying> {
+      using spraying_fsm = afsm::inner_state_machine<spraying, running_fsm>;
+
+      spraying();
+
+      struct idle : state<idle> {
+        template <typename Event, typename FSM>
+        void on_enter(Event const&& event, FSM& fsm) const;
+      };
+      struct preparation : state<preparation> {
+        template <typename Event, typename FSM>
+        void on_enter(Event&& event, FSM& fsm);
+
+        template <typename Event, typename FSM>
+        void on_exit(Event&& event, FSM const& fsm) const;
+      };
+      struct ongoing : state<ongoing> {
+        // template <typename FSM>
+        // void on_enter(event::spraying::run const&& event, FSM& fsm) const;
+
+        // template <typename Event, typename FSM>
+        // void on_exit(Event const&& event, FSM const& fsm) const;
+      };
+      struct completed : terminal_state<completed> {};
+
+      using initial_state = idle;
+      using transitions = transition_table<
+          /* State, Event, Next, Action, Guard */
+          tr<idle, none, preparation, none, guard::spraying::height>,
+          tr<preparation,
+             event::spraying::run,
+             ongoing,
+             action::spraying::job,
+             and_<guard::spraying::height, guard::homing>>,
+          tr<ongoing,
+             none,
+             completed,
+             action::spraying::complete,
+             and_<guard::spraying::height, guard::spraying::completed>>>;
+
+      bool initialized;
+      void initialize();
+
+      std::shared_ptr<device::DigitalOutputDevice> spraying_ready;
+      std::shared_ptr<device::DigitalOutputDevice> spraying_running;
+      std::shared_ptr<device::DigitalOutputDevice> spraying_complete;
+      std::shared_ptr<device::DigitalOutputDevice> spray;
+    };
+
+    /**
+     * @brief Tending Machine State implementation.
+     *
+     * Machine state of tending action
+     *
+     * @author Ray Andrew
+     * @date   June 2020
+     */
+    struct tending : state_machine<tending> {
+      using tending_fsm = afsm::inner_state_machine<tending, running_fsm>;
+
+      tending();
+
+      struct idle : state<idle> {
+        template <typename Event, typename FSM>
+        void on_enter(Event const&& event, FSM& fsm) const;
+      };
+      struct preparation : state<preparation> {
+        template <typename Event, typename FSM>
+        void on_enter(Event&& event, FSM& fsm);
+
+        template <typename Event, typename FSM>
+        void on_exit(Event&& event, FSM const& fsm) const;
+      };
+      struct ongoing : state<ongoing> {};
+      struct completed : terminal_state<completed> {};
+
+      using initial_state = idle;
+      using transitions = transition_table<
+          /* State, Event, Next, Action, Guard */
+          tr<idle, none, preparation, none, guard::tending::height>,
+          tr<preparation,
+             event::tending::run,
+             ongoing,
+             action::tending::job,
+             and_<guard::tending::height, guard::homing>>,
+          tr<ongoing,
+             none,
+             completed,
+             action::tending::complete,
+             guard::tending::completed>>;
+
+      bool initialized;
+      void initialize();
+
+      std::shared_ptr<device::DigitalOutputDevice> tending_ready;
+      std::shared_ptr<device::DigitalOutputDevice> tending_running;
+      std::shared_ptr<device::DigitalOutputDevice> tending_complete;
+      std::shared_ptr<device::PWMDevice>           finger;
+    };
+
+    using initial_state = no_task;
+    using transitions = transition_table<
+        tr<no_task, none, spraying, none, guard::spraying::height>,
+        tr<spraying, event::task_complete, no_task>,
+        tr<tending, event::task_complete, no_task>,
+        tr<no_task,
+           none,
+           tending,
+           none,
+           and_<guard::tending::height, guard::spraying::completed>>>;
+
+    /**
+     * Constructor
+     */
+    running();
+    /**
+     * Check if spraying is completed
+     *
+     * @return spraying is completed or not
+     */
+    bool is_spraying_completed() const;
+    /**
+     * Check if tending completed
+     *
+     * @return tending completed or not
+     */
+    bool is_tending_completed() const;
+    /**
+     * This will become true if only spraying has
+     * been completed
+     */
+    bool is_spraying_completed_;
+    /**
+     * This will become true if only tending has
+     * been completed
+     */
+    bool is_tending_completed_;
+  };
 
   using initial_state = initial;
   using transitions = transition_table<
       /* State, Event, Next, Action, Guard */
-      tr<initial, event::start, running, action::do_start>,
-      tr<running, event::spraying::start, spraying, none>,
-      // tr<running, event::tending::start, tending, none>,
-      tr<running, event::stop, terminated, action::do_stop>>;
+      tr<initial, event::start, running, action::start>,
+      tr<running, none, stopped, none, guard::e_stop>,
+      tr<stopped, none, running, none, guard::reset>,
+      tr<running, event::stop, terminated, action::stop>>;
 
-  // caller
-  tending_fsm&       rebind();
+  /**
+   * Constructor
+   */
+  TendingDef();
+  /**
+   * Get instance of this state machine
+   *
+   * @return instance of this state machine
+   */
+  tending_fsm& rebind();
+  /**
+   * Get constant instance of this state machine
+   *
+   * @return constant instance of this state machine
+   */
   tending_fsm const& rebind() const;
-
+  /**
+   * Start machine
+   **/
   void start();
+  /**
+   * Stop machine
+   */
   void stop();
-
-  // spraying
-  void start_spraying();
-  void finish_spraying();
-
-  // tending
-  void start_tending();
-  void finish_tending();
-
-  // checking
-  bool is_running();
-  bool is_terminated();
-
+  /**
+   * Trigger `no task`
+   */
+  void task_completed();
+  /**
+   * Run spraying
+   */
+  void run_spraying();
+  /**
+   * Run tending
+   */
+  void run_tending();
+  /**
+   * Check if machine is ready
+   * This denotes as "all devices are ready"
+   *
+   * @return machine is ready or not
+   */
+  bool is_ready() const;
+  /**
+   * Check if machine is running
+   *
+   * @return machine is running or not
+   */
+  bool is_running() const;
+  /**
+   * Check if machine is terminated
+   *
+   * @return machine is terminated or not
+   */
+  bool is_terminated() const;
+  /**
+   * Version of state machine
+   */
   static const int VERSION;
+  /**
+   * This will become true if only devices initialization
+   * done successfully
+   */
+  bool machine_ready_;
 };
 
 using tending = afsm::state_machine<TendingDef>;

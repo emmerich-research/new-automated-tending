@@ -125,7 +125,7 @@ class A4988Device : public impl::StepperDeviceImpl<Speed> {
    *
    * @return max microsteps of A4988
    */
-  inline static const stepper::step max_microsteps() { return max_microsteps_; }
+  inline static stepper::step max_microsteps() { return max_microsteps_; }
   /**
    * Get A4988 Stepper Microstep table
    *
