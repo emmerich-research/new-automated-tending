@@ -455,12 +455,25 @@ void Movement::tending_motor_params() const {
   stepper_y()->deceleration(config->tending_stepper_y<double>("deceleration"));
 }
 
-void Movement::follow_tending_paths() {
+void Movement::follow_tending_paths_edge() {
   LOG_INFO("Following tending paths...");
 
   tending_motor_params();
 
-  for (const auto& iter : Config::get()->tending_path()) {
+  for (const auto& iter : Config::get()->tending_path_edge()) {
+    LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+    move<movement::unit::mm>(iter.first, iter.second, State::get()->z());
+  }
+
+  revert_motor_params();
+}
+
+void Movement::follow_tending_paths_zigzag() {
+  LOG_INFO("Following tending paths...");
+
+  tending_motor_params();
+
+  for (const auto& iter : Config::get()->tending_path_zigzag()) {
     LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
     move<movement::unit::mm>(iter.first, iter.second, State::get()->z());
   }

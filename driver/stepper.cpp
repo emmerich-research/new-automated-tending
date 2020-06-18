@@ -154,7 +154,9 @@ bool menu() {
     sleep_for<time_units::millis>(3000);
     movement->move_finger_down();
     sleep_for<time_units::millis>(3000);
-    movement->follow_tending_paths();
+    movement->follow_tending_paths_edge();
+    sleep_for<time_units::millis>(1000);
+    movement->follow_tending_paths_zigzag();
     sleep_for<time_units::millis>(1000);
     movement->homing();
 

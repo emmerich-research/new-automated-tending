@@ -65,12 +65,20 @@ const ConfigImpl::path_container& ConfigImpl::spraying_path() {
   return spraying_path_;
 }
 
-const ConfigImpl::path_container& ConfigImpl::tending_path() {
-  if (tending_path_.empty()) {
-    tending_path_ =
-        find<ConfigImpl::path_container>("mechanisms", "tending", "path");
+const ConfigImpl::path_container& ConfigImpl::tending_path_edge() {
+  if (tending_path_edge_.empty()) {
+    tending_path_edge_ = find<ConfigImpl::path_container>(
+        "mechanisms", "tending", "path", "edge");
   }
-  return tending_path_;
+  return tending_path_edge_;
+}
+
+const ConfigImpl::path_container& ConfigImpl::tending_path_zigzag() {
+  if (tending_path_zigzag_.empty()) {
+    tending_path_zigzag_ = find<ConfigImpl::path_container>(
+        "mechanisms", "tending", "path", "zigzag");
+  }
+  return tending_path_zigzag_;
 }
 
 const ConfigImpl::coordinate& ConfigImpl::spraying_path(size_t idx) {
@@ -79,8 +87,14 @@ const ConfigImpl::coordinate& ConfigImpl::spraying_path(size_t idx) {
   return paths[idx];
 }
 
-const ConfigImpl::coordinate& ConfigImpl::tending_path(size_t idx) {
-  const auto paths = tending_path();
+const ConfigImpl::coordinate& ConfigImpl::tending_path_edge(size_t idx) {
+  const auto paths = tending_path_edge();
+  massert(idx < paths.size(), "sanity");
+  return paths[idx];
+}
+
+const ConfigImpl::coordinate& ConfigImpl::tending_path_zigzag(size_t idx) {
+  const auto paths = tending_path_zigzag();
   massert(idx < paths.size(), "sanity");
   return paths[idx];
 }

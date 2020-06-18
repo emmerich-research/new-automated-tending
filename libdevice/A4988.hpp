@@ -83,7 +83,7 @@ class A4988Device : public impl::StepperDeviceImpl<Speed> {
    *
    * @return shared_ptr of DigitalOutputDevice
    */
-  const std::shared_ptr<DigitalOutputDevice>& ms1_device() const {
+  inline const std::shared_ptr<DigitalOutputDevice>& ms1_device() const {
     return ms1_device_;
   }
   /**
@@ -91,7 +91,7 @@ class A4988Device : public impl::StepperDeviceImpl<Speed> {
    *
    * @return shared_ptr of DigitalOutputDevice
    */
-  const std::shared_ptr<DigitalOutputDevice>& ms2_device() const {
+  inline const std::shared_ptr<DigitalOutputDevice>& ms2_device() const {
     return ms2_device_;
   }
   /**
@@ -99,7 +99,7 @@ class A4988Device : public impl::StepperDeviceImpl<Speed> {
    *
    * @return shared_ptr of DigitalOutputDevice
    */
-  const std::shared_ptr<DigitalOutputDevice>& ms3_device() const {
+  inline const std::shared_ptr<DigitalOutputDevice>& ms3_device() const {
     return ms3_device_;
   }
   /**
@@ -107,37 +107,37 @@ class A4988Device : public impl::StepperDeviceImpl<Speed> {
    *
    * @return step GPIO pin
    */
-  const PI_PIN& ms1_pin() const { return ms1_pin_; }
+  inline const PI_PIN& ms1_pin() const { return ms1_pin_; }
   /**
    * Get Direction GPIO pin
    *
    * @return direction GPIO pin
    */
-  const PI_PIN& ms2_pin() const { return ms2_pin_; }
+  inline const PI_PIN& ms2_pin() const { return ms2_pin_; }
   /**
    * Get Enable GPIO pin
    *
    * @return enable GPIO pin
    */
-  const PI_PIN& ms3_pin() const { return ms3_pin_; }
+  inline const PI_PIN& ms3_pin() const { return ms3_pin_; }
   /**
    * Get A4988 Stepper max microsteps
    *
    * @return max microsteps of A4988
    */
-  static const stepper::step max_microsteps() { return max_microsteps_; }
+  inline static const stepper::step max_microsteps() { return max_microsteps_; }
   /**
    * Get A4988 Stepper Microstep table
    *
    * @return ms table of A4988 stepper
    */
-  static const stepper::step* ms_table() { return ms_table_; }
+  inline static const stepper::step* ms_table() { return ms_table_; }
   /**
    * Get A4988 Stepper Microstep table
    *
    * @return ms table of A4988 stepper
    */
-  static const size_t ms_table_size() { return sizeof(ms_table_); }
+  inline static size_t ms_table_size() { return sizeof(ms_table_); }
 
  protected:
   /*

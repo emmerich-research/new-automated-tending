@@ -157,7 +157,6 @@ class ConfigImpl : public StackObj {
     return find<T>("devices", "limit-switch", "z1",
                    std::forward<Keys>(keys)...);
   }
-
   /**
    * Get limit switch lower bound z-axis device info
    *
@@ -278,21 +277,37 @@ class ConfigImpl : public StackObj {
    */
   const coordinate& tending_position();
   /**
-   * Get tending movement path
+   * Get tending edge movement path
    *
-   * It should be in key "mechanisms.tending.path"
+   * It should be in key "mechanisms.tending.path.edge"
    *
-   * @return tending movement path
+   * @return tending edge movement path
    */
-  const path_container& tending_path();
+  const path_container& tending_path_edge();
   /**
-   * Get tending movement path coordinate at specified index
+   * Get tending edge movement path coordinate at specified index
+   *
+   * @param idx index to get
+   *
+   * @return tending edge movement path at specified index
+   */
+  const coordinate& tending_path_edge(size_t idx);
+  /**
+   * Get tending zigzag movement path
+   *
+   * It should be in key "mechanisms.tending.path.zigzag"
+   *
+   * @return tending zigzag movement path
+   */
+  const path_container& tending_path_zigzag();
+  /**
+   * Get tending zigzag movement path coordinate at specified index
    *
    * @param idx index to get
    *
    * @return tending movement path at specified index
    */
-  const coordinate& tending_path(size_t idx);
+  const coordinate& tending_path_zigzag(size_t idx);
   /**
    * Get stepper x-axis info for tending mechanism
    *
@@ -399,9 +414,13 @@ class ConfigImpl : public StackObj {
    */
   coordinate spraying_position_;
   /**
-   * Tending movement path
+   * Tending movement path for edge pattern
    */
-  path_container tending_path_;
+  path_container tending_path_edge_;
+  /**
+   * Tending movement path for zigzag pattern
+   */
+  path_container tending_path_zigzag_;
   /**
    * Tending position
    */

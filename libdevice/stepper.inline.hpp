@@ -30,7 +30,7 @@ StepperDeviceImpl<Speed>::StepperDeviceImpl(PI_PIN        step_pin,
 }
 
 template <stepper::speed Speed>
-const stepper::state StepperDeviceImpl<Speed>::state() const {
+stepper::state StepperDeviceImpl<Speed>::state() const {
   stepper::state state = stepper::state::stopped;
 
   if (remaining_steps() > 0) {
@@ -138,7 +138,7 @@ void StepperDeviceImpl<Speed>::move(long steps, bool stop_condition) {
 }
 
 template <stepper::speed Speed>
-const stepper::step StepperDeviceImpl<Speed>::stop() {
+stepper::step StepperDeviceImpl<Speed>::stop() {
   stepper::step retval = remaining_steps();
   remaining_steps_ = 0;
   return retval;

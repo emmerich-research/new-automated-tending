@@ -330,9 +330,13 @@ class Movement : public StackObj {
    */
   void follow_spraying_paths();
   /**
-   * Move according to tending paths
+   * Move according to edge tending paths
    */
-  void follow_tending_paths();
+  void follow_tending_paths_edge();
+  /**
+   * Move according to zigzag tending paths
+   */
+  void follow_tending_paths_zigzag();
 
  private:
   /**

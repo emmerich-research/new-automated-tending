@@ -2,11 +2,6 @@
 # github.com/rayandrews
 # <raydreww@gmail.com>
 
-# PULL UP / DOWN
-# OFF  = 0
-# DOWN = 1
-# UP   = 2
-
 [general]
 name                         = "Emmerich Tending App"
 debug                        = true # will log all debugging things
@@ -15,6 +10,23 @@ debug                        = true # will log all debugging things
 
 # ----------------------------------------------------------
 # Stepper Configuration
+#
+# Brief:
+# Stepper consisted of at least 2 pins :
+# - Step Pin
+# - Dir Pin
+#
+# However there are exists other pins (specifically
+# to its driver), such as :
+# - Enable Pin
+# - Microstep Pin (can be 3 for Pololu A4988,
+#   denotes as MS1, MS2, MS3)
+#
+# Notes :
+# RPM, acceleration, and deceleration can be set here
+# this default configuration will be used for homing
+# and other basic movements
+# (such as moving to spray position, etc)
 # ----------------------------------------------------------
 [devices.stepper]
 type                         = "A4988"
@@ -30,7 +42,6 @@ enable-pin                   = 9
 enable-active-state          = true
 steps-per-mm                 = 52
 microsteps                   = 8
-# default speed things
 rpm                          = 50.0
 acceleration                 = 10.0 # steps / s^2
 deceleration                 = 10.0 # steps / s^2
@@ -46,7 +57,6 @@ enable-pin                   = 9
 enable-active-state          = true
 steps-per-mm                 = 52
 microsteps                   = 8
-# default speed things
 rpm                          = 50.0
 acceleration                 = 10.0 # steps / s^2
 deceleration                 = 10.0 # steps / s^2
@@ -62,7 +72,6 @@ enable-pin                   = 9
 enable-active-state          = true
 steps-per-mm                 = 20
 microsteps                   = 8
-# default speed things
 rpm                          = 10.0
 acceleration                 = 10.0 # steps / s^2
 deceleration                 = 10.0 # steps / s^2
@@ -71,6 +80,8 @@ deceleration                 = 10.0 # steps / s^2
 # ----------------------------------------------------------
 
 [devices.spray]
+# notes that this needs to be pulled up via Raspberry PI PIN
+# and the logic needs to be flipped (active-state = false)
 key                          = "SPRAY"
 pin                          = 21
 active-state                 = false
@@ -82,9 +93,15 @@ duty-cycle                   = 127
 active-state                 = true
 
 # ----------------------------------------------------------
-# Limit Switch for edge detection
+# Limit Switch
+#
+# Brief: This will prevent any mechanical and software issues
+# that will make the machine `out of its path`
 # ----------------------------------------------------------
 [devices.limit-switch]
+# notes that this needs to be pulled up via Raspberry PI PIN
+# and the logic needs to be flipped (active-state = false)
+
 type                         = "input"
 
 # limit switch x-axis
@@ -99,13 +116,13 @@ key                          = "LIMIT-Y"
 pin                          = 8
 active-state                 = false
 
-# limit switch z-axis upper bound
+# limit switch z-axis upper bound (top)
 [devices.limit-switch.z1]
 key                          = "LIMIT-Z1"
 pin                          = 15
 active-state                 = false
 
-# limit switch z-axis lower bound
+# limit switch z-axis lower bound (bottom)
 [devices.limit-switch.z2]
 key                          = "LIMIT-Z2"
 pin                          = 16
@@ -146,6 +163,8 @@ active-state                 = true
 
 [devices.communication.output]
 # communication from PLC to RaspberryPI
+# notes that this needs to be pulled up via Raspberry PI PIN
+# and the logic needs to be flipped (active-state = false)
 
 [devices.communication.output.tending-ready]
 key                          = "OUTPUT-PI-TENDING-READY"
@@ -189,11 +208,23 @@ rotary-encoder-pin           = 1
 
 # ----------------------------------------------------------
 # Spraying Mechanism
+#
+# Brief :
+# This will do these phases :
+# - Homing
+# - Moving to initial position
+# - Spray on
+# - Do path
+# - Move little bit to side
+# - Spray off
+# - Homing
 # ----------------------------------------------------------
 [mechanisms.spraying]
 # initial position according to limit switch homing
 position                     = [45.0, 10.0]
-# coordinates after homing become initial position of spraying
+
+# coordinates after changing `imaginary homing` to
+# initial position of spraying
 path                         = [
   # x   y  (in mm, need to be in floating point)
 
@@ -233,22 +264,39 @@ deceleration                 = 10.0 # steps / s^2
 
 # ----------------------------------------------------------
 # Tending Mechanism
+#
+# Brief :
+# This will do these phases :
+# - Homing
+# - Moving to initial position
+# - Finger Down
+# - Do edge path
+# - Finger motor start
+# - Do zigzag path
+# - Finger motor stop
+# - Homing
 # ----------------------------------------------------------
 [mechanisms.tending]
 # initial position according to limit switch homing
 position                     = [160.0, 90.0]
-# coordinates after homing become initial position of spraying
-path                         = [
-  # x   y  (in mm, need to be in floating point)
 
-  # edge
+[mechanisms.tending.path]
+# coordinates after changing `imaginary homing` to
+# initial position of spraying
+# this needs to be splitted between edge and zigzag
+# because finger motor will be on after edge has been
+# done
+edge                         = [
+  # x    y  (in mm, need to be in floating point)
   [0.0,   0.0],
   [0.0,   400.0],
   [400.0, 400.0],
   [400.0, 0.0],
   [10.0,  40.0],
+]
 
-  # zigzag
+zigzag                       = [
+  # x    y  (in mm, need to be in floating point)
   [0.0,   0.0],
   [0.0,   400.0],
   [100.0, 400.0],
@@ -271,7 +319,6 @@ deceleration                 = 10.0 # steps / s^2
 rpm                          = 50.0
 acceleration                 = 10.0 # steps / s^2
 deceleration                 = 10.0 # steps / s^2
-
 # ----------------------------------------------------------
 # End of Tending Mechanism
 # ----------------------------------------------------------

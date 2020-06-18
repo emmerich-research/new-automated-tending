@@ -121,7 +121,7 @@ class StepperDevice : public StackObj {
    *
    * @return current state of stepper
    */
-  virtual const stepper::state state() const = 0;
+  virtual stepper::state state() const = 0;
   /**
    * Get calculated time to complete move with given steps.
    *
@@ -431,7 +431,7 @@ class StepperDeviceImpl : public StepperDevice {
    *
    * @return current state of stepper
    */
-  virtual const stepper::state state() const override;
+  virtual stepper::state state() const override;
   /**
    * Move stepper motor at given steps
    *
@@ -471,7 +471,7 @@ class StepperDeviceImpl : public StepperDevice {
    *
    * @return remaining steps
    */
-  virtual const stepper::step stop(void) override;
+  virtual stepper::step stop(void) override;
 
  protected:
   /**
