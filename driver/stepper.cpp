@@ -56,11 +56,14 @@ bool menu() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
+  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
+  massert(output_registry != nullptr, "sanity");
+
   auto* stepper_registry = device::StepperRegistry::get();
   massert(stepper_registry != nullptr, "sanity");
 
-  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
-  massert(output_registry != nullptr, "sanity");
+  auto* pwm_registry = device::PWMDeviceRegistry::get();
+  massert(pwm_registry != nullptr, "sanity");
 
   auto&& movement = mechanism::movement_mechanism();
 
@@ -79,6 +82,8 @@ bool menu() {
       output_registry->get(device::id::comm::pi::tending_complete());
 
   auto&& spray = output_registry->get(device::id::spray());
+
+  auto&& finger = pwm_registry->get(device::id::finger());
 
   spraying_ready->write(device::digital::value::low);
   spraying_running->write(device::digital::value::low);
@@ -153,11 +158,19 @@ bool menu() {
     movement->move_to_tending_position();
     sleep_for<time_units::millis>(3000);
     movement->move_finger_down();
-    sleep_for<time_units::millis>(3000);
+    sleep_for<time_units::millis>(1000);
     movement->follow_tending_paths_edge();
+    sleep_for<time_units::millis>(1000);
+    if (finger->duty_cycle(config->finger<unsigned int>("duty-cycle")) ==
+        ATM_ERR) {
+      LOG_INFO("Cannot set finger duty cycle...");
+    }
     sleep_for<time_units::millis>(1000);
     movement->follow_tending_paths_zigzag();
     sleep_for<time_units::millis>(1000);
+    if (finger->duty_cycle(0) == ATM_ERR) {
+      LOG_INFO("Cannot set finger duty cycle...");
+    }
     movement->homing();
 
     tending_ready->write(device::digital::value::high);
