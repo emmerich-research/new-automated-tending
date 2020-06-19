@@ -1,6 +1,7 @@
 project(gui)
 
 find_package(SDL2 REQUIRED)
+find_package(OpenGL REQUIRED)
 
 set(IMGUI_VERSION 1.77)
 
@@ -39,8 +40,9 @@ target_compile_definitions(gui PUBLIC
 
 target_link_libraries(gui PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
-  "${GLAD_LIBRARIES}"
-  "${SDL2_LIBRARIES}"
+  ${CMAKE_DL_LIBS}
+  ${GLAD_LIBRARIES}
+  ${SDL2_LIBRARIES}
   "${PROJECT_NAMESPACE}::util"
   "${PROJECT_NAMESPACE}::core"
   "${PROJECT_NAMESPACE}::algo")
