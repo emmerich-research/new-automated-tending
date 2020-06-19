@@ -23,8 +23,10 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
 
   while (true) {
     if (spraying_height.check()) {
+      root_machine(fsm).start_spraying();
       break;
     } else if (tending_height.check()) {
+      root_machine(fsm).start_tending();
       break;
     }
   }
