@@ -5,7 +5,7 @@
 
 #include <libcore/core.hpp>
 #include <libdevice/device.hpp>
-#include <libmechanism/mechanism.hpp>
+#include <libgui/gui.hpp>
 
 #include "machine.hpp"
 
@@ -18,13 +18,11 @@ int throw_message() {
 
 int main() {
   ATM_STATUS status = ATM_OK;
-  std::cerr << 1 << std::endl;
   // run state machine
   machine::tending tsm;
 
   // initialization
   try {
-    std::cerr << 2 << std::endl;
     tsm.start();
     massert(tsm.is_running(), "sanity");
   } catch (std::runtime_error& e) {

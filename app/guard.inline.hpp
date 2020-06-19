@@ -16,23 +16,23 @@ bool machine_ready::operator()(FSM const& fsm, State const&) const {
 }
 
 template <typename FSM, typename State>
-bool homing::operator()(FSM const& fsm, State const&) const {
+bool homing::operator()(FSM const&, State const&) const {
   return check();
 }
 
 template <typename FSM, typename State>
-bool e_stop::operator()(FSM const& fsm, State const&) const {
+bool e_stop::operator()(FSM const&, State const&) const {
   return check();
 }
 
 template <typename FSM, typename State>
-bool reset::operator()(FSM const& fsm, State const&) const {
+bool reset::operator()(FSM const&, State const&) const {
   return check();
 }
 
 namespace spraying {
 template <typename FSM, typename State>
-bool height::operator()(FSM const& fsm, State const&) const {
+bool height::operator()(FSM const&, State const&) const {
   return check();
 }
 
@@ -51,7 +51,7 @@ auto completed::operator()(FSM const& fsm, State const&) const
 
 namespace tending {
 template <typename FSM, typename State>
-bool height::operator()(FSM const& fsm, State const&) const {
+bool height::operator()(FSM const&, State const&) const {
   return check();
 }
 

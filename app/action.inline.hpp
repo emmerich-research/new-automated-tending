@@ -47,6 +47,32 @@ void start::operator()(Event const&,
         "Failed to initialize `mechanism`, something is wrong");
   }
 
+  // setting all communicatoin to low
+  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
+  massert(output_registry != nullptr, "sanity");
+
+  auto&& spraying_ready =
+      output_registry->get(device::id::comm::pi::spraying_ready());
+  auto&& spraying_running =
+      output_registry->get(device::id::comm::pi::spraying_running());
+  auto&& spraying_complete =
+      output_registry->get(device::id::comm::pi::spraying_complete());
+
+  auto&& tending_ready =
+      output_registry->get(device::id::comm::pi::tending_ready());
+  auto&& tending_running =
+      output_registry->get(device::id::comm::pi::tending_running());
+  auto&& tending_complete =
+      output_registry->get(device::id::comm::pi::tending_complete());
+
+  spraying_ready->write(device::digital::value::low);
+  spraying_running->write(device::digital::value::low);
+  spraying_complete->write(device::digital::value::low);
+
+  tending_ready->write(device::digital::value::low);
+  tending_running->write(device::digital::value::low);
+  tending_complete->write(device::digital::value::low);
+
   fsm.machine_ready_ = true;
 }
 

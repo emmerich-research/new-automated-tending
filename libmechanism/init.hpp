@@ -21,8 +21,6 @@ ATM_STATUS initialize_mechanism();
 
 /**
  * Destroy mechanisms
- *
- * @return void
  */
 void destroy_mechanism();
 

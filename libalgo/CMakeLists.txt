@@ -16,13 +16,15 @@ ucm_add_target(
  
 add_library("${PROJECT_NAMESPACE}::algo" ALIAS algo)
 
-target_include_directories(algo INTERFACE
+target_include_directories(algo PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 target_link_libraries(algo PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
-  "${PROJECT_NAMESPACE}::core")
+  "${PROJECT_NAMESPACE}::util"
+  "${PROJECT_NAMESPACE}::core"
+  "${PROJECT_NAMESPACE}::algo")
 
 target_set_warnings(algo
   ENABLE ALL

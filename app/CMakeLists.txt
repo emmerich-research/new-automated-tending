@@ -23,7 +23,8 @@ target_link_libraries(app PRIVATE
   "${PROJECT_NAMESPACE}::core"
   "${PROJECT_NAMESPACE}::algo"
   "${PROJECT_NAMESPACE}::device"
-  "${PROJECT_NAMESPACE}::mechanism")
+  "${PROJECT_NAMESPACE}::mechanism"
+  "${PROJECT_NAMESPACE}::gui")
 
 target_set_warnings(app
   ENABLE ALL

@@ -8,6 +8,7 @@ NAMESPACE_BEGIN
 namespace guard {
 struct guard_base : public StackObj {
   virtual bool check() const = 0;
+  virtual ~guard_base() = default;
 };
 
 struct machine_ready : public StackObj {

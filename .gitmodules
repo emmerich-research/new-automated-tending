@@ -13,3 +13,6 @@
 [submodule "external/afsm"]
 	path = external/afsm
 	url = https://github.com/zmij/afsm.git
+[submodule "external/imgui"]
+	path = external/imgui
+	url = https://github.com/ocornut/imgui.git

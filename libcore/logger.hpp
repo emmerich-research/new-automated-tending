@@ -222,7 +222,7 @@ class LoggerImpl : public StackObj {
    * @param args  formatted message
    */
   template <typename... Args>
-  void critical(fmt::basic_string_view<char> fmt, const Args&... args) {
+  inline void critical(fmt::basic_string_view<char> fmt, const Args&... args) {
     logger_->critical(fmt, args...);
   }
 

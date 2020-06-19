@@ -11,11 +11,10 @@ NAMESPACE_BEGIN
 
 namespace machine {
 template <typename Event, typename FSM>
-void TendingDef::initial::on_enter(Event const&& event, FSM& fsm) const {}
+void TendingDef::initial::on_enter(Event const&&, FSM&) const {}
 
 template <typename Event, typename FSM>
-void TendingDef::running::no_task::on_enter(Event const&& event,
-                                            FSM&          fsm) const {
+void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
   fsm.is_spraying_completed_ = false;
   fsm.is_tending_completed_ = false;
 }
@@ -24,15 +23,14 @@ void TendingDef::running::no_task::on_enter(Event const&& event,
  * Beginning of spraying
  */
 template <typename Event, typename FSM>
-void TendingDef::running::spraying::idle::on_enter(Event const&& event,
-                                                   FSM&          fsm) const {
+void TendingDef::running::spraying::idle::on_enter(Event const&&,
+                                                   FSM& fsm) const {
   LOG_INFO("Entering spraying mode, waiting for signal for spraying height");
   fsm.initialize();
 }
 
 template <typename Event, typename FSM>
-void TendingDef::running::spraying::preparation::on_enter(Event&& event,
-                                                          FSM&    fsm) {
+void TendingDef::running::spraying::preparation::on_enter(Event&&, FSM& fsm) {
   LOG_INFO("Spraying preparation...");
 
   fsm.spraying_ready->write(device::digital::value::low);
@@ -47,7 +45,7 @@ void TendingDef::running::spraying::preparation::on_enter(Event&& event,
 }
 
 template <typename Event, typename FSM>
-void TendingDef::running::spraying::preparation::on_exit(Event&&    event,
+void TendingDef::running::spraying::preparation::on_exit(Event&&,
                                                          FSM const& fsm) const {
   fsm.spraying_ready->write(device::digital::value::high);
   fsm.spraying_running->write(device::digital::value::low);
@@ -80,15 +78,14 @@ void TendingDef::running::spraying::preparation::on_exit(Event&&    event,
  * Beginning of tending
  */
 template <typename Event, typename FSM>
-void TendingDef::running::tending::idle::on_enter(Event const&& event,
-                                                  FSM&          fsm) const {
+void TendingDef::running::tending::idle::on_enter(Event const&&,
+                                                  FSM& fsm) const {
   LOG_INFO("Entering tending mode, waiting for signal for tending height");
   fsm.initialize();
 }
 
 template <typename Event, typename FSM>
-void TendingDef::running::tending::preparation::on_enter(Event&& event,
-                                                         FSM&    fsm) {
+void TendingDef::running::tending::preparation::on_enter(Event&&, FSM& fsm) {
   LOG_INFO("Tending preparation...");
 
   fsm.tending_ready->write(device::digital::value::low);
@@ -101,7 +98,7 @@ void TendingDef::running::tending::preparation::on_enter(Event&& event,
 }
 
 template <typename Event, typename FSM>
-void TendingDef::running::tending::preparation::on_exit(Event&&    event,
+void TendingDef::running::tending::preparation::on_exit(Event&&,
                                                         FSM const& fsm) const {
   fsm.tending_ready->write(device::digital::value::high);
   fsm.tending_running->write(device::digital::value::low);
