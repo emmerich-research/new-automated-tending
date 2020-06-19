@@ -32,6 +32,7 @@ bool height::check() const {
   auto*  input_registry = device::DigitalInputDeviceRegistry::get();
   auto&& spraying_height =
       input_registry->get(device::id::comm::plc::spraying_height());
+  LOG_INFO("Spraying height {}", spraying_height->read_bool());
   return spraying_height->read_bool();
 }
 }  // namespace spraying
