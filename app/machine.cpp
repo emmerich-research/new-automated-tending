@@ -37,8 +37,16 @@ bool TendingDef::is_terminated() const {
   return rebind().is_in_state<terminated>();
 }
 
+void TendingDef::start_spraying() {
+  rebind().process_event(event::spraying::start{});
+}
+
 void TendingDef::run_spraying() {
   rebind().process_event(event::spraying::run{});
+}
+
+void TendingDef::start_tending() {
+  rebind().process_event(event::tending::run{});
 }
 
 void TendingDef::run_tending() {

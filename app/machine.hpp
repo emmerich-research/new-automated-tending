@@ -219,15 +219,14 @@ struct TendingDef : public StackObj,
     };
 
     using initial_state = no_task;
-    using transitions = transition_table<
-        tr<no_task, none, spraying, none, guard::spraying::height>,
-        tr<spraying, event::task_complete, no_task>,
-        tr<tending, event::task_complete, no_task>,
-        tr<no_task,
-           none,
-           tending,
-           none,
-           and_<guard::tending::height, guard::spraying::completed>>>;
+    using transitions =
+        transition_table<tr<no_task, event::spraying::start, spraying>,
+                         tr<spraying, event::task_complete, no_task>,
+                         tr<tending, event::task_complete, no_task>,
+                         tr<no_task,
+                            event::tending::start,
+                            tending,
+                            guard::spraying::completed>>;
 
     /**
      * Constructor
@@ -294,9 +293,17 @@ struct TendingDef : public StackObj,
    */
   void task_completed();
   /**
+   * Start spraying
+   */
+  void start_spraying();
+  /**
    * Run spraying
    */
   void run_spraying();
+  /**
+   * Start tending
+   */
+  void start_tending();
   /**
    * Run tending
    */

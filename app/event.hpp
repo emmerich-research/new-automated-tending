@@ -12,10 +12,12 @@ struct stop {};
 struct task_complete {};
 
 namespace spraying {
+struct start {};
 struct run {};
 }  // namespace spraying
 
 namespace tending {
+struct start {};
 struct run {};
 }  // namespace tending
 }  // namespace event
