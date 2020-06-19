@@ -36,7 +36,8 @@ target_include_directories(gui PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 target_compile_definitions(gui PUBLIC
-    GLFW_INCLUDE_NONE)
+  GLFW_INCLUDE_NONE
+  IMGUI_IMPL_OPENGL_LOADER_GLAD)
 
 target_link_libraries(gui PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}

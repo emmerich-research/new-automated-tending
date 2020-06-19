@@ -100,15 +100,6 @@ static auto        finger = []() {
 
 namespace comm {
 namespace plc {
-static std::string tending_height_;
-static auto        tending_height = []() {
-  if (tending_height_.empty()) {
-    tending_height_ =
-        Config::get()->plc_to_pi<std::string>("tending-height", "key");
-  }
-  return tending_height_;
-};
-
 static std::string spraying_height_;
 static auto        spraying_height = []() {
   if (spraying_height_.empty()) {
@@ -116,6 +107,15 @@ static auto        spraying_height = []() {
         Config::get()->plc_to_pi<std::string>("spraying-height", "key");
   }
   return spraying_height_;
+};
+
+static std::string tending_height_;
+static auto        tending_height = []() {
+  if (tending_height_.empty()) {
+    tending_height_ =
+        Config::get()->plc_to_pi<std::string>("tending-height", "key");
+  }
+  return tending_height_;
 };
 
 static std::string reset_;
