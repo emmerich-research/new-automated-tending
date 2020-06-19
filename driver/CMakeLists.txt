@@ -1,34 +1,29 @@
 project(driver)
 
-ucm_add_files(
-  "stepper.cpp"
-  TO SOURCES)
-  
-ucm_add_target(
-  NAME driver
-  TYPE EXECUTABLE
-  SOURCES ${SOURCES}
-  # UNITY CPP_PER_UNITY 20
-  PCH_FILE "precompiled.hpp")
+file(GLOB_RECURSE driver_sources "*.cpp")
 
-# target_include_directories(${NAME} PRIVATE
-#   # ${PROJECT_SOURCE_DIR}
-#   ${CMAKE_BINARY_DIR})
+foreach(driver_file ${driver_sources})
+  # I used a simple string replace, to cut off .cpp.
+  get_filename_component(driver_source_file ${driver_file} NAME)
+  string(REPLACE ".cpp" "" driver_exe ${driver_source_file})
 
-target_link_libraries(driver PRIVATE
-  "${PROJECT_NAMESPACE}::core"
-  "${PROJECT_NAMESPACE}::algo"
-  "${PROJECT_NAMESPACE}::device"
-  "${PROJECT_NAMESPACE}::mechanism")
+  add_executable(${driver_exe} ${driver_file})
 
-target_set_warnings(driver
-  ENABLE ALL
-  # AS_ERROR ALL
-  DISABLE Annoying)
+  target_link_libraries(${driver_exe} PRIVATE
+    "${PROJECT_NAMESPACE}::core"
+    "${PROJECT_NAMESPACE}::algo"
+    "${PROJECT_NAMESPACE}::device"
+    "${PROJECT_NAMESPACE}::mechanism"
+    "${PROJECT_NAMESPACE}::gui")
 
-set_target_properties(driver PROPERTIES
+  target_set_warnings(${driver_exe}
+    ENABLE ALL
+    DISABLE Annoying)
+
+  set_target_properties(${driver_exe} PROPERTIES
     CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES 
+    CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO)
 
-target_enable_lto(driver optimized)
+  target_enable_lto(${driver_exe} optimized)
+endforeach()

@@ -8,16 +8,29 @@
  * enabled or not
  */
 
+#if defined(X_H)
+#undef None
+#endif
+
 // 1. STL
 
 // 2. Vendor
+// 2.1. Glad
+#include <glad/glad.h>
 
+// 2.2. SDL
+#include <SDL.h>
+
+// 2.3. ImGui
 #include <external/imgui/imgui.h>
 
 #include <external/imgui/imconfig.h>
 // #include <external/imgui/imgui_internal.h>
 #include <external/imgui/imstb_rectpack.h>
 #include <external/imgui/imstb_truetype.h>
+
+#include <external/imgui/examples/imgui_impl_opengl3.h>
+#include <external/imgui/examples/imgui_impl_sdl.h>
 
 // 3. Inside projects
 #include <libutil/util.hpp>

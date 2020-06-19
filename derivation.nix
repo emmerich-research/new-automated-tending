@@ -3,12 +3,10 @@
 , pkgs
 , cmake
 , ninja
-, boost
-, gtkmm3
 , mesa
 , mesa_drivers
-, libGLU
 , doxygen
+, SDL2
 }:
 
 let
@@ -27,12 +25,10 @@ in
     propagatedBuildInputs  = [
       mesa
       mesa_drivers
-      libGLU
     ];
   
     buildInputs            = [
-      boost
-      gtkmm3
+      SDL2
       doxygen
     ];
 
