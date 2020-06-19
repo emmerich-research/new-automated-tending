@@ -31,20 +31,19 @@ target_include_directories(gui PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
   "$<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>"
   "$<BUILD_INTERFACE:${IMGUI_INCLUDE_DIR}>"
+  "$<BUILD_INTERFACE:${GLAD_INCLUDE_DIRS}>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 target_compile_definitions(gui PUBLIC
     GLFW_INCLUDE_NONE)
 
 target_link_libraries(gui PUBLIC
-  glad::glad
   ${CMAKE_THREAD_LIBS_INIT}
+  "${GLAD_LIBRARIES}"
   "${SDL2_LIBRARIES}"
   "${PROJECT_NAMESPACE}::util"
   "${PROJECT_NAMESPACE}::core"
   "${PROJECT_NAMESPACE}::algo")
-
-add_definitions(-DGLFW_INCLUDE_NONE)
 
 target_set_warnings(gui
   ENABLE ALL
