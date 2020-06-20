@@ -223,38 +223,40 @@ void Movement::stop(void) {
 }
 
 void Movement::start_move(const long& x, const long& y, const long& z) {
-  // const time_unit time_x = stepper_x()->time_for_move(x);
-  // const time_unit time_y = stepper_y()->time_for_move(y);
-  // const time_unit time_z = stepper_z()->time_for_move(z);
+#if defined(SYNC_DRIVER)
+  const time_unit time_x = stepper_x()->time_for_move(x);
+  const time_unit time_y = stepper_y()->time_for_move(y);
+  const time_unit time_z = stepper_z()->time_for_move(z);
 
-  // // find which motor would take the longest to finish,
-  // const time_unit move_time = std::max(time_x, std::max(time_y, time_z));
+  // find which motor would take the longest to finish,
+  const time_unit move_time = std::max(time_x, std::max(time_y, time_z));
 
-  // LOG_DEBUG("Will move about {} micros", move_time);
+  LOG_DEBUG("Will move about {} micros", move_time);
 
-  // // start moving x
-  // if (x == 0) {
-  //   event_timer_x_ = 0;
-  // } else {
-  //   stepper_x()->start_move(x, move_time);
-  //   event_timer_x_ = 1;
-  // }
+  // start moving x
+  if (x == 0) {
+    event_timer_x_ = 0;
+  } else {
+    stepper_x()->start_move(x, move_time);
+    event_timer_x_ = 1;
+  }
 
-  // // start moving y
-  // if (y == 0) {
-  //   event_timer_y_ = 0;
-  // } else {
-  //   stepper_y()->start_move(y, move_time);
-  //   event_timer_y_ = 1;
-  // }
+  // start moving y
+  if (y == 0) {
+    event_timer_y_ = 0;
+  } else {
+    stepper_y()->start_move(y, move_time);
+    event_timer_y_ = 1;
+  }
 
-  // // start moving z
-  // if (z == 0) {
-  //   event_timer_z_ = 0;
-  // } else {
-  //   stepper_z()->start_move(z, move_time);
-  //   event_timer_z_ = 1;
-  // }
+  // start moving z
+  if (z == 0) {
+    event_timer_z_ = 0;
+  } else {
+    stepper_z()->start_move(z, move_time);
+    event_timer_z_ = 1;
+  }
+#else
 
   // start moving x
   if (x == 0) {
@@ -279,6 +281,7 @@ void Movement::start_move(const long& x, const long& y, const long& z) {
     stepper_z()->start_move(z);
     event_timer_z_ = 1;
   }
+#endif
 
   ready_ = false;
   last_move_end_ = 0;

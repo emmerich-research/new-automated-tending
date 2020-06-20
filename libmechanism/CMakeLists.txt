@@ -1,5 +1,7 @@
 project(mechanism)
 
+set(SYNC_DRIVER ON)
+
 ucm_add_files(
   "init.cpp"
 
@@ -26,6 +28,11 @@ target_link_libraries(mechanism PUBLIC
   "${PROJECT_NAMESPACE}::core"
   "${PROJECT_NAMESPACE}::algo"
   "${PROJECT_NAMESPACE}::device")
+
+if (SYNC_DRIVER)
+  target_compile_definitions(mechanism PUBLIC
+    SYNC_DRIVER)
+endif()
 
 target_set_warnings(mechanism
   ENABLE ALL
