@@ -28,13 +28,17 @@ void homing::act() const {
   guard::homing g_homing;
 
   bool is_home = g_homing.check();
-  while (!is_home) {
-    is_home = g_homing.check();
+
+  if (!is_home) {
     movement->homing();
-    is_home = g_homing.check();
-    LOG_DEBUG("Still doing homing, retrying homing for 400ms...");
-    sleep_for<time_units::millis>(400);
   }
+  // while (!is_home) {
+  //   is_home = g_homing.check();
+  //   movement->homing();
+  //   is_home = g_homing.check();
+  //   LOG_DEBUG("Still doing homing, retrying homing for 400ms...");
+  //   sleep_for<time_units::millis>(400);
+  // }
   massert(g_homing.check(), "sanity");
 }
 }  // namespace action
