@@ -1,5 +1,3 @@
-#include "precompiled.hpp"
-
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
@@ -68,6 +66,9 @@ bool menu() {
   auto* pwm_registry = device::PWMDeviceRegistry::get();
   massert(pwm_registry != nullptr, "sanity");
 
+  auto* input_registry = device::DigitalInputDeviceRegistry::get();
+  massert(input_registry != nullptr, "sanity");
+
   auto&& movement = mechanism::movement_mechanism();
 
   auto&& spraying_ready =
@@ -106,6 +107,7 @@ bool menu() {
   LOG_INFO("5. Just Y");
   LOG_INFO("6. Just Z");
   LOG_INFO("7. X and Y");
+  LOG_INFO("8. Test trigger");
   LOG_INFO("0. Exit");
 
   unsigned int choice;
@@ -212,6 +214,18 @@ bool menu() {
     stepper_z->disable();
   } else if (choice == 7) {
     movement->move<mechanism::movement::unit::mm>(50.0, 50.0, 0.0);
+  } else if (choice == 8) {
+    auto*  input_registry = device::DigitalInputDeviceRegistry::get();
+    auto&& spraying_height =
+        input_registry->get(device::id::comm::plc::spraying_height());
+    while (true) {
+      auto status = spraying_height->read_bool();
+      LOG_INFO("Spraying Height {}", status);
+      if (status) {
+        break;
+      }
+      sleep_for<time_units::millis>(500);
+    }
   } else if (choice == 0) {
     return true;
   }
