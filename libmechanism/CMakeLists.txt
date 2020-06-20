@@ -1,6 +1,6 @@
 project(mechanism)
 
-set(SYNC_DRIVER ON)
+set(SYNC_DRIVER OFF)
 
 ucm_add_files(
   "init.cpp"
