@@ -57,7 +57,7 @@ if (OPENGL3)
     OPENGL3_EXIST)
 elseif(OPENGL2)
   target_compile_definitions(gui PUBLIC
-    OPENGL3_EXIST)
+    OPENGL2_EXIST)
 endif()
 
 target_link_libraries(gui PUBLIC

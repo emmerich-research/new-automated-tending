@@ -15,13 +15,11 @@
 // 1. STL
 
 // 2. Vendor
-// 2.1. Glad
-#include <glad/glad.h>
 
-// 2.2. SDL
+// 2.1. SDL
 #include <SDL.h>
 
-// 2.3. ImGui
+// 2.2. ImGui
 #include <external/imgui/imgui.h>
 
 #include <external/imgui/imconfig.h>
@@ -30,8 +28,12 @@
 #include <external/imgui/imstb_truetype.h>
 
 #if defined(OPENGL3_EXIST)
+// 2.3. Glad
+#include <glad/glad.h>
+
 #include <external/imgui/examples/imgui_impl_opengl3.h>
 #elif defined(OPENGL2_EXIST)
+#include <SDL_opengl.h>
 #include <external/imgui/examples/imgui_impl_opengl2.h>
 #endif
 

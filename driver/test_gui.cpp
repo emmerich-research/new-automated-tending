@@ -1,5 +1,3 @@
-#include "precompiled.hpp"
-
 #include <stdio.h>
 
 #include <libgui/gui.hpp>
@@ -16,6 +14,7 @@ int main(int, char**) {
     return -1;
   }
 
+#if defined(OPENGL3_EXIST)
   // Decide GL+GLSL versions
 #if __APPLE__
   // GL 3.2 Core + GLSL 150
@@ -55,6 +54,22 @@ int main(int, char**) {
     fprintf(stderr, "Failed to initialize OpenGL loader!\n");
     return 1;
   }
+#elif defined(OPENGL2_EXIST)
+  // Setup window
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+  SDL_WindowFlags window_flags = (SDL_WindowFlags)(
+      SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+  SDL_Window* window =
+      SDL_CreateWindow("Dear ImGui SDL2+OpenGL example", SDL_WINDOWPOS_CENTERED,
+                       SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+  SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+  SDL_GL_MakeCurrent(window, gl_context);
+  SDL_GL_SetSwapInterval(1);  // Enable vsync
+#endif
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
@@ -71,7 +86,12 @@ int main(int, char**) {
 
   // Setup Platform/Renderer bindings
   ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+
+#if defined(OPENGL3_EXIST)
   ImGui_ImplOpenGL3_Init(glsl_version);
+#elif defined(OPENGL2_EXIST)
+  ImGui_ImplOpenGL2_Init();
+#endif
 
   // Load Fonts
   // - If no fonts are loaded, dear imgui will use the default font. You can
@@ -126,7 +146,11 @@ int main(int, char**) {
     }
 
     // Start the Dear ImGui frame
+#if defined(OPENGL3_EXIST)
     ImGui_ImplOpenGL3_NewFrame();
+#elif defined(OPENGL2_EXIST)
+    ImGui_ImplOpenGL2_NewFrame();
+#endif
     ImGui_ImplSDL2_NewFrame(window);
     ImGui::NewFrame();
 
@@ -189,12 +213,21 @@ int main(int, char**) {
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
+
+#if defined(OPENGL3_EXIST)
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#elif defined(OPENGL2_EXIST)
+    ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+#endif
     SDL_GL_SwapWindow(window);
   }
 
   // Cleanup
+#if defined(OPENGL3_EXIST)
   ImGui_ImplOpenGL3_Shutdown();
+#elif defined(OPENGL2_EXIST)
+  ImGui_ImplOpenGL2_Shutdown();
+#endif
   ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
 
