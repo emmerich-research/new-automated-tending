@@ -95,17 +95,17 @@ struct TendingDef : public StackObj,
       using initial_state = idle;
       using transitions = transition_table<
           /* State, Event, Next, Action, Guard */
-          tr<idle, none, preparation, none, guard::spraying::height>,
+          tr<idle, none, preparation, none>,
           tr<preparation,
              event::spraying::run,
              ongoing,
              action::spraying::job,
-             and_<guard::spraying::height, guard::homing>>,
+             guard::homing>,
           tr<ongoing,
              none,
              completed,
              action::spraying::complete,
-             and_<guard::spraying::height, guard::spraying::completed>>>;
+             guard::spraying::completed>>;
 
       bool initialized;
       void initialize();
@@ -128,57 +128,6 @@ struct TendingDef : public StackObj,
       using tending_fsm = afsm::inner_state_machine<tending, running_fsm>;
 
       tending();
-
-      struct idle : state<idle> {
-        template <typename Event, typename FSM>
-        void on_enter(Event const&& event, FSM& fsm) const;
-      };
-      struct preparation : state<preparation> {
-        template <typename Event, typename FSM>
-        void on_enter(Event&& event, FSM& fsm);
-
-        template <typename Event, typename FSM>
-        void on_exit(Event&& event, FSM const& fsm) const;
-      };
-      struct ongoing : state<ongoing> {};
-      struct completed : terminal_state<completed> {};
-
-      using initial_state = idle;
-      using transitions = transition_table<
-          /* State, Event, Next, Action, Guard */
-          tr<idle, none, preparation, none, guard::tending::height>,
-          tr<preparation,
-             event::tending::run,
-             ongoing,
-             action::tending::job,
-             and_<guard::tending::height, guard::homing>>,
-          tr<ongoing,
-             none,
-             completed,
-             action::tending::complete,
-             guard::tending::completed>>;
-
-      bool initialized;
-      void initialize();
-
-      std::shared_ptr<device::DigitalOutputDevice> tending_ready;
-      std::shared_ptr<device::DigitalOutputDevice> tending_running;
-      std::shared_ptr<device::DigitalOutputDevice> tending_complete;
-      std::shared_ptr<device::PWMDevice>           finger;
-    };
-
-    /**
-     * @brief Cleaning Machine State implementation.
-     *
-     * Machine state of cleaning action
-     *
-     * @author Ray Andrew
-     * @date   June 2020
-     */
-    struct cleaning : state_machine<cleaning> {
-      using cleaning_fsm = afsm::inner_state_machine<cleaning, running_fsm>;
-
-      cleaning();
 
       struct idle : state<idle> {
         template <typename Event, typename FSM>

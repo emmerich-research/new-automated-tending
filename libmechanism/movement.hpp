@@ -343,6 +343,14 @@ class Movement : public StackObj {
    * Move according to zigzag tending paths
    */
   void follow_tending_paths_zigzag();
+  /**
+   * Enable all motors
+   */
+  void enable_motors() const;
+  /**
+   * Disable all motors
+   */
+  void disable_motors() const;
 
  private:
   /**
@@ -508,14 +516,6 @@ class Movement : public StackObj {
    * @return ready or not
    */
   inline const bool& ready() const { return ready_; }
-  /**
-   * Enable all motors
-   */
-  void enable_motors() const;
-  /**
-   * Disable all motors
-   */
-  void disable_motors() const;
   /**
    * Update position of x
    */

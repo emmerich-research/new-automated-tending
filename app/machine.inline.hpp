@@ -29,6 +29,7 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
       root_machine(fsm).start_tending();
       break;
     }
+    sleep_for<time_units::millis>(500);
   }
 }
 

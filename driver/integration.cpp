@@ -40,6 +40,10 @@ static void init() {
 static void shutdown_hook() {
   stop = true;
   std::cout << "Shutting down..." << std::endl;
+  auto&& movement = mechanism::movement_mechanism();
+  if (movement != nullptr) {
+    movement->disable_motors();
+  }
   destroy_device();
   destroy_core();
   std::cout << "Shutting down is completed!" << std::endl;
