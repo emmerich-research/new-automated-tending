@@ -29,7 +29,12 @@
 #include <external/imgui/imstb_rectpack.h>
 #include <external/imgui/imstb_truetype.h>
 
+#if defined(OPENGL3_EXIST)
 #include <external/imgui/examples/imgui_impl_opengl3.h>
+#elif defined(OPENGL2_EXIST)
+#include <external/imgui/examples/imgui_impl_opengl2.h>
+#endif
+
 #include <external/imgui/examples/imgui_impl_sdl.h>
 
 // 3. Inside projects

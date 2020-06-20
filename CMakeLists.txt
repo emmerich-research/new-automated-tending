@@ -76,8 +76,24 @@ if (${arch} MATCHES "^arm")
   find_package(pigpio REQUIRED)
   LIST(APPEND RASPI_LIB "pigpio")
   LIST(APPEND RASPI_LIB "rt")
+
+  # check version
+  # glxinfo | grep "OpenGL version string:" | grep -E -o "[0-9]\.[0-9]" | head -1
+
+  # to make OpenGL3 + ImGUI works
+  # OpenGL in Raspi is basically OpenGL2
+  # there is error with :
+  # GL_SAMPLER_BINDING (needs to be OpenGL3)
+  # https://github.com/ocornut/imgui/pull/1806
+
+  set(GLAD_API "gl=2.1,gles=2.0" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest" FORCE)
+  set(OPENGL2 ON)
+  set(OPENGL3 OFF)
 else()
   add_definitions(-DMOCK_GPIO)
+  set(GLAD_API "" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest" FORCE)
+  set(OPENGL3 OFF)
+  set(OPENGL3 ON)
 endif()
 
 find_package(Threads REQUIRED)

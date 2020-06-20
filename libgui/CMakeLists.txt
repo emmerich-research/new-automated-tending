@@ -15,9 +15,22 @@ ucm_add_files(
   "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp"
   "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp"
   "${IMGUI_INCLUDE_DIR}/examples/imgui_impl_sdl.cpp"
-  "${IMGUI_INCLUDE_DIR}/examples/imgui_impl_opengl3.cpp"
 
   TO SOURCES)
+
+if (OPENGL3)
+  message("-- Using OpenGL3")
+  ucm_add_files(
+    "${IMGUI_INCLUDE_DIR}/examples/imgui_impl_opengl3.cpp"
+
+    TO SOURCES)
+elseif(OPENGL2)
+  message("-- Using OpenGL2")
+   ucm_add_files(
+    "${IMGUI_INCLUDE_DIR}/examples/imgui_impl_opengl2.cpp"
+
+    TO SOURCES)
+endif()
 
 ucm_add_target(
   NAME gui
@@ -38,6 +51,14 @@ target_include_directories(gui PUBLIC
 target_compile_definitions(gui PUBLIC
   GLFW_INCLUDE_NONE
   IMGUI_IMPL_OPENGL_LOADER_GLAD)
+
+if (OPENGL3)
+  target_compile_definitions(gui PUBLIC
+    OPENGL3_EXIST)
+elseif(OPENGL2)
+  target_compile_definitions(gui PUBLIC
+    OPENGL3_EXIST)
+endif()
 
 target_link_libraries(gui PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
