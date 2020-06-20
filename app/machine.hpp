@@ -172,10 +172,7 @@ struct TendingDef : public StackObj,
         transition_table<tr<no_task, event::spraying::start, spraying>,
                          tr<spraying, event::task_complete, no_task>,
                          tr<tending, event::task_complete, no_task>,
-                         tr<no_task,
-                            event::tending::start,
-                            tending,
-                            guard::spraying::completed>>;
+                         tr<no_task, event::tending::start, tending>>;
 
     /**
      * Constructor

@@ -15,8 +15,8 @@ void TendingDef::initial::on_enter(Event const&&, FSM&) const {}
 
 template <typename Event, typename FSM>
 void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
-  fsm.is_spraying_completed_ = false;
-  fsm.is_tending_completed_ = false;
+  // fsm.is_spraying_completed_ = false;
+  // fsm.is_tending_completed_ = false;
 
   guard::spraying::height spraying_height;
   guard::tending::height  tending_height;
