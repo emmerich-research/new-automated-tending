@@ -42,9 +42,9 @@ enable-pin                   = 9
 enable-active-state          = true
 steps-per-mm                 = 52
 microsteps                   = 8
-rpm                          = 50.0
-acceleration                 = 10.0 # steps / s^2
-deceleration                 = 10.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 1500.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 
 # stepper y-axis
 [devices.stepper.y]
@@ -57,9 +57,9 @@ enable-pin                   = 9
 enable-active-state          = true
 steps-per-mm                 = 52
 microsteps                   = 8
-rpm                          = 50.0
-acceleration                 = 10.0 # steps / s^2
-deceleration                 = 10.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 1500.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 
 # stepper z-axis
 [devices.stepper.z]
@@ -72,9 +72,9 @@ enable-pin                   = 9
 enable-active-state          = true
 steps-per-mm                 = 20
 microsteps                   = 8
-rpm                          = 10.0
-acceleration                 = 10.0 # steps / s^2
-deceleration                 = 10.0 # steps / s^2
+rpm                          = 50.0
+acceleration                 = 1000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Stepper Configuration
 # ----------------------------------------------------------
@@ -228,36 +228,29 @@ position                     = [45.0, 10.0]
 path                         = [
   # x   y  (in mm, need to be in floating point)
 
-  # edge
-  [0.0,   0.0],
-  [0.0,   400.0],
-  [400.0, 400.0],
-  [400.0, 0.0],
-  [10.0,  40.0],
-
   # zigzag
   [0.0,   0.0],
-  [0.0,   400.0],
-  [100.0, 400.0],
-  [100.0, 0.0],
-  [200.0, 0.0],
-  [200.0, 400.0],
-  [300.0, 400.0],
-  [300.0, 0.0],
-  [400.0, 0.0],
+  [400.0,   0.0],
+  [400.0, 100.0],
+  [0.0, 100.0],
+  [0.0, 200.0],
+  [400.0, 200.0],
+  [400.0, 300.0],
+  [0.0, 300.0],
+  [0.0, 400.0],
   [400.0, 400.0],
 ]
 
 [mechanisms.spraying.stepper]
 [mechanisms.spraying.stepper.x]
-rpm                          = 50.0
-acceleration                 = 10.0 # steps / s^2
-deceleration                 = 10.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 2000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.spraying.stepper.y]
-rpm                          = 50.0
-acceleration                 = 10.0 # steps / s^2
-deceleration                 = 10.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 2000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Spraying Mechanism
 # ----------------------------------------------------------
@@ -311,14 +304,14 @@ zigzag                       = [
 
 [mechanisms.tending.stepper]
 [mechanisms.tending.stepper.x]
-rpm                          = 50.0
-acceleration                 = 10.0 # steps / s^2
-deceleration                 = 10.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 1000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.tending.stepper.y]
-rpm                          = 50.0
-acceleration                 = 10.0 # steps / s^2
-deceleration                 = 10.0 # steps / s^2
+rpm                          = 200.0
+acceleration                 = 1000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Tending Mechanism
 # ----------------------------------------------------------

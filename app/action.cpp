@@ -27,11 +27,11 @@ void homing::act() const {
   auto&&        movement = mechanism::movement_mechanism();
   guard::homing g_homing;
 
-  bool is_home = g_homing.check();
+  // bool is_home = g_homing.check();
 
-  if (!is_home) {
-    movement->homing();
-  }
+  // if (!is_home) {
+  movement->homing();
+  // }
   // while (!is_home) {
   //   is_home = g_homing.check();
   //   movement->homing();
@@ -39,7 +39,7 @@ void homing::act() const {
   //   LOG_DEBUG("Still doing homing, retrying homing for 400ms...");
   //   sleep_for<time_units::millis>(400);
   // }
-  massert(g_homing.check(), "sanity");
+  // massert(g_homing.check(), "sanity");
 }
 }  // namespace action
 

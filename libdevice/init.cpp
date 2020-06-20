@@ -130,6 +130,16 @@ static ATM_STATUS initialize_input_digital_devices() {
     return ATM_ERR;
   }
 
+  /**
+   * Anomaly with Pin 18 BCM
+   * Always start with mode IN with value 1
+   */
+  auto* digital_input_registry = DigitalInputDeviceRegistry::get();
+  status = digital_input_registry->create("UNK", 18, true);
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
   return status;
 }
 
@@ -233,12 +243,11 @@ static ATM_STATUS initialize_pwm_devices() {
     return ATM_ERR;
   }
 
-  // auto&& spray = pwm_registry->get(id::spray());
+  auto&& finger = pwm_registry->get(id::spray());
 
-  // if (spray->duty_cycle(config->spray<unsigned int>("duty-cycle")) ==
-  // ATM_ERR) {
-  //   LOG_INFO("Cannot set spray duty cycle...");
-  // }
+  if (finger->duty_cycle(0) == ATM_ERR) {
+    LOG_INFO("Cannot set spray duty cycle...");
+  }
 
   return status;
 }
