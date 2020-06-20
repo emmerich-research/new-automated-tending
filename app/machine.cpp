@@ -46,7 +46,7 @@ void TendingDef::run_spraying() {
 }
 
 void TendingDef::start_tending() {
-  rebind().process_event(event::tending::run{});
+  rebind().process_event(event::tending::start{});
 }
 
 void TendingDef::run_tending() {
