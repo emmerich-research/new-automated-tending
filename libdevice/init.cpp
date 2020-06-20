@@ -135,7 +135,7 @@ static ATM_STATUS initialize_input_digital_devices() {
    * Always start with mode IN with value 1
    */
   auto* digital_input_registry = DigitalInputDeviceRegistry::get();
-  status = digital_input_registry->create("UNK", 18, true);
+  status = digital_input_registry->create("UNK", 18, true, PI_PUD_UP);
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -222,6 +222,16 @@ static ATM_STATUS initialize_output_digital_devices() {
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
+
+  /**
+   * Anomaly with Pin 18 BCM
+   * Always start with mode IN with value 1
+   */
+  // auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
+  // status = digital_output_registry->create("UNK", 18, true);
+  // if (status == ATM_ERR) {
+  //   return ATM_ERR;
+  // }
 
   return status;
 }
