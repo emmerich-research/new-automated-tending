@@ -146,12 +146,12 @@ struct TendingDef : public StackObj,
       using initial_state = idle;
       using transitions = transition_table<
           /* State, Event, Next, Action, Guard */
-          tr<idle, none, preparation, none, guard::tending::height>,
+          tr<idle, none, preparation, none>,
           tr<preparation,
              event::tending::run,
              ongoing,
              action::tending::job,
-             and_<guard::tending::height, guard::homing>>,
+             guard::homing>,
           tr<ongoing,
              none,
              completed,
