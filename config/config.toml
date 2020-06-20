@@ -88,8 +88,13 @@ active-state                 = false
 
 [devices.finger]
 key                          = "FINGER"
-pin                          = 12
+pin                          = 18
 duty-cycle                   = 127
+active-state                 = true
+
+[devices.anomaly]
+key                          = "ANOMALY"
+pin                          = 12
 active-state                 = true
 
 # ----------------------------------------------------------

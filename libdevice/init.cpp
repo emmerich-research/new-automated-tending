@@ -131,11 +131,12 @@ static ATM_STATUS initialize_input_digital_devices() {
   }
 
   /**
-   * Anomaly with Pin 18 BCM
-   * Always start with mode IN with value 1
+   * Anomaly PIN
    */
   auto* digital_input_registry = DigitalInputDeviceRegistry::get();
-  status = digital_input_registry->create("UNK", 18, true, PI_PUD_UP);
+  status = digital_input_registry->create(
+      id::anomaly(), config->anomaly<PI_PIN>("pin"),
+      config->anomaly<bool>("active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }

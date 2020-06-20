@@ -98,6 +98,14 @@ static auto        finger = []() {
   return finger_;
 };
 
+static std::string anomaly_;
+static auto        anomaly = []() {
+  if (anomaly_.empty()) {
+    anomaly_ = Config::get()->anomaly<std::string>("key");
+  }
+  return anomaly_;
+};
+
 namespace comm {
 namespace plc {
 static std::string spraying_height_;

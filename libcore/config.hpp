@@ -187,6 +187,20 @@ class ConfigImpl : public StackObj {
     return find<T>("devices", "spray", std::forward<Keys>(keys)...);
   }
   /**
+   * Get anomaly device info
+   *
+   * It should be in key "devices.anomaly"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return anomaly device info with type T
+   */
+  template <typename T, typename... Keys>
+  inline T anomaly(Keys&&... keys) const {
+    return find<T>("devices", "anomaly", std::forward<Keys>(keys)...);
+  }
+  /**
    * Get finger device info
    *
    * It should be in key "devices.finger"
