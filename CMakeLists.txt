@@ -86,7 +86,7 @@ if (${arch} MATCHES "^arm")
   # GL_SAMPLER_BINDING (needs to be OpenGL3)
   # https://github.com/ocornut/imgui/pull/1806
 
-  set(GLAD_API "gl=2.1,gles=2.0" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest" FORCE)
+  set(GLAD_API "gl=2.1,gles2=2.0" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest" FORCE)
   set(OPENGL2 ON)
   set(OPENGL3 OFF)
 else()
