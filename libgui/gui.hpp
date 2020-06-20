@@ -33,6 +33,7 @@
 
 #include <external/imgui/examples/imgui_impl_opengl3.h>
 #elif defined(OPENGL2_EXIST)
+#include <GL/gl.h>
 #include <SDL_opengl.h>
 #include <external/imgui/examples/imgui_impl_opengl2.h>
 #endif
