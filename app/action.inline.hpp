@@ -120,6 +120,7 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
   LOG_INFO("Follow spraying paths...");
   movement->follow_spraying_paths();
 
+  LOG_INFO("Turning off the spray...");
   fsm.spray->write(device::digital::value::low);
 
   LOG_INFO("Homing...");

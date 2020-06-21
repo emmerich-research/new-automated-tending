@@ -224,6 +224,9 @@ static ATM_STATUS initialize_output_digital_devices() {
     return ATM_ERR;
   }
 
+  auto&& spray = digital_output_registry->get(id::spray());
+  spray->write(device::digital::value::low);
+
   status = initialize_pi_to_plc_comm();
   if (status == ATM_ERR) {
     return ATM_ERR;
@@ -259,10 +262,10 @@ static ATM_STATUS initialize_pwm_devices() {
     return ATM_ERR;
   }
 
-  auto&& finger = pwm_registry->get(id::spray());
+  auto&& finger = pwm_registry->get(id::finger());
 
   if (finger->write(device::digital::value::low) == ATM_ERR) {
-    LOG_INFO("Cannot set spray duty cycle...");
+    LOG_INFO("Cannot set finger duty cycle...");
   }
 
   return status;
