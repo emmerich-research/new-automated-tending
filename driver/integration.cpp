@@ -54,7 +54,125 @@ static int throw_message() {
   return ATM_ERR;
 }
 
+static void do_spraying() {
+  massert(Config::get() != nullptr, "sanity");
+  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
+  auto* config = Config::get();
+  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
+  auto* input_registry = device::DigitalInputDeviceRegistry::get();
+
+  auto&& movement = mechanism::movement_mechanism();
+
+  auto&& spraying_ready =
+      output_registry->get(device::id::comm::pi::spraying_ready());
+  auto&& spraying_running =
+      output_registry->get(device::id::comm::pi::spraying_running());
+  auto&& spraying_complete =
+      output_registry->get(device::id::comm::pi::spraying_complete());
+
+  auto&& spray = output_registry->get(device::id::spray());
+  spraying_ready->write(device::digital::value::low);
+  spraying_running->write(device::digital::value::low);
+  spraying_complete->write(device::digital::value::low);
+
+  movement->homing();
+
+  spraying_ready->write(device::digital::value::high);
+  spraying_running->write(device::digital::value::low);
+  spraying_complete->write(device::digital::value::low);
+
+  sleep_for<time_units::millis>(3000);
+
+  spraying_running->write(device::digital::value::high);
+
+  movement->move_to_spraying_position();
+
+  sleep_for<time_units::millis>(3000);
+
+  spray->write(device::digital::value::high);
+
+  sleep_for<time_units::millis>(3000);
+
+  movement->follow_spraying_paths();
+
+  spray->write(device::digital::value::low);
+
+  movement->homing();
+
+  spraying_ready->write(device::digital::value::high);
+  spraying_running->write(device::digital::value::low);
+  spraying_complete->write(device::digital::value::high);
+}
+
+static void do_tending() {
+  massert(Config::get() != nullptr, "sanity");
+  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::PWMDeviceRegistry::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
+  auto* config = Config::get();
+  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
+  auto* input_registry = device::DigitalInputDeviceRegistry::get();
+  auto* pwm_registry = device::PWMDeviceRegistry::get();
+
+  auto&& movement = mechanism::movement_mechanism();
+
+  auto&& tending_ready =
+      output_registry->get(device::id::comm::pi::tending_ready());
+  auto&& tending_running =
+      output_registry->get(device::id::comm::pi::tending_running());
+  auto&& tending_complete =
+      output_registry->get(device::id::comm::pi::tending_complete());
+
+  auto&& finger = pwm_registry->get(device::id::finger());
+
+  tending_ready->write(device::digital::value::low);
+  tending_running->write(device::digital::value::low);
+  tending_complete->write(device::digital::value::low);
+
+  movement->homing();
+
+  tending_ready->write(device::digital::value::high);
+  tending_running->write(device::digital::value::low);
+  tending_complete->write(device::digital::value::low);
+
+  sleep_for<time_units::millis>(3000);
+
+  tending_running->write(device::digital::value::high);
+  movement->move_to_tending_position();
+  sleep_for<time_units::millis>(3000);
+  movement->move_finger_down();
+  sleep_for<time_units::millis>(1000);
+  movement->follow_tending_paths_edge();
+  sleep_for<time_units::millis>(1000);
+  if (finger->duty_cycle(config->finger<unsigned int>("duty-cycle")) ==
+      ATM_ERR) {
+    LOG_INFO("Cannot set finger duty cycle...");
+  }
+
+  sleep_for<time_units::millis>(1000);
+  movement->follow_tending_paths_zigzag();
+  sleep_for<time_units::millis>(1000);
+
+  if (finger->write(device::digital::value::low) == ATM_ERR) {
+    LOG_INFO("Cannot set finger duty cycle...");
+  }
+  movement->homing();
+
+  tending_ready->write(device::digital::value::high);
+  tending_running->write(device::digital::value::low);
+  tending_complete->write(device::digital::value::high);
+}
+
+
 bool menu() {
+  massert(Config::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
@@ -66,9 +184,6 @@ bool menu() {
 
   auto* stepper_registry = device::StepperRegistry::get();
   massert(stepper_registry != nullptr, "sanity");
-
-  auto* pwm_registry = device::PWMDeviceRegistry::get();
-  massert(pwm_registry != nullptr, "sanity");
 
   auto* input_registry = device::DigitalInputDeviceRegistry::get();
   massert(input_registry != nullptr, "sanity");
@@ -90,8 +205,6 @@ bool menu() {
       output_registry->get(device::id::comm::pi::tending_complete());
 
   auto&& spray = output_registry->get(device::id::spray());
-
-  auto&& finger = pwm_registry->get(device::id::finger());
 
   auto&& spraying_height =
     input_registry->get(device::id::comm::plc::spraying_height());
@@ -117,90 +230,17 @@ bool menu() {
   LOG_INFO("5. Just Y");
   LOG_INFO("6. Just Z");
   LOG_INFO("7. X and Y");
-  LOG_INFO("8. Test trigger");
+  LOG_INFO("8. Spraying and Tending trigger");
   LOG_INFO("0. Exit");
 
   unsigned int choice;
   std::cin >> choice;
 
   if (choice == 1) {
-    spraying_ready->write(device::digital::value::low);
-    spraying_running->write(device::digital::value::low);
-    spraying_complete->write(device::digital::value::low);
-
-    movement->homing();
-
-    while(!spraying_height->read_bool()) {
-      LOG_INFO("Waiting for spraying Height");
-      sleep_for<time_units::millis>(500);
-    }
-
-    spraying_ready->write(device::digital::value::high);
-    spraying_running->write(device::digital::value::low);
-    spraying_complete->write(device::digital::value::low);
-
-    sleep_for<time_units::millis>(3000);
-
-    spraying_running->write(device::digital::value::high);
-
-    movement->move_to_spraying_position();
-
-    sleep_for<time_units::millis>(3000);
-
-    spray->write(device::digital::value::high);
-
-    sleep_for<time_units::millis>(3000);
-
-    movement->follow_spraying_paths();
-
-    spray->write(device::digital::value::low);
-
-    movement->homing();
-
-    spraying_ready->write(device::digital::value::high);
-    spraying_running->write(device::digital::value::low);
-    spraying_complete->write(device::digital::value::high);
+    do_spraying();
     return false;
   } else if (choice == 2) {
-    tending_ready->write(device::digital::value::low);
-    tending_running->write(device::digital::value::low);
-    tending_complete->write(device::digital::value::low);
-
-    while(!tending_height->read_bool()) {
-      LOG_INFO("Waiting for tending Height");
-      sleep_for<time_units::millis>(500);
-    }
-
-    movement->homing();
-
-    tending_ready->write(device::digital::value::high);
-    tending_running->write(device::digital::value::low);
-    tending_complete->write(device::digital::value::low);
-
-    sleep_for<time_units::millis>(3000);
-
-    tending_running->write(device::digital::value::high);
-    movement->move_to_tending_position();
-    sleep_for<time_units::millis>(3000);
-    movement->move_finger_down();
-    sleep_for<time_units::millis>(1000);
-    movement->follow_tending_paths_edge();
-    sleep_for<time_units::millis>(1000);
-    if (finger->duty_cycle(config->finger<unsigned int>("duty-cycle")) ==
-        ATM_ERR) {
-      LOG_INFO("Cannot set finger duty cycle...");
-    }
-    sleep_for<time_units::millis>(1000);
-    movement->follow_tending_paths_zigzag();
-    sleep_for<time_units::millis>(1000);
-    if (finger->write(device::digital::value::low) == ATM_ERR) {
-      LOG_INFO("Cannot set finger duty cycle...");
-    }
-    movement->homing();
-
-    tending_ready->write(device::digital::value::high);
-    tending_running->write(device::digital::value::low);
-    tending_complete->write(device::digital::value::high);
+    do_tending();
     return false;
   } else if (choice == 3) {
     movement->homing();
@@ -235,15 +275,19 @@ bool menu() {
   } else if (choice == 7) {
     movement->move<mechanism::movement::unit::mm>(50.0, 50.0, 0.0);
   } else if (choice == 8) {
-    auto*  input_registry = device::DigitalInputDeviceRegistry::get();
-    auto&& spraying_height =
-        input_registry->get(device::id::comm::plc::spraying_height());
     while (true) {
-      auto status = spraying_height->read_bool();
-      LOG_INFO("Spraying Height {}", status);
-      if (status) {
-        break;
+      auto spraying_height_status = spraying_height->read_bool();
+      auto tending_height_status = tending_height->read_bool();
+
+      LOG_INFO("Spraying height {}, tending height {}",
+               spraying_height_status, tending_height_status);
+
+      if (spraying_height_status) {
+        do_spraying();
+      } else if (tending_height_status) {
+        do_tending();
       }
+     
       sleep_for<time_units::millis>(500);
     }
   } else if (choice == 0) {
