@@ -6,7 +6,7 @@
 , mesa
 , mesa_drivers
 , doxygen
-, SDL2
+, glfw3
 }:
 
 let
@@ -28,7 +28,7 @@ in
     ];
   
     buildInputs            = [
-      SDL2
+      glfw3
       doxygen
     ];
 

@@ -16,10 +16,7 @@
 
 // 2. Vendor
 
-// 2.1. SDL
-#include <SDL.h>
-
-// 2.2. ImGui
+// 2.1. ImGui
 #include <external/imgui/imgui.h>
 
 #include <external/imgui/imconfig.h>
@@ -27,18 +24,21 @@
 #include <external/imgui/imstb_rectpack.h>
 #include <external/imgui/imstb_truetype.h>
 
-#if defined(OPENGL3_EXIST)
-// 2.3. Glad
-#include <glad/glad.h>
+#include <external/imgui/examples/imgui_impl_glfw.h>
 
+#if defined(OPENGL3_EXIST)
 #include <external/imgui/examples/imgui_impl_opengl3.h>
+
+// 2.2. Glad
+#include <glad/glad.h>
 #elif defined(OPENGL2_EXIST)
-#include <GL/gl.h>
-#include <SDL_opengl.h>
 #include <external/imgui/examples/imgui_impl_opengl2.h>
+
+#include <GL/gl.h>
 #endif
 
-#include <external/imgui/examples/imgui_impl_sdl.h>
+// 2.3. GLFW
+#include <GLFW/glfw3.h>
 
 // 3. Inside projects
 #include <libutil/util.hpp>

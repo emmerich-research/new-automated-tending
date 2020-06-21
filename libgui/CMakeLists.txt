@@ -1,6 +1,6 @@
 project(gui)
 
-find_package(SDL2 REQUIRED)
+find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
 set(IMGUI_VERSION 1.77)
@@ -14,7 +14,7 @@ ucm_add_files(
   "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp"
   "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp"
   "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp"
-  "${IMGUI_INCLUDE_DIR}/examples/imgui_impl_sdl.cpp"
+  "${IMGUI_INCLUDE_DIR}/examples/imgui_impl_glfw.cpp"
 
   TO SOURCES)
 
@@ -45,18 +45,17 @@ target_include_directories(gui PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
   "$<BUILD_INTERFACE:${OPENGL_INCLUDE_DIR}>"
   "$<BUILD_INTERFACE:${OPENGL_EGL_INCLUDE_DIRS}>"
-  "$<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>"
   "$<BUILD_INTERFACE:${IMGUI_INCLUDE_DIR}>"
   "$<BUILD_INTERFACE:${GLAD_INCLUDE_DIRS}>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 target_compile_definitions(gui PUBLIC
-  GLFW_INCLUDE_NONE
-  IMGUI_IMPL_OPENGL_LOADER_GLAD)
+  GLFW_INCLUDE_NONE)
 
 if (OPENGL3)
   target_compile_definitions(gui PUBLIC
-    OPENGL3_EXIST)
+    OPENGL3_EXIST
+    IMGUI_IMPL_OPENGL_LOADER_GLAD)
 elseif(OPENGL2)
   target_compile_definitions(gui PUBLIC
     OPENGL2_EXIST)
@@ -65,9 +64,9 @@ endif()
 target_link_libraries(gui PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
   ${CMAKE_DL_LIBS}
+  glfw
   ${OPENGL_LIBRARIES}
   ${GLAD_LIBRARIES}
-  ${SDL2_LIBRARIES}
   "${PROJECT_NAMESPACE}::util"
   "${PROJECT_NAMESPACE}::core"
   "${PROJECT_NAMESPACE}::algo")
