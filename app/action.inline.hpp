@@ -191,10 +191,13 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
   sleep_for<time_units::millis>(1000);
 
-  LOG_INFO("Turning off the motor...");
-  if (fsm.finger->duty_cycle(0) == ATM_ERR) {
-    LOG_INFO("Cannot set finger duty cycle...");
-  }
+  LOG_INFO("Homing finger...");
+  movement->homing_finger();
+
+  // LOG_INFO("Turning off the motor...");
+  // if (fsm.finger->duty_cycle(0) == ATM_ERR) {
+  //   LOG_INFO("Cannot set finger duty cycle...");
+  // }
 
   LOG_INFO("Homing...");
   movement->homing();

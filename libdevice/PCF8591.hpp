@@ -15,6 +15,14 @@ NAMESPACE_BEGIN
 
 namespace device {
 namespace analog {
+class PCF8591Device;
+}
+
+/** device::AnalogDevice registry singleton class using StaticObj
+ */
+using PCF8591Device = StaticObj<analog::PCF8591Device>;
+
+namespace analog {
 class PCF8591Device : public AnalogDevice {
  public:
   /**

@@ -18,18 +18,17 @@ NAMESPACE_BEGIN
 namespace device {
 // forward declaration
 class AnalogDevice;
+namespace impl {
+class AnalogDeviceImpl;
+}
 
 namespace analog {
 /**
- * @var using value = unsigned int
- * @brief Type definition for stepper steps
+ * @var using value = unsigned char
+ * @brief Type definition for analog value
  */
 using value = unsigned char;
 };  // namespace analog
-
-/** device::AnalogDevice registry singleton class using algo::InstanceRegistry
- */
-using AnalogDeviceRegistry = algo::InstanceRegistry<AnalogDevice>;
 
 /**
  * @brief Analog Device class

@@ -44,6 +44,12 @@ static ATM_STATUS initialize_movement_mechanism() {
     return ATM_ERR;
   }
 
+  status = movement_builder->setup_finger(
+      device::id::finger(), config->analog<PI_PIN>("rotary-encoder-pin"));
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
   [[maybe_unused]] auto movement = movement_builder->build();
 
   massert(movement_mechanism() != nullptr, "sanity");

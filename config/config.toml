@@ -91,6 +91,8 @@ key                          = "FINGER"
 pin                          = 18
 duty-cycle                   = 127
 active-state                 = true
+homing-duty-cycle            = 30
+homing-offset                = 30 # in degree
 
 [devices.anomaly]
 key                          = "ANOMALY"

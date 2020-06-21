@@ -45,16 +45,20 @@ void TendingDef::running::spraying::idle::on_enter(Event const&&,
 
 template <typename Event, typename FSM>
 void TendingDef::running::spraying::preparation::on_enter(Event&&, FSM& fsm) {
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
   LOG_INFO("Spraying preparation...");
 
   fsm.spraying_ready->write(device::digital::value::low);
   fsm.spraying_running->write(device::digital::value::low);
   fsm.spraying_complete->write(device::digital::value::low);
 
-  LOG_INFO("Homing to make sure task ready...");
+  auto&& movement = mechanism::movement_mechanism();
 
-  action::homing homing;
-  homing.act();
+  LOG_INFO("Homing to make sure ready to spray...");
+  movement->homing();
+
   root_machine(fsm).run_spraying();
 }
 
@@ -100,14 +104,23 @@ void TendingDef::running::tending::idle::on_enter(Event const&&,
 
 template <typename Event, typename FSM>
 void TendingDef::running::tending::preparation::on_enter(Event&&, FSM& fsm) {
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
   LOG_INFO("Tending preparation...");
 
   fsm.tending_ready->write(device::digital::value::low);
   fsm.tending_running->write(device::digital::value::low);
   fsm.tending_complete->write(device::digital::value::low);
 
-  action::homing homing;
-  homing.act();
+  auto&& movement = mechanism::movement_mechanism();
+
+  LOG_INFO("Homing to make sure ready to tend...");
+  movement->homing();
+
+  LOG_INFO("Homing finger...");
+  movement->homing_finger();
+
   root_machine(fsm).run_tending();
 }
 

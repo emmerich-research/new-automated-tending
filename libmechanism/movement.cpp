@@ -87,6 +87,18 @@ ATM_STATUS MovementBuilderImpl::setup_z(
   return ATM_OK;
 }
 
+ATM_STATUS MovementBuilderImpl::setup_finger(const std::string& finger_id,
+                                             PI_PIN rotary_encoder_pin) {
+  if (!device::PWMDeviceRegistry::get()->exist(finger_id)) {
+    return ATM_ERR;
+  }
+
+  finger_id_ = finger_id;
+  rotary_encoder_pin_ = rotary_encoder_pin;
+
+  return ATM_OK;
+}
+
 std::shared_ptr<Movement>& MovementBuilderImpl::build() {
   if (movement_mechanism_instance_ == nullptr) {
     movement_mechanism_instance_ = Movement::create(this);
@@ -114,6 +126,10 @@ Movement::Movement(const impl::MovementBuilderImpl* builder)
   if (active()) {
     setup_limit_switch();
   }
+
+  if (active()) {
+    setup_finger();
+  }
 }
 
 template <>
@@ -131,8 +147,8 @@ long Movement::convert_length_to_steps<movement::unit::mm>(
 }
 
 void Movement::setup_stepper() {
-  auto stepper_registry = device::StepperRegistry::get();
-  auto stepper_x = stepper_registry->get(builder()->stepper_x_id());
+  auto*  stepper_registry = device::StepperRegistry::get();
+  auto&& stepper_x = stepper_registry->get(builder()->stepper_x_id());
 
   if (!stepper_x) {
     active_ = false;
@@ -141,7 +157,7 @@ void Movement::setup_stepper() {
 
   stepper_x_ = stepper_x;
 
-  auto stepper_y = stepper_registry->get(builder()->stepper_y_id());
+  auto&& stepper_y = stepper_registry->get(builder()->stepper_y_id());
 
   if (!stepper_y) {
     active_ = false;
@@ -150,7 +166,7 @@ void Movement::setup_stepper() {
 
   stepper_y_ = stepper_y;
 
-  auto stepper_z = stepper_registry->get(builder()->stepper_z_id());
+  auto&& stepper_z = stepper_registry->get(builder()->stepper_z_id());
 
   if (!stepper_z) {
     active_ = false;
@@ -161,9 +177,9 @@ void Movement::setup_stepper() {
 }
 
 void Movement::setup_limit_switch() {
-  auto digital_input_registry = device::DigitalInputDeviceRegistry::get();
+  auto* digital_input_registry = device::DigitalInputDeviceRegistry::get();
 
-  auto limit_switch_x =
+  auto&& limit_switch_x =
       digital_input_registry->get(builder()->limit_switch_x_id());
 
   if (!limit_switch_x) {
@@ -173,7 +189,7 @@ void Movement::setup_limit_switch() {
 
   limit_switch_x_ = limit_switch_x;
 
-  auto limit_switch_y =
+  auto&& limit_switch_y =
       digital_input_registry->get(builder()->limit_switch_y_id());
 
   if (!limit_switch_y) {
@@ -183,7 +199,7 @@ void Movement::setup_limit_switch() {
 
   limit_switch_y_ = limit_switch_y;
 
-  auto limit_switch_z_top =
+  auto&& limit_switch_z_top =
       digital_input_registry->get(builder()->limit_switch_z_top_id());
 
   if (!limit_switch_z_top) {
@@ -193,7 +209,7 @@ void Movement::setup_limit_switch() {
 
   limit_switch_z_top_ = limit_switch_z_top;
 
-  auto limit_switch_z_bottom =
+  auto&& limit_switch_z_bottom =
       digital_input_registry->get(builder()->limit_switch_z_bottom_id());
 
   if (!limit_switch_z_bottom) {
@@ -202,6 +218,18 @@ void Movement::setup_limit_switch() {
   }
 
   limit_switch_z_bottom_ = limit_switch_z_bottom;
+}
+
+void Movement::setup_finger() {
+  auto*  pwm_registry = device::PWMDeviceRegistry::get();
+  auto&& finger = pwm_registry->get(builder()->finger_id());
+
+  if (!finger) {
+    active_ = false;
+    return;
+  }
+
+  finger_ = finger;
 }
 
 device::stepper::step Movement::stop_x(void) {
@@ -596,6 +624,27 @@ void Movement::move_finger_down() {
   disable_motors();
 
   State::get()->z(52.0);
+}
+
+void Movement::homing_finger() const {
+  massert(Config::get() != nullptr, "sanity");
+  massert(device::PCF8591Device::get() != nullptr, "sanity");
+
+  auto* config = Config::get();
+  auto* analog_device = device::PCF8591Device::get();
+
+  auto offset = config->finger<unsigned int>("homing-offset");
+
+  LOG_INFO("Setting to homing duty cycle");
+  finger()->duty_cycle(config->finger<unsigned int>("homing-duty-cycle"));
+  while (true) {
+    auto degree = analog_device->read(builder()->rotary_encoder_pin());
+    if (degree <= offset) {
+      finger()->duty_cycle(0);
+      break;
+    }
+    sleep_for<time_units::micros>(500);
+  }
 }
 
 void Movement::homing() {

@@ -99,6 +99,15 @@ class MovementBuilderImpl : public StackObj {
                      const std::string&           limit_switch_z_top_id,
                      const std::string&           limit_switch_z_bottom_id);
   /**
+   * Setup finger
+   *
+   * @param finger_id            finger instance id
+   * @param finger_pin           steps conversion to mm
+   *
+   * @return ATM_STATUS ATM_OK or ATM_ERR, but not both
+   */
+  ATM_STATUS setup_finger(const std::string& finger_id, PI_PIN finger_pin);
+  /**
    * Build movement mechanism
    *
    * @return shared_ptr of Movement
@@ -179,6 +188,20 @@ class MovementBuilderImpl : public StackObj {
     return limit_switch_z_bottom_id_;
   }
   /**
+   * Get finger instance ID
+   *
+   * @return instance id of finger
+   */
+  inline const std::string& finger_id() const { return finger_id_; }
+  /**
+   * Get rotary encoder pin
+   *
+   * @return rotary encoder pin
+   */
+  inline const PI_PIN& rotary_encoder_pin() const {
+    return rotary_encoder_pin_;
+  }
+  /**
    * Get movement mechanism instance
    *
    * @return instance of movement mechanism
@@ -202,6 +225,9 @@ class MovementBuilderImpl : public StackObj {
   ~MovementBuilderImpl() = default;
 
  private:
+  /**
+   * Movement mechanism instance
+   */
   std::shared_ptr<Movement> movement_mechanism_instance_;
   /**
    * Conversion of mm to steps for x-axis
@@ -249,6 +275,14 @@ class MovementBuilderImpl : public StackObj {
    * Instance id of limit switch z (lower bound)
    */
   std::string limit_switch_z_bottom_id_;
+  /**
+   * Instance id of finger
+   */
+  std::string finger_id_;
+  /**
+   * Pin of rotary encoder
+   */
+  PI_PIN rotary_encoder_pin_;
 };
 }  // namespace impl
 
@@ -351,6 +385,10 @@ class Movement : public StackObj {
    * Disable all motors
    */
   void disable_motors() const;
+  /**
+   * Homing finger
+   */
+  void homing_finger() const;
 
  private:
   /**
@@ -451,6 +489,15 @@ class Movement : public StackObj {
     return limit_switch_z_bottom_;
   }
   /**
+   * Get Finger instance of PWMDevice that has
+   * been initialized
+   *
+   * @return shared_ptr of PWMDevice
+   */
+  inline const std::shared_ptr<device::PWMDevice>& finger() const {
+    return finger_;
+  }
+  /**
    * Setup all stepper devices
    *
    * Will return early if fails
@@ -462,6 +509,12 @@ class Movement : public StackObj {
    * Will return early if fails
    */
   void setup_limit_switch();
+  /**
+   * Setup finger
+   *
+   * Will return early if fails
+   */
+  void setup_finger();
   /**
    * Setup move action for steppers
    *
@@ -573,7 +626,7 @@ class Movement : public StackObj {
 
  private:
   /**
-   * Get instance of impl::MovementBuilderImpl to reduce verbosity
+   * Instance of impl::MovementBuilderImpl to reduce verbosity
    */
   const impl::MovementBuilderImpl* builder_;
   /**
@@ -585,33 +638,37 @@ class Movement : public StackObj {
    */
   bool active_;
   /**
-   * Get Stepper X-Axis that has been initialized
+   * Stepper X-Axis that has been initialized
    */
   std::shared_ptr<device::StepperDevice> stepper_x_;
   /**
-   * Get Stepper Y-Axis that has been initialized
+   * Stepper Y-Axis that has been initialized
    */
   std::shared_ptr<device::StepperDevice> stepper_y_;
   /**
-   * Get Stepper Z-Axis that has been initialized
+   * Stepper Z-Axis that has been initialized
    */
   std::shared_ptr<device::StepperDevice> stepper_z_;
   /**
-   * Get Limit Switch for X-Axis that has been initialized
+   * Limit Switch for X-Axis that has been initialized
    */
   std::shared_ptr<device::DigitalInputDevice> limit_switch_x_;
   /**
-   * Get Limit Switch for Y-Axis that has been initialized
+   * Limit Switch for Y-Axis that has been initialized
    */
   std::shared_ptr<device::DigitalInputDevice> limit_switch_y_;
   /**
-   * Get Limit Switch for Z-Axis (Upper Bound) that has been initialized
+   * Limit Switch for Z-Axis (Upper Bound) that has been initialized
    */
   std::shared_ptr<device::DigitalInputDevice> limit_switch_z_top_;
   /**
-   * Get Limit Switch for Z-Axis (Lower Bound) that has been initialized
+   * Limit Switch for Z-Axis (Lower Bound) that has been initialized
    */
   std::shared_ptr<device::DigitalInputDevice> limit_switch_z_bottom_;
+  /**
+   * Finger device that has been initialized
+   */
+  std::shared_ptr<device::PWMDevice> finger_;
 };
 }  // namespace mechanism
 

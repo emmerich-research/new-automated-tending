@@ -19,17 +19,22 @@ using namespace device;
 static ATM_STATUS initialize_analog_devices() {
   ATM_STATUS status = ATM_OK;
 
-  status = AnalogDeviceRegistry::create();
+  status = PCF8591Device::create();
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
-  auto* analog_device_registry = AnalogDeviceRegistry::get();
+  auto* analog_device = PCF8591Device::get();
 
-  status = analog_device_registry->create<analog::PCF8591Device>(id::analog());
-  if (status == ATM_ERR) {
+  if (analog_device == nullptr) {
     return ATM_ERR;
   }
+
+  // status =
+  // analog_device_registry->create<analog::PCF8591Device>(id::analog());
+  // if (status == ATM_ERR) {
+  //   return ATM_ERR;
+  // }
 
   return status;
 }
