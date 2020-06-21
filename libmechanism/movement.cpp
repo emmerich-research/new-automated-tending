@@ -640,7 +640,7 @@ void Movement::homing_finger() const {
   while (true) {
     auto degree = analog_device->read(builder()->rotary_encoder_pin());
     if (degree <= offset) {
-      finger()->duty_cycle(0);
+      finger()->write(device::digital::value::low);
       break;
     }
     sleep_for<time_units::micros>(500);

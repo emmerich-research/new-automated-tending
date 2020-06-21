@@ -87,11 +87,12 @@ pin                          = 21
 active-state                 = false
 
 [devices.finger]
+# default range 0 - 255
 key                          = "FINGER"
 pin                          = 18
+active-state                 = false
 duty-cycle                   = 127
-active-state                 = true
-homing-duty-cycle            = 30
+homing-duty-cycle            = 200
 homing-offset                = 30 # in degree
 
 [devices.anomaly]
@@ -209,7 +210,7 @@ active-state                 = false
 # analog
 [devices.analog]
 key                          = "PCF8591"
-rotary-encoder-pin           = 1
+rotary-encoder-pin           = 0
 
 [mechanisms]
 

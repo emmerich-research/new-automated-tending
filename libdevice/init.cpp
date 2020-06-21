@@ -261,7 +261,7 @@ static ATM_STATUS initialize_pwm_devices() {
 
   auto&& finger = pwm_registry->get(id::spray());
 
-  if (finger->duty_cycle(0) == ATM_ERR) {
+  if (finger->write(device::digital::value::low) == ATM_ERR) {
     LOG_INFO("Cannot set spray duty cycle...");
   }
 

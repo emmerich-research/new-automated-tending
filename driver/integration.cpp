@@ -177,7 +177,7 @@ bool menu() {
     sleep_for<time_units::millis>(1000);
     movement->follow_tending_paths_zigzag();
     sleep_for<time_units::millis>(1000);
-    if (finger->duty_cycle(0) == ATM_ERR) {
+    if (finger->write(device::digital::value::low) == ATM_ERR) {
       LOG_INFO("Cannot set finger duty cycle...");
     }
     movement->homing();
