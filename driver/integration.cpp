@@ -93,6 +93,12 @@ bool menu() {
 
   auto&& finger = pwm_registry->get(device::id::finger());
 
+  auto&& spraying_height =
+    input_registry->get(device::id::comm::plc::spraying_height());
+
+  auto&& tending_height =
+    input_registry->get(device::id::comm::plc::tending_height());
+
   spraying_ready->write(device::digital::value::low);
   spraying_running->write(device::digital::value::low);
   spraying_complete->write(device::digital::value::low);
@@ -104,8 +110,8 @@ bool menu() {
   spray->write(device::digital::value::low);
 
   LOG_INFO("----MENU-----");
-  LOG_INFO("1. Spraying path");
-  LOG_INFO("2. Tending path");
+  LOG_INFO("1. Spraying with trigger");
+  LOG_INFO("2. Tending with trigger");
   LOG_INFO("3. Homing");
   LOG_INFO("4. Just X");
   LOG_INFO("5. Just Y");
@@ -123,6 +129,11 @@ bool menu() {
     spraying_complete->write(device::digital::value::low);
 
     movement->homing();
+
+    while(!spraying_height->read_bool()) {
+      LOG_INFO("Waiting for spraying Height");
+      sleep_for<time_units::millis>(500);
+    }
 
     spraying_ready->write(device::digital::value::high);
     spraying_running->write(device::digital::value::low);
@@ -154,6 +165,11 @@ bool menu() {
     tending_ready->write(device::digital::value::low);
     tending_running->write(device::digital::value::low);
     tending_complete->write(device::digital::value::low);
+
+    while(!tending_height->read_bool()) {
+      LOG_INFO("Waiting for tending Height");
+      sleep_for<time_units::millis>(500);
+    }
 
     movement->homing();
 
