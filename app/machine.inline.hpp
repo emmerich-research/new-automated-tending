@@ -4,6 +4,7 @@
 #include "machine.hpp"
 
 #include <libdevice/device.hpp>
+#include <libgui/gui.hpp>
 #include <libmechanism/mechanism.hpp>
 #include <libutil/util.hpp>
 
@@ -21,16 +22,19 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
   guard::spraying::height spraying_height;
   guard::tending::height  tending_height;
 
-  while (true) {
-    if (spraying_height.check()) {
-      root_machine(fsm).start_spraying();
-      break;
-    } else if (tending_height.check()) {
-      root_machine(fsm).start_tending();
-      break;
-    }
-    sleep_for<time_units::millis>(500);
-  }
+  root_machine(fsm).thread_pool().enqueue(
+      [fsm, spraying_height, tending_height]() mutable -> void {
+        while (!root_machine(fsm).is_terminated()) {
+          if (spraying_height.check()) {
+            root_machine(fsm).start_spraying();
+            break;
+          } else if (tending_height.check()) {
+            root_machine(fsm).start_tending();
+            break;
+          }
+          sleep_for<time_units::millis>(500);
+        }
+      });
 }
 
 /**

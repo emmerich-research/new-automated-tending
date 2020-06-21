@@ -3,6 +3,7 @@
 
 #include <libcore/core.hpp>
 #include <libdevice/device.hpp>
+#include <libgui/gui.hpp>
 #include <libmechanism/mechanism.hpp>
 #include <libutil/util.hpp>
 
@@ -22,7 +23,7 @@ void start::operator()(Event const&,
   std::cout << "Starting machine ..." << std::endl;
 
   // preparing shutdown hook
-  std::atexit(shutdown_hook);
+  // std::atexit(shutdown_hook);
 
   ATM_STATUS status = ATM_OK;
 
@@ -31,6 +32,12 @@ void start::operator()(Event const&,
   if (status == ATM_ERR) {
     throw std::runtime_error(
         "Failed to initialize `core` functionality, something is wrong");
+  }
+
+  status = initialize_gui();
+  if (status == ATM_ERR) {
+    throw std::runtime_error(
+        "Failed to initialize `gui` functionality, something is wrong");
   }
 
   // initialize `GPIO-based` devices such as analog, digital, and PWM

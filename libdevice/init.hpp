@@ -25,8 +25,6 @@ ATM_STATUS initialize_device();
 
 /**
  * Destroy devices
- *
- * @return void
  */
 void destroy_device();
 

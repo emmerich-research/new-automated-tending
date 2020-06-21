@@ -16,6 +16,9 @@ ucm_add_files(
   "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp"
   "${IMGUI_INCLUDE_DIR}/examples/imgui_impl_glfw.cpp"
 
+  "init.cpp"
+  "util.cpp"
+
   TO SOURCES)
 
 if (OPENGL3)

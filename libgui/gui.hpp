@@ -13,6 +13,9 @@
 #endif
 
 // 1. STL
+#include <exception>
+#include <iostream>
+#include <tuple>
 
 // 2. Vendor
 
@@ -48,5 +51,8 @@
 #include <libalgo/algo.hpp>
 
 // 4. Local
+#include "init.hpp"
+
+#include "util.hpp"
 
 #endif  // LIB_GUI_GUI_HPP_

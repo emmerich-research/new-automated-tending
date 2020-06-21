@@ -113,7 +113,7 @@ std::shared_ptr<Movement>& MovementBuilderImpl::build() {
 Movement::Movement(const impl::MovementBuilderImpl* builder)
     : builder_{builder},
       // steps_per_mm_{builder->steps_per_mm()},
-      thread_pool_{8} {
+      thread_pool_{4} {
   active_ = true;
   ready_ = true;
   next_move_interval_ = 0;

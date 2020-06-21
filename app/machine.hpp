@@ -7,6 +7,7 @@
 
 #include <afsm/fsm.hpp>
 
+#include <libalgo/algo.hpp>
 #include <libcore/core.hpp>
 
 #include "action.hpp"
@@ -44,7 +45,7 @@ struct TendingDef : public StackObj,
   };
 
   struct stopped : state<stopped> {};
-                             
+
   struct terminated : terminal_state<terminated> {};
 
   struct running : state_machine<running, history> {
@@ -266,6 +267,12 @@ struct TendingDef : public StackObj,
    */
   bool is_terminated() const;
   /**
+   * Get thread pool instance
+   *
+   * @return instance of algo::ThreadPool
+   */
+  inline algo::ThreadPool& thread_pool() { return thread_pool_; }
+  /**
    * Version of state machine
    */
   static const int VERSION;
@@ -274,6 +281,10 @@ struct TendingDef : public StackObj,
    * done successfully
    */
   bool machine_ready_;
+  /**
+   * Thread Pool for running the task in separate thread
+   */
+  algo::ThreadPool thread_pool_;
 };
 
 using tending = afsm::state_machine<TendingDef>;
