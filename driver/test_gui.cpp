@@ -31,8 +31,8 @@ int main(int, char**) {
 #endif
 #endif
 
-  GLFWwindow* window = glfwCreateWindow(
-      1280, 720, "Dear ImGui GLFW+OpenGL2 example", NULL, NULL);
+  GLFWwindow* window =
+      glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL example", NULL, NULL);
   if (window == NULL)
     return 1;
   glfwMakeContextCurrent(window);
@@ -110,7 +110,11 @@ int main(int, char**) {
     glfwPollEvents();
 
     // Start the Dear ImGui frame
+#if defined(OPENGL3_EXIST)
     ImGui_ImplOpenGL3_NewFrame();
+#elif defined(OPENGL2_EXIST)
+    ImGui_ImplOpenGL2_NewFrame();
+#endif
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
