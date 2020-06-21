@@ -28,7 +28,7 @@ static void init() {
   //   std::perror("sigaction");
 
   // preparing shutdown hook
-  std::atexit(shutdown_hook);
+  // std::atexit(shutdown_hook);
 }
 
 // static void sigint_hook([[maybe_unused]] int signal) {
@@ -325,6 +325,8 @@ int main() {
   do {
     stop = menu();
   } while (!stop);
+
+  shutdown_hook();
 
   return status == ATM_OK ? 0 : -1;
 }
