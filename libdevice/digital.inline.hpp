@@ -188,6 +188,20 @@ ATM_STATUS DigitalDevice<Mode>::pull_down() {
 
   return res;
 }
+
+template <digital::mode Mode>
+ATM_STATUS DigitalDevice<Mode>::pull_off() {
+  ATM_STATUS res = gpioSetPullUpDown(pin_, PI_PUD_OFF);
+
+  if (res != PI_OK) {
+    LOG_DEBUG(
+        "[FAILED] Failed to PULL OFF DigitalDevice<{}> using GPIO with "
+        "pin {}",
+        get_mode(Mode), pin());
+  }
+
+  return res;
+}
 }  // namespace device
 
 NAMESPACE_END

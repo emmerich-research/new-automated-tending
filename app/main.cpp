@@ -11,9 +11,21 @@
 
 USE_NAMESPACE
 
-int throw_message() {
+static int throw_message() {
   std::cerr << "Failed to initialize machine, something is wrong" << std::endl;
   return ATM_ERR;
+}
+
+static void key_callback(GLFWwindow* window,
+                         int         key,
+                         int         scancode,
+                         int         action,
+                         int         mods) {
+  if (mods == GLFW_MOD_ALT && key == GLFW_KEY_F4 && action == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window, GL_TRUE);
+  } else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window, GL_TRUE);
+  }
 }
 
 int main() {
@@ -45,6 +57,8 @@ int main() {
   // }
 
   massert(window() != nullptr, "sanity");
+
+  glfwSetKeyCallback(window(), key_callback);  // setup key callback
 
   // Our state
   bool   show_demo_window = true;

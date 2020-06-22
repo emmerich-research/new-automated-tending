@@ -7,7 +7,7 @@ NAMESPACE_BEGIN
 namespace machine {
 const int TendingDef::VERSION = 1;
 
-TendingDef::TendingDef() : machine_ready_{false}, thread_pool_{4} {}
+TendingDef::TendingDef() : machine_ready_{false}, thread_pool_{1} {}
 
 TendingDef::tending_fsm& TendingDef::rebind() {
   return static_cast<tending_fsm&>(*this);

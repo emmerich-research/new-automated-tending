@@ -361,37 +361,40 @@ time_unit Movement::next() {
   }
   // sleep_until<time_units::micros>(next_move_interval(), last_move_end());
 
-  bool next_x = false;
-  bool next_y = false;
-  bool next_z = false;
+  // bool next_x = false;
+  // bool next_y = false;
+  // bool next_z = false;
 
   std::future<time_unit> timer_x;
   std::future<time_unit> timer_y;
   std::future<time_unit> timer_z;
 
   if (event_timer_x() <= next_move_interval()) {
-    next_x = true;
+    // next_x = true;
     // event_timer_x_ = stepper_x()->next(
     //     limit_switch_x()->read().value_or(device::digital::value::low) ==
     //     device::digital::value::high);
 
-    timer_x = thread_pool().enqueue([this] { return stepper_x()->next(); });
+    event_timer_x_ = stepper_x()->next();
+
+    // timer_x = thread_pool().enqueue([this] { return stepper_x()->next(); });
   } else {
     event_timer_x_ -= next_move_interval();
   }
 
   if (event_timer_y() <= next_move_interval()) {
-    next_y = true;
+    // next_y = true;
     // event_timer_y_ = stepper_y()->next(
     //     limit_switch_y()->read().value_or(device::digital::value::low) ==
     //     device::digital::value::low);
-    timer_y = thread_pool().enqueue([this] { return stepper_y()->next(); });
+    // timer_y = thread_pool().enqueue([this] { return stepper_y()->next(); });
+    event_timer_y_ = stepper_y()->next();
   } else {
     event_timer_y_ -= next_move_interval();
   }
 
   if (event_timer_z() <= next_move_interval()) {
-    next_z = true;
+    // next_z = true;
     // const auto limit_switch_z_top_touched =
     //     limit_switch_z_top()->read().value_or(device::digital::value::low) ==
     //     device::digital::value::high;
@@ -400,30 +403,31 @@ time_unit Movement::next() {
     //     == device::digital::value::high;
     // event_timer_z_ = stepper_z()->next(limit_switch_z_top_touched ||
     //                                    limit_switch_z_bottom_touched);
-    timer_z = thread_pool().enqueue([this] {
-      // const auto limit_switch_z_top_touched =
-      //     limit_switch_z_top()->read().value_or(device::digital::value::low)
-      //     == device::digital::value::high;
-      // const auto limit_switch_z_bottom_touched =
-      //     limit_switch_z_bottom()->read().value_or(
-      //         device::digital::value::low) == device::digital::value::high;
-      return stepper_z()->next();
-    });
+    // timer_z = thread_pool().enqueue([this] {
+    // const auto limit_switch_z_top_touched =
+    //     limit_switch_z_top()->read().value_or(device::digital::value::low)
+    //     == device::digital::value::high;
+    // const auto limit_switch_z_bottom_touched =
+    //     limit_switch_z_bottom()->read().value_or(
+    //         device::digital::value::low) == device::digital::value::high;
+    // return stepper_z()->next();
+    // });
+    event_timer_z_ = stepper_z()->next();
   } else {
     event_timer_z_ -= next_move_interval();
   }
 
-  if (next_x) {
-    event_timer_x_ = timer_x.get();
-  }
+  // if (next_x) {
+  //   event_timer_x_ = timer_x.get();
+  // }
 
-  if (next_y) {
-    event_timer_y_ = timer_y.get();
-  }
+  // if (next_y) {
+  //   event_timer_y_ = timer_y.get();
+  // }
 
-  if (next_z) {
-    event_timer_z_ = timer_z.get();
-  }
+  // if (next_z) {
+  //   event_timer_z_ = timer_z.get();
+  // }
 
   // update_position();
   // auto x = State::get()->x();

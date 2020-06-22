@@ -37,7 +37,6 @@ struct TendingDef : public StackObj,
    * to actions and guards
    **/
   using tending_fsm = afsm::state_machine<TendingDef>;
-  using history = afsm::def::tags::has_history;
 
   struct initial : state<initial> {
     template <typename Event, typename FSM>
@@ -48,7 +47,7 @@ struct TendingDef : public StackObj,
 
   struct terminated : terminal_state<terminated> {};
 
-  struct running : state_machine<running, history> {
+  struct running : state_machine<running> {
     /**
      * A type alias for actual state machine, that will be passed
      * to actions and guards
