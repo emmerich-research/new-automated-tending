@@ -204,6 +204,7 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   sleep_for<time_units::millis>(3000);
   fsm.spraying_complete->write(device::digital::value::low);
+  state->spraying_complete(false);
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
