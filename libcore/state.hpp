@@ -57,6 +57,7 @@ struct Task {
   bool ready;
   bool running;
   bool completed;
+  bool fault;
 };
 
 namespace impl {
@@ -163,6 +164,18 @@ class StateImpl : public StackObj {
    * @return  x-axis coordinate
    */
   const Point& z();
+  /**
+   * Get spraying task
+   *
+   * @return spraying task
+   */
+  Task& spraying();
+  /**
+   * Get tending task
+   *
+   * @return tending task
+   */
+  Task& tending();
 
  private:
   /**

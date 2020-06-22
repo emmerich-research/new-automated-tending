@@ -16,8 +16,26 @@ void TendingDef::initial::on_enter(Event const&&, FSM&) const {}
 
 template <typename Event, typename FSM>
 void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
-  // fsm.is_spraying_completed_ = false;
-  // fsm.is_tending_completed_ = false;
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
+
+  auto&& movement = mechanism::movement_mechanism();
+  auto*  digital_output_registry = device::DigitalOutputDeviceRegistry::get();
+
+  auto&& spraying_ready =
+      digital_output_registry->get(device::id::comm::pi::spraying_ready());
+  auto&& tending_ready =
+      digital_output_registry->get(device::id::comm::pi::tending_ready());
+
+  spraying_ready->write(device::digital::value::low);
+  tending_ready->write(device::digital::value::low);
+
+  LOG_INFO("Homing...");
+  movement->homing();
+
+  spraying_ready->write(device::digital::value::high);
+  tending_ready->write(device::digital::value::high);
 
   guard::spraying::height spraying_height;
   guard::tending::height  tending_height;
@@ -54,7 +72,7 @@ void TendingDef::running::spraying::preparation::on_enter(Event&&, FSM& fsm) {
 
   LOG_INFO("Spraying preparation...");
 
-  fsm.spraying_ready->write(device::digital::value::low);
+  // fsm.spraying_ready->write(device::digital::value::low);
   fsm.spraying_running->write(device::digital::value::low);
   fsm.spraying_complete->write(device::digital::value::low);
 
@@ -69,7 +87,7 @@ void TendingDef::running::spraying::preparation::on_enter(Event&&, FSM& fsm) {
 template <typename Event, typename FSM>
 void TendingDef::running::spraying::preparation::on_exit(Event&&,
                                                          FSM const& fsm) const {
-  fsm.spraying_ready->write(device::digital::value::high);
+  // fsm.spraying_ready->write(device::digital::value::high);
   fsm.spraying_running->write(device::digital::value::low);
   fsm.spraying_complete->write(device::digital::value::low);
 
@@ -113,7 +131,7 @@ void TendingDef::running::tending::preparation::on_enter(Event&&, FSM& fsm) {
 
   LOG_INFO("Tending preparation...");
 
-  fsm.tending_ready->write(device::digital::value::low);
+  // fsm.tending_ready->write(device::digital::value::low);
   fsm.tending_running->write(device::digital::value::low);
   fsm.tending_complete->write(device::digital::value::low);
 
@@ -131,7 +149,7 @@ void TendingDef::running::tending::preparation::on_enter(Event&&, FSM& fsm) {
 template <typename Event, typename FSM>
 void TendingDef::running::tending::preparation::on_exit(Event&&,
                                                         FSM const& fsm) const {
-  fsm.tending_ready->write(device::digital::value::high);
+  // fsm.tending_ready->write(device::digital::value::high);
   fsm.tending_running->write(device::digital::value::low);
   fsm.tending_complete->write(device::digital::value::low);
 

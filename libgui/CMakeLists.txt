@@ -18,6 +18,8 @@ ucm_add_files(
 
   "init.cpp"
   "util.cpp"
+  "widget.cpp"
+  "window.cpp"
 
   TO SOURCES)
 

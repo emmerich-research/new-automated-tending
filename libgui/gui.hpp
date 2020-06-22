@@ -54,5 +54,7 @@
 #include "init.hpp"
 
 #include "util.hpp"
+#include "widget.hpp"
+#include "window.hpp"
 
 #endif  // LIB_GUI_GUI_HPP_

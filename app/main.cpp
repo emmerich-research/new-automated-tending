@@ -88,12 +88,7 @@ int main() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair
-    // to created a named window.
     {
-      static float f = 0.0f;
-      static int   counter = 0;
-
       gui::reset_window_pos();
 
       auto [width, height] = gui::get_window_size();
@@ -102,75 +97,129 @@ int main() {
           ImVec2{static_cast<float>(width), static_cast<float>(height)});
       // ImGui::SetNextWindowContentSize(ImVec2{window_width, window_height});
 
-      ImGui::Begin("Control Panel");  // Create a window called "Hello, world!"
-                                      // and append into it.
+      ImGui::Begin("Control Panel");
 
       static bool h_borders = true;
       static bool v_borders = true;
       static int  top_columns_count = 2;
       static int  bottom_columns_count = 3;
 
-      // ImGui::BeginGroup();
-      // {
-      //   ImGui::BeginGroup();
-      //   ImGui::Button("AAA");
-      //   ImGui::SameLine();
-      //   ImGui::Button("BBB");
-      //   ImGui::SameLine();
-      //   ImGui::BeginGroup();
-      //   ImGui::Button("CCC");
-      //   ImGui::Button("DDD");
-      //   ImGui::EndGroup();
-      //   ImGui::SameLine();
-      //   ImGui::Button("EEE");
-      //   ImGui::EndGroup();
-      //   if (ImGui::IsItemHovered())
-      //     ImGui::SetTooltip("First group hovered");
-      // }
-      // ImGui::EndGroup();
-
       // Top Row
       ImGui::Columns(top_columns_count, NULL, v_borders);
       {
         ImGui::BeginChild("inner_status");
         ImGui::Columns(2, NULL, v_borders);
+        unsigned int status_id = 0;
         {
           // Spraying status
           if (h_borders && ImGui::GetColumnIndex() == 0)
             ImGui::Separator();
 
           ImGui::Text("Spraying Status");
-          // ImGui::Text("Width %.2f", ImGui::GetColumnWidth());
-          // ImGui::Text("Avail %.2f", ImGui::GetContentRegionAvail().x);
-          // ImGui::Text("Offset %.2f", ImGui::GetColumnOffset());
-          // ImGui::Text("Long text that is likely to clip");
-          // ImGui::Button("Button", ImVec2(-FLT_MIN, 0.0f));
-          ImGui::PushID(0);
+
+          // Spraying Ready
+          ImGui::PushID(status_id++);
           ImGui::PushStyleColor(ImGuiCol_Button,
                                 (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
           ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
                                 (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
           ImGui::PushStyleColor(ImGuiCol_ButtonActive,
                                 (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Spray Ready", ImVec2(-FLT_MIN, 0.0f));
+          ImGui::Button("Spraying Ready", ImVec2(-FLT_MIN, 50.0f));
           ImGui::PopStyleColor(3);
           ImGui::PopID();
+
+          // Spraying Running
+          ImGui::PushID(status_id++);
+          ImGui::PushStyleColor(ImGuiCol_Button,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
+          ImGui::Button("Spraying Running", ImVec2(-FLT_MIN, 50.0f));
+          ImGui::PopStyleColor(3);
+          ImGui::PopID();
+
+          // Spraying Complete
+          ImGui::PushID(status_id++);
+          ImGui::PushStyleColor(ImGuiCol_Button,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
+          ImGui::Button("Spraying Complete", ImVec2(-FLT_MIN, 50.0f));
+          ImGui::PopStyleColor(3);
+          ImGui::PopID();
+
+          // Spraying Fault
+          ImGui::PushID(status_id++);
+          ImGui::PushStyleColor(ImGuiCol_Button,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
+          ImGui::Button("Spraying Fault", ImVec2(-FLT_MIN, 50.0f));
+          ImGui::PopStyleColor(3);
+          ImGui::PopID();
+
           ImGui::NextColumn();
         }
 
         {
           // Tending Status
           ImGui::Text("Tending Status");
-          ImGui::PushID(0);
+
+          // Tending Ready
+          ImGui::PushID(status_id++);
           ImGui::PushStyleColor(ImGuiCol_Button,
                                 (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
           ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
                                 (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
           ImGui::PushStyleColor(ImGuiCol_ButtonActive,
                                 (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Tending Ready", ImVec2(-FLT_MIN, 0.0f));
+          ImGui::Button("Tending Ready", ImVec2(-FLT_MIN, 50.0f));
           ImGui::PopStyleColor(3);
           ImGui::PopID();
+
+          // Tending Running
+          ImGui::PushID(status_id++);
+          ImGui::PushStyleColor(ImGuiCol_Button,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
+          ImGui::Button("Tending Running", ImVec2(-FLT_MIN, 50.0f));
+          ImGui::PopStyleColor(3);
+          ImGui::PopID();
+
+          // Tending Complete
+          ImGui::PushID(status_id++);
+          ImGui::PushStyleColor(ImGuiCol_Button,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
+          ImGui::Button("Tending Complete", ImVec2(-FLT_MIN, 50.0f));
+          ImGui::PopStyleColor(3);
+          ImGui::PopID();
+
+          // Tending Fault
+          ImGui::PushID(status_id++);
+          ImGui::PushStyleColor(ImGuiCol_Button,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
+          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
+          ImGui::Button("Tending Fault", ImVec2(-FLT_MIN, 50.0f));
+          ImGui::PopStyleColor(3);
+          ImGui::PopID();
+
           ImGui::NextColumn();
         }
         ImGui::EndChild();

@@ -251,14 +251,14 @@ path                         = [
 
 [mechanisms.spraying.stepper]
 [mechanisms.spraying.stepper.x]
-rpm                          = 500.0
-acceleration                 = 800.0 # steps / s^2
-deceleration                 = 800.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 2000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.spraying.stepper.y]
-rpm                          = 500.0
-acceleration                 = 800.0 # steps / s^2
-deceleration                 = 800.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 2000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Spraying Mechanism
 # ----------------------------------------------------------
@@ -312,14 +312,14 @@ zigzag                       = [
 
 [mechanisms.tending.stepper]
 [mechanisms.tending.stepper.x]
-rpm                          = 500.0
-acceleration                 = 800.0 # steps / s^2
-deceleration                 = 800.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 1000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.tending.stepper.y]
-rpm                          = 500.0
-acceleration                 = 800.0 # steps / s^2
-deceleration                 = 800.0 # steps / s^2
+rpm                          = 200.0
+acceleration                 = 1000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Tending Mechanism
 # ----------------------------------------------------------

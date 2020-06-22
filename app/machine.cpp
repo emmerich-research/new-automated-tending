@@ -72,6 +72,8 @@ bool TendingDef::running::is_tending_completed() const {
 TendingDef::running::spraying::spraying() : initialized{false} {}
 
 void TendingDef::running::spraying::initialize() {
+  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
+
   if (!initialized) {
     auto* digital_output_registry = device::DigitalOutputDeviceRegistry::get();
     massert(digital_output_registry != nullptr, "sanity");
@@ -90,6 +92,9 @@ void TendingDef::running::spraying::initialize() {
 TendingDef::running::tending::tending() : initialized{false} {}
 
 void TendingDef::running::tending::initialize() {
+  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::PWMDeviceRegistry::get() != nullptr, "sanity");
+
   if (!initialized) {
     auto* digital_output_registry = device::DigitalOutputDeviceRegistry::get();
     auto* pwm_registry = device::PWMDeviceRegistry::get();

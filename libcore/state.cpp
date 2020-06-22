@@ -5,7 +5,8 @@
 NAMESPACE_BEGIN
 
 namespace impl {
-StateImpl::StateImpl() : path_id_{0}, coordinate_{0.0, 0.0, 0.0} {
+StateImpl::StateImpl()
+    : path_id_{0}, coordinate_{0.0, 0.0, 0.0}, spraying_{}, tending_{} {
   DEBUG_ONLY(obj_name_ = "StateImpl");
 }
 
@@ -89,9 +90,19 @@ void StateImpl::dec_z() {
   coordinate_.z -= 1.0;
 }
 
-const Point& StateImpl::z()  {
+const Point& StateImpl::z() {
   const StateImpl::StateLock lock(mutex());
   return coordinate_.z;
+}
+
+Task& StateImpl ::spraying() {
+  const StateImpl::StateLock lock(mutex());
+  return spraying_;
+}
+
+Task& StateImpl ::tending() {
+  const StateImpl::StateLock lock(mutex());
+  return tending_;
 }
 }  // namespace impl
 

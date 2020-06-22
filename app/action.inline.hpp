@@ -148,6 +148,9 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Spraying is completed...");
 
+  sleep_for<time_units::millis>(3000);
+  fsm.spraying_complete->write(device::digital::value::low);
+
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
 }
@@ -224,6 +227,9 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
   fsm.tending_complete->write(device::digital::value::high);
 
   LOG_INFO("Tending is completed...");
+
+  sleep_for<time_units::millis>(3000);
+  fsm.tending_complete->write(device::digital::value::low);
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
