@@ -84,15 +84,28 @@ void status() {
 
 void manual() {
   massert(State::get() != nullptr, "sanity");
+  massert(Config::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
 
   // Manual Movement
-  auto*             state = State::get();
+  auto*       state = State::get();
+  const auto* config = Config::get();
+  auto&&      movement = mechanism::movement_mechanism();
+
   const ImGuiStyle& style = ImGui::GetStyle();
   const ImVec2      button_size{100, 100};
 
-  const bool disabled = !(state->spraying_fault() || state->tending_fault());
+  const bool manual_mode = state->manual_mode();
+  const bool fault = state->fault();
 
-  if (disabled) {
+  const double x_manual = config->fault_manual_movement<double>("x");
+  const double y_manual = config->fault_manual_movement<double>("y");
+  const double z_manual = config->fault_manual_movement<double>("z");
+
+  state->reset_coordinate();
+
+  if (!manual_mode) {
     ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
   }
@@ -107,26 +120,31 @@ void manual() {
       ImGui::Separator();
       ImGui::SameLine(button_size.x + style.FramePadding.x * 2);
       if (ImGui::Button("Y+", button_size)) {
+        movement->move<mechanism::movement::unit::mm>(0.0, y_manual, 0.0);
       }
       {
         ImGui::BeginGroup();
         if (ImGui::Button("X-", button_size)) {
+          movement->move<mechanism::movement::unit::mm>(-x_manual, 0.0, 0.0);
         }
         ImGui::SameLine();
         if (ImGui::Button("HOME", button_size)) {
+          movement->homing();
         }
         ImGui::SameLine();
         if (ImGui::Button("X+", button_size)) {
+          movement->move<mechanism::movement::unit::mm>(x_manual, 0.0, 0.0);
         }
         ImGui::EndGroup();
       }
       ImGui::SetCursorPosX(ImGui::GetColumnOffset() + button_size.x +
                            style.FramePadding.x * 4);
       if (ImGui::Button("Y-", button_size)) {
+        movement->move<mechanism::movement::unit::mm>(0.0, -y_manual, 0.0);
       }
       {
         // Fault
-        if (!disabled) {
+        if (fault) {
           ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
           ImGui::PushStyleVar(ImGuiStyleVar_Alpha,
                               ImGui::GetStyle().Alpha * 0.5f);
@@ -137,13 +155,15 @@ void manual() {
         ImGui::Separator();
         if (ImGui::Button("Fault Test", ImVec2{-FLT_MIN, 100})) {
         }
-        if (!disabled) {
+        if (fault) {
           ImGui::PopItemFlag();
           ImGui::PopStyleVar();
         } else {
           ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
           ImGui::PushStyleVar(ImGuiStyleVar_Alpha,
                               ImGui::GetStyle().Alpha * 0.5f);
+        }
+        if (ImGui::Button("Manual Move", ImVec2{-FLT_MIN, 100})) {
         }
       }
       ImGui::EndGroup();
@@ -167,12 +187,14 @@ void manual() {
     ImGui::NextColumn();
   }
 
-  if (disabled) {
+  if (!manual_mode) {
     ImGui::PopItemFlag();
     ImGui::PopStyleVar();
   }
 
   ImGui::EndChild();
+
+  state->reset_coordinate();
 }
 }  // namespace widget
 }  // namespace gui

@@ -6,7 +6,11 @@ NAMESPACE_BEGIN
 
 namespace impl {
 StateImpl::StateImpl()
-    : path_id_{0}, coordinate_{0.0, 0.0, 0.0}, spraying_{}, tending_{} {
+    : path_id_{0},
+      coordinate_{0.0, 0.0, 0.0},
+      spraying_{},
+      tending_{},
+      manual_mode_{false} {
   DEBUG_ONLY(obj_name_ = "StateImpl");
 }
 
@@ -31,8 +35,12 @@ void StateImpl::coordinate(const Coordinate& coordinate) {
   coordinate_.z = coordinate.z;
 }
 
-const Coordinate& StateImpl::coordinate()  {
+const Coordinate& StateImpl::coordinate() {
   return coordinate_;
+}
+
+void StateImpl::reset_coordinate() {
+  coordinate({0.0, 0.0, 0.0});
 }
 
 void StateImpl::x(const Point& x) {
@@ -183,6 +191,21 @@ void StateImpl::tending_fault(bool fault) {
 bool StateImpl::tending_fault() {
   const StateImpl::StateLock lock(mutex());
   return tending_.fault;
+}
+
+bool StateImpl::fault() {
+  const StateImpl::StateLock lock(mutex());
+  return tending_.fault || spraying_.fault;
+}
+
+void StateImpl::manual_mode(bool manual) {
+  const StateImpl::StateLock lock(mutex());
+  manual_mode_ = manual;
+}
+
+bool StateImpl::manual_mode() {
+  const StateImpl::StateLock lock(mutex());
+  return manual_mode_;
 }
 }  // namespace impl
 

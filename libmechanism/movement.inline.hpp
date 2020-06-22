@@ -12,9 +12,11 @@ void Movement::move(Point x, Point y, Point z) {
     // enabling motor
     enable_motors();
 
-    auto current_x = State::get()->x();
-    auto current_y = State::get()->y();
-    auto current_z = State::get()->z();
+    auto* state = State::get();
+
+    auto current_x = state->x();
+    auto current_y = state->y();
+    auto current_z = state->z();
 
     LOG_INFO("Current X {}, Next X {}", current_x, x);
     LOG_INFO("Current Y {}, Next Y {}", current_y, y);
@@ -27,16 +29,21 @@ void Movement::move(Point x, Point y, Point z) {
     const long steps_z = convert_length_to_steps<Unit>(
         z - current_z, builder()->steps_per_mm_z());
 
-    auto result = thread_pool().enqueue([this, steps_x, steps_y, steps_z] {
-      LOG_INFO("Starting to move steps_x={}, steps_y={}, steps_z={}...",
-               steps_x, steps_y, steps_z);
-      start_move(steps_x, steps_y, steps_z);  // will trigger ready to false
-      while (!ready()) {
-        next();
-      }
-      LOG_INFO("Move is finished");
-      return true;
-    });
+    auto result =
+        thread_pool().enqueue([this, state, steps_x, steps_y, steps_z] {
+          LOG_INFO("Starting to move steps_x={}, steps_y={}, steps_z={}...",
+                   steps_x, steps_y, steps_z);
+          start_move(steps_x, steps_y, steps_z);  // will trigger ready to false
+          while (!ready()) {
+            if (state->fault() && !state->manual_mode()) {
+              stop();
+            } else {
+              next();
+            }
+          }
+          LOG_INFO("Move is finished");
+          return true;
+        });
 
     // BEWARE!
     // this line will enforce waiting of move task until finished

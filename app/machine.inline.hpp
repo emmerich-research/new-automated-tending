@@ -30,6 +30,10 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
   auto&& tending_ready =
       digital_output_registry->get(device::id::comm::pi::tending_ready());
 
+  state->spraying_fault(false);
+  state->tending_fault(false);
+  state->manual_mode(false);
+
   spraying_ready->write(device::digital::value::low);
   state->spraying_ready(false);
 
@@ -49,8 +53,8 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
   guard::tending::height  tending_height;
 
   root_machine(fsm).thread_pool().enqueue(
-      [fsm, spraying_height, tending_height]() mutable -> void {
-        while (!root_machine(fsm).is_terminated()) {
+      [fsm, state, spraying_height, tending_height]() mutable -> void {
+        while (!root_machine(fsm).is_terminated() && !state->fault()) {
           if (spraying_height.check()) {
             root_machine(fsm).start_spraying();
             break;
@@ -187,6 +191,34 @@ void TendingDef::running::tending::preparation::on_exit(Event&&,
 /**
  * End of tending
  */
+
+/**
+ * Beginning of Stopped
+ */
+template <typename Event, typename FSM>
+void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
+  LOG_INFO("Entering fault mode");
+}
+
+template <typename Event, typename FSM>
+void TendingDef::fault::manual::on_enter(Event const&&, FSM& fsm) const {
+  massert(State::get() != nullptr, "sanity");
+  LOG_INFO("Entering fault manual mode");
+
+  auto* state = State::get();
+
+  state->manual_mode(true);
+}
+
+template <typename Event, typename FSM>
+void TendingDef::fault::manual::on_exit(Event const&&, FSM& fsm) const {
+  massert(State::get() != nullptr, "sanity");
+  LOG_INFO("Exiting fault manual mode");
+
+  auto* state = State::get();
+
+  state->manual_mode(false);
+}
 }  // namespace machine
 
 NAMESPACE_END

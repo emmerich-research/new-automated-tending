@@ -9,8 +9,11 @@ namespace event {
 struct start {};
 struct stop {};
 
-struct fault {};
+namespace fault {
+struct trigger {};
 struct restart {};
+struct manual {};
+};  // namespace fault
 
 struct task_complete {};
 

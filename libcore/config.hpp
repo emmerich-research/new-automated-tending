@@ -353,6 +353,21 @@ class ConfigImpl : public StackObj {
                    std::forward<Keys>(keys)...);
   }
   /**
+   * Get mechanisms fault manual mode movement
+   *
+   * It should be in key "mechanisms.fault.manual-mode.movement"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return manual mode config
+   */
+  template <typename T, typename... Keys>
+  inline T fault_manual_movement(Keys&&... keys) const {
+    return find<T>("mechanisms", "fault", "manual-mode", "movement",
+                   std::forward<Keys>(keys)...);
+  }
+  /**
    * Get communication device from PLC to RaspberryPI
    *
    * It should be in key "devices.communication.input"

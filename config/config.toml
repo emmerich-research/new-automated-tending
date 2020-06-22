@@ -215,6 +215,22 @@ rotary-encoder-pin           = 0
 [mechanisms]
 
 # ----------------------------------------------------------
+# Fault Mechanism
+# Brief :
+# - Stopping all motors
+# - Motors will be active if manual mode are true (check UI/HMI)
+
+[mechanisms.fault]
+
+[mechanisms.fault.manual-mode]
+
+[mechanisms.fault.manual-mode.movement]
+# in mm
+x                            = 50.0
+y                            = 50.0
+z                            = 20.0
+
+# ----------------------------------------------------------
 # Spraying Mechanism
 #
 # Brief :

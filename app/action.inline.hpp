@@ -113,8 +113,11 @@ void fault::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
 
   auto* state = State::get();
 
-  state->spraying_fault(true);
-  state->tending_fault(true);
+  if (state->spraying_running()) {
+    state->spraying_fault(true);
+  } else if (state->tending_running()) {
+    state->tending_fault(true);
+  }
 }
 
 template <typename Event,
@@ -126,8 +129,11 @@ void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
 
   auto* state = State::get();
 
-  state->spraying_fault(false);
-  state->tending_fault(false);
+  if (state->spraying_running()) {
+    state->spraying_fault(false);
+  } else if (state->tending_running()) {
+    state->tending_fault(false);
+  }
 }
 
 template <typename Event,

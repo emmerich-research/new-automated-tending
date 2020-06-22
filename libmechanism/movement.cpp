@@ -248,6 +248,7 @@ void Movement::stop(void) {
   [[maybe_unused]] auto step_x = stop_x();
   [[maybe_unused]] auto step_y = stop_y();
   [[maybe_unused]] auto step_z = stop_z();
+  ready_ = true;
 }
 
 void Movement::start_move(const long& x, const long& y, const long& z) {
@@ -558,6 +559,8 @@ void Movement::revert_motor_params() const {
 }
 
 void Movement::move_finger_up() {
+  massert(State::get() != nullptr, "sanity");
+
   LOG_INFO("Lifting finger...");
 
   // enabling motor
@@ -723,7 +726,7 @@ void Movement::homing() {
     auto* state = State::get();
 
     // set state to 0,0,0
-    state->coordinate({0.0, 0.0, 0.0});
+    state->reset_coordinate();
 
     return is_x_completed && is_y_completed;
   });

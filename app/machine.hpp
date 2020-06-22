@@ -43,7 +43,31 @@ struct TendingDef : public StackObj,
     void on_enter(Event const&& event, FSM& fsm) const;
   };
 
-  struct stopped : state<stopped> {};
+  struct fault : state_machine<fault> {
+    /**
+     * A type alias for actual state machine, that will be passed
+     * to actions and guards
+     **/
+    using fault_fsm = afsm::inner_state_machine<fault, tending_fsm>;
+
+    struct idle : state<idle> {
+      template <typename Event, typename FSM>
+      void on_enter(Event const&& event, FSM& fsm) const;
+    };
+
+    struct manual : state<manual> {
+      template <typename Event, typename FSM>
+      void on_enter(Event const&& event, FSM& fsm) const;
+
+      template <typename Event, typename FSM>
+      void on_exit(Event const&& event, FSM& fsm) const;
+    };
+
+    using initial_state = idle;
+    using transitions = transition_table<
+        /* State, Event, Next, Action, Guard */
+        tr<idle, event::fault::manual, manual>>;
+  };
 
   struct terminated : terminal_state<terminated> {};
 
@@ -198,8 +222,8 @@ struct TendingDef : public StackObj,
   using transitions = transition_table<
       /* State, Event, Next, Action, Guard */
       tr<initial, event::start, running, action::start>,
-      tr<running, event::fault, stopped, action::fault>,
-      tr<stopped, event::restart, running, action::restart>,
+      tr<running, event::fault::trigger, fault, action::fault>,
+      tr<fault, event::fault::restart, running, action::restart>,
       tr<running, event::stop, terminated, action::stop>>;
 
   /**
@@ -230,6 +254,10 @@ struct TendingDef : public StackObj,
    * Trigger fault to machine
    */
   void fault();
+  /**
+   * Trigger fault to machine in manual mode
+   */
+  void fault_manual();
   /**
    * Restart machine after fault
    */

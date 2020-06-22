@@ -58,11 +58,15 @@ void TendingDef::task_completed() {
 }
 
 void TendingDef::fault() {
-  rebind().process_event(event::fault{});
+  rebind().process_event(event::fault::trigger{});
+}
+
+void TendingDef::fault_manual() {
+  rebind().process_event(event::fault::manual{});
 }
 
 void TendingDef::restart() {
-  rebind().process_event(event::restart{});
+  rebind().process_event(event::fault::restart{});
 }
 
 TendingDef::running::running()

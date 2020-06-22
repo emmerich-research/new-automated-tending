@@ -42,7 +42,8 @@ ATM_STATUS initialize_gui() {
 #endif
 #endif
 
-  window_ = glfwCreateWindow(1024, 768, Config::get()->name().c_str(),
+  // Sanfoundry IPS Screen
+  window_ = glfwCreateWindow(1024, 600, Config::get()->name().c_str(),
                              glfwGetPrimaryMonitor(), NULL);
   if (window() == nullptr) {
     return ATM_ERR;
@@ -81,25 +82,6 @@ ATM_STATUS initialize_gui() {
 
   ImFontConfig font_config;
   font_config.SizePixels = 20.0f;
-  // FontData = NULL;
-  // FontDataSize = 0;
-  // FontDataOwnedByAtlas = true;
-  // FontNo = 0;
-  // SizePixels = 0.0f;
-  // OversampleH = 3; // FIXME: 2 may be a better default?
-  // OversampleV = 1;
-  // PixelSnapH = false;
-  // GlyphExtraSpacing = ImVec2(0.0f, 0.0f);
-  // GlyphOffset = ImVec2(0.0f, 0.0f);
-  // GlyphRanges = NULL;
-  // GlyphMinAdvanceX = 0.0f;
-  // GlyphMaxAdvanceX = FLT_MAX;
-  // MergeMode = false;
-  // RasterizerFlags = 0x00;
-  // RasterizerMultiply = 1.0f;
-  // EllipsisChar = (ImWchar)-1;
-  // memset(Name, 0, sizeof(Name));
-  // DstFont = NULL;
 
   io.Fonts->AddFontDefault(&font_config);
 

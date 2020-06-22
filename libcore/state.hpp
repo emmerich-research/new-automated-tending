@@ -105,6 +105,10 @@ class StateImpl : public StackObj {
    */
   const Coordinate& coordinate();
   /**
+   * Reset coordinate
+   */
+  void reset_coordinate();
+  /**
    * Set x-axis coordinate
    *
    * @param x set new x-axis coordinate
@@ -272,6 +276,22 @@ class StateImpl : public StackObj {
    * @return status of tending fault
    */
   bool tending_fault();
+  /**
+   * Get fault status
+   *
+   * @return status of fault
+   */
+  bool fault();
+  /**
+   * Set manual mode
+   */
+  void manual_mode(bool manual);
+  /**
+   * Manual mode
+   *
+   * @return status of manual mode
+   */
+  bool manual_mode();
 
  private:
   /**
@@ -317,6 +337,10 @@ class StateImpl : public StackObj {
    * Spraying task
    */
   Task spraying_;
+  /**
+   * Manual mode
+   */
+  bool manual_mode_;
 };
 }  // namespace impl
 
