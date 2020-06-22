@@ -20,7 +20,8 @@ StepperDevice::StepperDevice(PI_PIN        step_pin,
       rpm_{rpm},
       step_device_{DigitalOutputDevice::create(step_pin)},
       dir_device_{DigitalOutputDevice::create(dir_pin)},
-      enable_device_{DigitalOutputDevice::create(enable_pin)},
+      enable_device_{
+          DigitalOutputDevice::create(enable_pin, true, PI_PUD_DOWN)},
       motor_steps_{steps} {
   DEBUG_ONLY(obj_name_ = "StepperDevice");
   /* Movement mechanism variables initialization */

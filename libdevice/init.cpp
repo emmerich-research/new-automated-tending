@@ -48,7 +48,7 @@ static ATM_STATUS initialize_plc_to_pi_comm() {
   status = digital_input_registry->create(
       id::comm::plc::spraying_height(),
       config->plc_to_pi<PI_PIN>("spraying-height", "pin"),
-      config->plc_to_pi<bool>("spraying-height", "active-state"), PI_PUD_DOWN);
+      config->plc_to_pi<bool>("spraying-height", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -56,21 +56,21 @@ static ATM_STATUS initialize_plc_to_pi_comm() {
   status = digital_input_registry->create(
       id::comm::plc::tending_height(),
       config->plc_to_pi<PI_PIN>("tending-height", "pin"),
-      config->plc_to_pi<bool>("tending-height", "active-state"), PI_PUD_DOWN);
+      config->plc_to_pi<bool>("tending-height", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = digital_input_registry->create(
       id::comm::plc::reset(), config->plc_to_pi<PI_PIN>("reset", "pin"),
-      config->plc_to_pi<bool>("reset", "active-state"), PI_PUD_DOWN);
+      config->plc_to_pi<bool>("reset", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = digital_input_registry->create(
       id::comm::plc::e_stop(), config->plc_to_pi<PI_PIN>("e-stop", "pin"),
-      config->plc_to_pi<bool>("e-stop", "active-state"), PI_PUD_DOWN);
+      config->plc_to_pi<bool>("e-stop", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
