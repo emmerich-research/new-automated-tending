@@ -22,6 +22,15 @@ void control_panel_window() {
   widget::status();
   widget::manual();
 
+  {
+    // Bottom Row
+    ImGui::Columns(1);
+    ImGui::Separator();
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+                1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  }
+
   ImGui::End();
 }
 }  // namespace gui
