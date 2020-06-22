@@ -74,7 +74,9 @@ target_link_libraries(gui PUBLIC
   ${GLAD_LIBRARIES}
   "${PROJECT_NAMESPACE}::util"
   "${PROJECT_NAMESPACE}::core"
-  "${PROJECT_NAMESPACE}::algo")
+  "${PROJECT_NAMESPACE}::algo"
+  "${PROJECT_NAMESPACE}::device"
+  "${PROJECT_NAMESPACE}::mechanism")
 
 target_set_warnings(gui
   ENABLE ALL

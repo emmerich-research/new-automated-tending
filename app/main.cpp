@@ -65,8 +65,6 @@ int main() {
   bool   show_another_window = false;
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-  const ImGuiStyle& style = ImGui::GetStyle();
-
   while (!glfwWindowShouldClose(window())) {
     // Poll and handle events (inputs, window resize, etc.)
     // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to
@@ -89,203 +87,14 @@ int main() {
     ImGui::NewFrame();
 
     {
-      gui::reset_window_pos();
-
-      auto [width, height] = gui::get_window_size();
-
-      ImGui::SetNextWindowSize(
-          ImVec2{static_cast<float>(width), static_cast<float>(height)});
-      // ImGui::SetNextWindowContentSize(ImVec2{window_width, window_height});
-
-      ImGui::Begin("Control Panel");
-
-      static bool h_borders = true;
-      static bool v_borders = true;
-      static int  top_columns_count = 2;
-      static int  bottom_columns_count = 3;
-
-      // Top Row
-      ImGui::Columns(top_columns_count, NULL, v_borders);
-      {
-        ImGui::BeginChild("inner_status");
-        ImGui::Columns(2, NULL, v_borders);
-        unsigned int status_id = 0;
-        {
-          // Spraying status
-          if (h_borders && ImGui::GetColumnIndex() == 0)
-            ImGui::Separator();
-
-          ImGui::Text("Spraying Status");
-
-          // Spraying Ready
-          ImGui::PushID(status_id++);
-          ImGui::PushStyleColor(ImGuiCol_Button,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Spraying Ready", ImVec2(-FLT_MIN, 50.0f));
-          ImGui::PopStyleColor(3);
-          ImGui::PopID();
-
-          // Spraying Running
-          ImGui::PushID(status_id++);
-          ImGui::PushStyleColor(ImGuiCol_Button,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Spraying Running", ImVec2(-FLT_MIN, 50.0f));
-          ImGui::PopStyleColor(3);
-          ImGui::PopID();
-
-          // Spraying Complete
-          ImGui::PushID(status_id++);
-          ImGui::PushStyleColor(ImGuiCol_Button,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Spraying Complete", ImVec2(-FLT_MIN, 50.0f));
-          ImGui::PopStyleColor(3);
-          ImGui::PopID();
-
-          // Spraying Fault
-          ImGui::PushID(status_id++);
-          ImGui::PushStyleColor(ImGuiCol_Button,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Spraying Fault", ImVec2(-FLT_MIN, 50.0f));
-          ImGui::PopStyleColor(3);
-          ImGui::PopID();
-
-          ImGui::NextColumn();
-        }
-
-        {
-          // Tending Status
-          ImGui::Text("Tending Status");
-
-          // Tending Ready
-          ImGui::PushID(status_id++);
-          ImGui::PushStyleColor(ImGuiCol_Button,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Tending Ready", ImVec2(-FLT_MIN, 50.0f));
-          ImGui::PopStyleColor(3);
-          ImGui::PopID();
-
-          // Tending Running
-          ImGui::PushID(status_id++);
-          ImGui::PushStyleColor(ImGuiCol_Button,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Tending Running", ImVec2(-FLT_MIN, 50.0f));
-          ImGui::PopStyleColor(3);
-          ImGui::PopID();
-
-          // Tending Complete
-          ImGui::PushID(status_id++);
-          ImGui::PushStyleColor(ImGuiCol_Button,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Tending Complete", ImVec2(-FLT_MIN, 50.0f));
-          ImGui::PopStyleColor(3);
-          ImGui::PopID();
-
-          // Tending Fault
-          ImGui::PushID(status_id++);
-          ImGui::PushStyleColor(ImGuiCol_Button,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-          ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                                (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-          ImGui::Button("Tending Fault", ImVec2(-FLT_MIN, 50.0f));
-          ImGui::PopStyleColor(3);
-          ImGui::PopID();
-
-          ImGui::NextColumn();
-        }
-        ImGui::EndChild();
-      }
-
-      {
-        // Manual Movement
-
-        const ImVec2 button_size{100, 100};
-        ImGui::NextColumn();
-
-        ImGui::BeginChild("inner_movement");
-        ImGui::Columns(2, NULL, false);
-        {
-          ImGui::BeginGroup();
-          {
-            ImGui::Separator();
-            ImGui::SameLine(button_size.x + style.FramePadding.x * 2);
-            ImGui::Button("Y+", button_size);
-            {
-              ImGui::BeginGroup();
-              ImGui::Button("X-", button_size);
-              ImGui::SameLine();
-              ImGui::Button("HOME", button_size);
-              ImGui::SameLine();
-              ImGui::Button("X+", button_size);
-              ImGui::EndGroup();
-            }
-            ImGui::SetCursorPosX(ImGui::GetColumnOffset() + button_size.x +
-                                 style.FramePadding.x * 4);
-            ImGui::Button("Y-", button_size);
-            ImGui::EndGroup();
-          }
-          ImGui::EndGroup();
-          ImGui::NextColumn();
-        }
-
-        {
-          ImGui::SetCursorPosY(style.FramePadding.y * 20);
-          ImGui::Button("Z+", button_size);
-          ImGui::Button("Z-", button_size);
-          ImGui::NextColumn();
-        }
-        ImGui::EndChild();
-      }
+      gui::control_panel_window();
 
       // Bottom Row
       ImGui::Columns(1);
-      if (h_borders)
-        ImGui::Separator();
+      ImGui::Separator();
 
       ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                   1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-      ImGui::End();
-    }
-
-    // 3. Show another simple window.
-    if (show_another_window) {
-      ImGui::Begin(
-          "Another Window",
-          &show_another_window);  // Pass a pointer to our bool variable (the
-                                  // window will have a closing button that will
-                                  // clear the bool when clicked)
-      ImGui::Text("Hello from another window!");
-      if (ImGui::Button("Close Me"))
-        show_another_window = false;
       ImGui::End();
     }
 

@@ -56,7 +56,7 @@ struct Coordinate {
 struct Task {
   bool ready;
   bool running;
-  bool completed;
+  bool complete;
   bool fault;
 };
 
@@ -169,13 +169,109 @@ class StateImpl : public StackObj {
    *
    * @return spraying task
    */
-  Task& spraying();
+  const Task& spraying();
+  /**
+   * Set spraying ready
+   *
+   * @param ready ready status (true or false)
+   */
+  void spraying_ready(bool ready);
+  /**
+   * Get spraying ready
+   *
+   * @return status of spraying ready
+   */
+  bool spraying_ready();
+  /**
+   * Set spraying running
+   *
+   * @param running running status (true or false)
+   */
+  void spraying_running(bool running);
+  /**
+   * Get spraying running
+   *
+   * @return status of spraying running
+   */
+  bool spraying_running();
+  /**
+   * Set spraying complete
+   *
+   * @param complete complete status (true or false)
+   */
+  void spraying_complete(bool complete);
+  /**
+   * Get spraying complete
+   *
+   * @return status of spraying complete
+   */
+  bool spraying_complete();
+  /**
+   * Set spraying fault
+   *
+   * @param fault fault status (true or false)
+   */
+  void spraying_fault(bool fault);
+  /**
+   * Get spraying fault
+   *
+   * @return status of spraying fault
+   */
+  bool spraying_fault();
   /**
    * Get tending task
    *
    * @return tending task
    */
-  Task& tending();
+  const Task& tending();
+  /**
+   * Set tending ready
+   *
+   * @param ready ready status (true or false)
+   */
+  void tending_ready(bool ready);
+  /**
+   * Get tending fault
+   *
+   * @return status of tending fault
+   */
+  bool tending_ready();
+  /**
+   * Set tending running
+   *
+   * @param running running status (true or false)
+   */
+  void tending_running(bool running);
+  /**
+   * Get tending running
+   *
+   * @return status of tending running
+   */
+  bool tending_running();
+  /**
+   * Set tending complete
+   *
+   * @param complete complete status (true or false)
+   */
+  void tending_complete(bool complete);
+  /**
+   * Get tending complete
+   *
+   * @return status of tending complete
+   */
+  bool tending_complete();
+  /**
+   * Set tending fault
+   *
+   * @param fault fault status (true or false)
+   */
+  void tending_fault(bool fault);
+  /**
+   * Get tending fault
+   *
+   * @return status of tending fault
+   */
+  bool tending_fault();
 
  private:
   /**

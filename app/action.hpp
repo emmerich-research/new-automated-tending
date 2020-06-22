@@ -24,6 +24,22 @@ struct stop : public StackObj {
   void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
 };
 
+struct fault : public StackObj {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
+};
+
+struct restart : public StackObj {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
+};
+
 struct homing : public StackObj {
   template <typename Event,
             typename FSM,

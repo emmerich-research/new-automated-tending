@@ -198,8 +198,8 @@ struct TendingDef : public StackObj,
   using transitions = transition_table<
       /* State, Event, Next, Action, Guard */
       tr<initial, event::start, running, action::start>,
-      tr<running, none, stopped, none, guard::e_stop>,
-      tr<stopped, none, running, none, guard::reset>,
+      tr<running, event::fault, stopped, action::fault>,
+      tr<stopped, event::restart, running, action::restart>,
       tr<running, event::stop, terminated, action::stop>>;
 
   /**
@@ -226,6 +226,14 @@ struct TendingDef : public StackObj,
    * Stop machine
    */
   void stop();
+  /**
+   * Trigger fault to machine
+   */
+  void fault();
+  /**
+   * Restart machine after fault
+   */
+  void restart();
   /**
    * Trigger `no task`
    */

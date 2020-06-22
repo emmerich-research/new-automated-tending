@@ -80,6 +80,19 @@ void start::operator()(Event const&,
   tending_running->write(device::digital::value::low);
   tending_complete->write(device::digital::value::low);
 
+  // setting global state
+  auto* state = State::get();
+  massert(state != nullptr, "sanity");
+  state->spraying_ready(false);
+  state->spraying_running(false);
+  state->spraying_complete(false);
+  state->spraying_fault(false);
+
+  state->tending_ready(false);
+  state->tending_running(false);
+  state->tending_complete(false);
+  state->tending_fault(false);
+
   fsm.machine_ready_ = true;
 }
 
@@ -89,6 +102,32 @@ template <typename Event,
           typename TargetState>
 void stop::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
   shutdown_hook();
+}
+
+template <typename Event,
+          typename FSM,
+          typename SourceState,
+          typename TargetState>
+void fault::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
+  massert(State::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+
+  state->spraying_fault(true);
+  state->tending_fault(true);
+}
+
+template <typename Event,
+          typename FSM,
+          typename SourceState,
+          typename TargetState>
+void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
+  massert(State::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+
+  state->spraying_fault(false);
+  state->tending_fault(false);
 }
 
 template <typename Event,
@@ -105,14 +144,17 @@ template <typename Event,
           typename SourceState,
           typename TargetState>
 void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
+  massert(State::get() != nullptr, "sanity");
   massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
+  auto*  state = State::get();
   auto&& movement = mechanism::movement_mechanism();
 
   LOG_INFO("Spraying...");
   fsm.spraying_running->write(device::digital::value::high);
+  state->spraying_running(true);
 
   LOG_INFO("Moving to spraying position...");
   movement->move_to_spraying_position();
@@ -142,9 +184,15 @@ template <typename Event,
           typename SourceState,
           typename TargetState>
 void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
-  fsm.spraying_ready->write(device::digital::value::high);
+  massert(State::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+
   fsm.spraying_running->write(device::digital::value::low);
+  state->spraying_running(false);
+
   fsm.spraying_complete->write(device::digital::value::high);
+  state->spraying_complete(true);
 
   LOG_INFO("Spraying is completed...");
 
@@ -162,16 +210,19 @@ template <typename Event,
           typename SourceState,
           typename TargetState>
 void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
   massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
-  massert(Config::get() != nullptr, "sanity");
 
   auto*  config = Config::get();
+  auto*  state = State::get();
   auto&& movement = mechanism::movement_mechanism();
 
   LOG_INFO("Tending begins...");
   fsm.tending_running->write(device::digital::value::high);
+  state->tending_running(true);
 
   LOG_INFO("Moving to tending position...");
   movement->move_to_tending_position();
@@ -222,14 +273,21 @@ template <typename Event,
           typename SourceState,
           typename TargetState>
 void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
-  fsm.tending_ready->write(device::digital::value::high);
+  massert(State::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+
   fsm.tending_running->write(device::digital::value::low);
+  state->tending_running(false);
+
   fsm.tending_complete->write(device::digital::value::high);
+  state->tending_complete(true);
 
   LOG_INFO("Tending is completed...");
 
   sleep_for<time_units::millis>(3000);
   fsm.tending_complete->write(device::digital::value::low);
+  state->tending_complete(false);
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();

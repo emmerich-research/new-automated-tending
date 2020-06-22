@@ -57,6 +57,14 @@ void TendingDef::task_completed() {
   rebind().process_event(event::task_complete{});
 }
 
+void TendingDef::fault() {
+  rebind().process_event(event::fault{});
+}
+
+void TendingDef::restart() {
+  rebind().process_event(event::restart{});
+}
+
 TendingDef::running::running()
     : is_spraying_completed_{false}, is_tending_completed_{false} {}
 

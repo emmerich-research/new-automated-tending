@@ -9,6 +9,9 @@ namespace event {
 struct start {};
 struct stop {};
 
+struct fault {};
+struct restart {};
+
 struct task_complete {};
 
 namespace spraying {

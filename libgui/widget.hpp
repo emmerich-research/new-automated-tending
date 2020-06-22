@@ -6,7 +6,10 @@
 NAMESPACE_BEGIN
 
 namespace gui {
-namespace widget {}
+namespace widget {
+void status();
+void manual();
+}
 }  // namespace gui
 
 NAMESPACE_END
