@@ -158,7 +158,7 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
   status = digital_output_registry->create(
       id::comm::pi::tending_ready(),
       config->pi_to_plc<PI_PIN>("tending-ready", "pin"),
-      config->pi_to_plc<bool>("tending-ready", "active-state"), PI_PUD_UP);
+      config->pi_to_plc<bool>("tending-ready", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -166,7 +166,7 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
   status = digital_output_registry->create(
       id::comm::pi::spraying_ready(),
       config->pi_to_plc<PI_PIN>("spraying-ready", "pin"),
-      config->pi_to_plc<bool>("spraying-ready", "active-state"), PI_PUD_UP);
+      config->pi_to_plc<bool>("spraying-ready", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -174,7 +174,7 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
   status = digital_output_registry->create(
       id::comm::pi::tending_running(),
       config->pi_to_plc<PI_PIN>("tending-running", "pin"),
-      config->pi_to_plc<bool>("tending-running", "active-state"), PI_PUD_UP);
+      config->pi_to_plc<bool>("tending-running", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -182,7 +182,7 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
   status = digital_output_registry->create(
       id::comm::pi::spraying_running(),
       config->pi_to_plc<PI_PIN>("spraying-running", "pin"),
-      config->pi_to_plc<bool>("spraying-running", "active-state"), PI_PUD_UP);
+      config->pi_to_plc<bool>("spraying-running", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -190,7 +190,7 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
   status = digital_output_registry->create(
       id::comm::pi::tending_complete(),
       config->pi_to_plc<PI_PIN>("tending-complete", "pin"),
-      config->pi_to_plc<bool>("tending-complete", "active-state"), PI_PUD_UP);
+      config->pi_to_plc<bool>("tending-complete", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -198,7 +198,7 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
   status = digital_output_registry->create(
       id::comm::pi::spraying_complete(),
       config->pi_to_plc<PI_PIN>("spraying-complete", "pin"),
-      config->pi_to_plc<bool>("spraying-complete", "active-state"), PI_PUD_UP);
+      config->pi_to_plc<bool>("spraying-complete", "active-state"));
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
