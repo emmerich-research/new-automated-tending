@@ -192,56 +192,90 @@ void manual() {
 }
 
 void cleaning() {
-  ImGui::Columns(3);
-
+  // ImGui::BeginChild("inner_cleaning");
   {
-    ImGui::Text("Fluid Level Status");
+    ImGui::BeginGroup();
     {
-      ImGui::BeginGroup();
-      {
-        ImGui::Button("W Full", ImVec2{ImGui::GetColumnWidth() / 2, 100});
-        ImGui::Button("W Low", ImVec2{ImGui::GetColumnWidth() / 2, 100});
-      }
-      ImGui::EndGroup();
+      ImGui::Button("W Full", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+      ImGui::Button("W Low", ImVec2{ImGui::GetColumnWidth() / 2, 100});
     }
-    ImGui::SameLine();
-    {
-      ImGui::BeginGroup();
-      {
-        ImGui::Button("D Full", ImVec2{ImGui::GetColumnWidth() / 2, 100});
-        ImGui::Button("D Low", ImVec2{ImGui::GetColumnWidth() / 2, 100});
-      }
-      ImGui::EndGroup();
-    }
-
-    ImGui::NextColumn();
+    ImGui::EndGroup();
   }
-
+  ImGui::SameLine();
   {
-    ImGui::Text("Exchange Water");
+    ImGui::BeginGroup();
     {
-      ImGui::Button("1 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
-      ImGui::SameLine();
-      ImGui::Button("2 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
-      ImGui::SameLine();
-      ImGui::Button("3 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
-      ImGui::Button("W Manual Exchange", ImVec2{-FLT_MIN, 100});
+      ImGui::Button("D Full", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+      ImGui::Button("D Low", ImVec2{ImGui::GetColumnWidth() / 2, 100});
     }
-    ImGui::NextColumn();
+    ImGui::EndGroup();
   }
-
+  ImGui::NextColumn();
   {
-    ImGui::Text("Exchange Disinfectant");
+    ImGui::BeginGroup();
     {
-      ImGui::Button("1 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
-      ImGui::SameLine();
-      ImGui::Button("2 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
-      ImGui::SameLine();
-      ImGui::Button("3 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
-      ImGui::Button("D Manual Exchange", ImVec2{-FLT_MIN, 100});
+      ImGui::Button("WE Auto", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+      ImGui::Button("WE Manual", ImVec2{ImGui::GetColumnWidth() / 2, 100});
     }
-    ImGui::NextColumn();
+    ImGui::EndGroup();
   }
+  ImGui::SameLine();
+  {
+    ImGui::BeginGroup();
+    {
+      ImGui::Button("DE Auto", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+      ImGui::Button("DE Manual", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+    }
+    ImGui::EndGroup();
+  }
+  // {
+  //   ImGui::Text("Fluid Level Status");
+  //   {
+  //     ImGui::BeginGroup();
+  //     {
+  //       ImGui::Button("W Full", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+  //       ImGui::Button("W Low", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+  //     }
+  //     ImGui::EndGroup();
+  //   }
+  //   ImGui::SameLine();
+  //   {
+  //     ImGui::BeginGroup();
+  //     {
+  //       ImGui::Button("D Full", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+  //       ImGui::Button("D Low", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+  //     }
+  //     ImGui::EndGroup();
+  //   }
+
+  //   ImGui::NextColumn();
+  // }
+
+  // {
+  //   ImGui::Text("Exchange Water");
+  //   {
+  //     ImGui::Button("1 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+  //     ImGui::SameLine();
+  //     ImGui::Button("2 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+  //     ImGui::SameLine();
+  //     ImGui::Button("3 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+  //     ImGui::Button("W Manual Exchange", ImVec2{-FLT_MIN, 100});
+  //   }
+  //   ImGui::NextColumn();
+  // }
+
+  // {
+  //   ImGui::Text("Exchange Disinfectant");
+  //   {
+  //     ImGui::Button("1 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+  //     ImGui::SameLine();
+  //     ImGui::Button("2 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+  //     ImGui::SameLine();
+  //     ImGui::Button("3 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+  //     ImGui::Button("D Manual Exchange", ImVec2{-FLT_MIN, 100});
+  //   }
+  //   ImGui::NextColumn();
+  // }
 }
 }  // namespace widget
 }  // namespace gui

@@ -42,6 +42,7 @@ void control_panel_window() {
   ImGui::Text("Manual Movement");
 
   // ImGui::SetNextWindowContentSize(ImVec2(width, 0.0f));
+  ImGui::Columns(1, "widget_box", /* v_borders */ true);
   ImGui::Columns(2, "widget", /* v_borders */ true);
   // ImGui::Separator();
   widget::status();
