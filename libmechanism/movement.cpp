@@ -463,7 +463,7 @@ time_unit Movement::next() {
 
 void Movement::move_to_spraying_position() {
   LOG_INFO("Move to spraying position...");
-  const auto& iter = Config::get()->tending_position();
+  const auto& iter = Config::get()->spraying_position();
   move<movement::unit::mm>(iter.first, iter.second, 0.0);
   // reset position so imaginary homing equals tending position
   State::get()->coordinate({0.0, 0.0, 0.0});

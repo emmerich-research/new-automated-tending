@@ -13,14 +13,41 @@ void control_panel_window() {
 
   auto [width, height] = get_window_size();
 
+  ImGuiWindowFlags window_flags = 0;
+  window_flags |= ImGuiWindowFlags_NoTitleBar;
+  window_flags |= ImGuiWindowFlags_NoScrollbar;
+  window_flags |= ImGuiWindowFlags_NoMove;
+  window_flags |= ImGuiWindowFlags_NoResize;
+  window_flags |= ImGuiWindowFlags_NoCollapse;
+  window_flags |= ImGuiWindowFlags_NoNav;
+  window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+  window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+  // if (no_close)           p_open = NULL; // Don't pass our bool* to Begin
+
   ImGui::SetNextWindowSize(
       ImVec2{static_cast<float>(width), static_cast<float>(height)});
   // ImGui::SetNextWindowContentSize(ImVec2{window_width, window_height});
 
-  ImGui::Begin("Control Panel");
+  if (!ImGui::Begin("Control Panel", NULL, window_flags)) {
+    ImGui::End();
+    return;
+  }
 
+  ImGui::Text("CNC Status");
+  ImGui::SameLine();
+  ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetColumnWidth() -
+                       ImGui::CalcTextSize("Manual Movement").x -
+                       ImGui::GetScrollX() -
+                       2 * ImGui::GetStyle().ItemSpacing.x);
+  ImGui::Text("Manual Movement");
+
+  // ImGui::SetNextWindowContentSize(ImVec2(width, 0.0f));
+  ImGui::Columns(2, "widget", /* v_borders */ true);
+  // ImGui::Separator();
   widget::status();
+  ImGui::NextColumn();
   widget::manual();
+  // ImGui::NextColumn();
 
   {
     // Bottom Row

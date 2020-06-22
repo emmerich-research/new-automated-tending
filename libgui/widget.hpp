@@ -9,6 +9,7 @@ namespace gui {
 namespace widget {
 void status();
 void manual();
+void cleaning();
 }
 }  // namespace gui
 

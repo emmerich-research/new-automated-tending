@@ -43,12 +43,6 @@ void status() {
 
   auto* state = State::get();
 
-  static int          top_columns_count = 2;
-  static int          bottom_columns_count = 3;
-  static const ImVec2 button_size = {100, 100};
-
-  // Top Row
-  ImGui::Columns(top_columns_count, NULL, /* v_borders */ true);
   {
     ImGui::BeginChild("inner_status");
 
@@ -78,6 +72,8 @@ void status() {
       ImGui::NextColumn();
     }
 
+    cleaning();
+
     ImGui::EndChild();
   }
 }
@@ -94,7 +90,7 @@ void manual() {
   auto&&      movement = mechanism::movement_mechanism();
 
   const ImGuiStyle& style = ImGui::GetStyle();
-  const ImVec2      button_size{100, 100};
+  const ImVec2      button_size{75, 75};
 
   const bool manual_mode = state->manual_mode();
   const bool fault = state->fault();
@@ -103,14 +99,12 @@ void manual() {
   const double y_manual = config->fault_manual_movement<double>("y");
   const double z_manual = config->fault_manual_movement<double>("z");
 
-  state->reset_coordinate();
+  // state->reset_coordinate();
 
   if (!manual_mode) {
     ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
   }
-
-  ImGui::NextColumn();
 
   ImGui::BeginChild("inner_movement");
   ImGui::Columns(2, NULL, false);
@@ -194,7 +188,60 @@ void manual() {
 
   ImGui::EndChild();
 
-  state->reset_coordinate();
+  // state->reset_coordinate();
+}
+
+void cleaning() {
+  ImGui::Columns(3);
+
+  {
+    ImGui::Text("Fluid Level Status");
+    {
+      ImGui::BeginGroup();
+      {
+        ImGui::Button("W Full", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+        ImGui::Button("W Low", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+      }
+      ImGui::EndGroup();
+    }
+    ImGui::SameLine();
+    {
+      ImGui::BeginGroup();
+      {
+        ImGui::Button("D Full", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+        ImGui::Button("D Low", ImVec2{ImGui::GetColumnWidth() / 2, 100});
+      }
+      ImGui::EndGroup();
+    }
+
+    ImGui::NextColumn();
+  }
+
+  {
+    ImGui::Text("Exchange Water");
+    {
+      ImGui::Button("1 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+      ImGui::SameLine();
+      ImGui::Button("2 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+      ImGui::SameLine();
+      ImGui::Button("3 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+      ImGui::Button("W Manual Exchange", ImVec2{-FLT_MIN, 100});
+    }
+    ImGui::NextColumn();
+  }
+
+  {
+    ImGui::Text("Exchange Disinfectant");
+    {
+      ImGui::Button("1 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+      ImGui::SameLine();
+      ImGui::Button("2 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+      ImGui::SameLine();
+      ImGui::Button("3 Day", ImVec2{ImGui::GetColumnWidth() / 3, 100});
+      ImGui::Button("D Manual Exchange", ImVec2{-FLT_MIN, 100});
+    }
+    ImGui::NextColumn();
+  }
 }
 }  // namespace widget
 }  // namespace gui
