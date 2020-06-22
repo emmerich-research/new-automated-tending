@@ -42,8 +42,7 @@ ATM_STATUS initialize_gui() {
 #endif
 #endif
 
-  // Sanfoundry IPS Screen
-  window_ = glfwCreateWindow(1024, 600, Config::get()->name().c_str(),
+  window_ = glfwCreateWindow(1024, 768, Config::get()->name().c_str(),
                              glfwGetPrimaryMonitor(), NULL);
   if (window() == nullptr) {
     return ATM_ERR;
