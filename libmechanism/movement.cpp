@@ -478,6 +478,7 @@ void Movement::move_to_tending_position() {
 }
 
 void Movement::spraying_motor_params() const {
+  massert(Config::get() != nullptr, "sanity");
   auto* config = Config::get();
 
   LOG_INFO("Configuring motors' parameters to spraying...");
