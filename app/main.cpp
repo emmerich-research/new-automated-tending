@@ -16,6 +16,34 @@ static int throw_message() {
   return ATM_ERR;
 }
 
+static void status_button(const char* label, unsigned int status_id, bool active
+                          /* const std::function<void()>& callback */) {
+  ImGui::PushID(status_id);
+
+  if (active) {
+    // green
+    ImGui::PushStyleColor(ImGuiCol_Button,
+                          (ImVec4)ImColor::HSV(2 / 7.0f, 0.6f, 0.6f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                          (ImVec4)ImColor::HSV(2 / 7.0f, 0.7f, 0.7f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                          (ImVec4)ImColor::HSV(2 / 7.0f, 0.8f, 0.8f));
+  } else {
+    // red
+    ImGui::PushStyleColor(ImGuiCol_Button,
+                          (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                          (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                          (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
+  }
+
+  // callback();
+  [[maybe_unused]] bool result = ImGui::Button(label, ImVec2(-FLT_MIN, 50.0f));
+  ImGui::PopStyleColor(3);
+  ImGui::PopID();
+}
+
 static void key_callback(GLFWwindow* window,
                          int         key,
                          int         scancode,
@@ -58,12 +86,12 @@ int main() {
 
   massert(window() != nullptr, "sanity");
 
+  auto* state = State::get();
+
   glfwSetKeyCallback(window(), key_callback);  // setup key callback
 
-  // Our state
-  bool   show_demo_window = true;
-  bool   show_another_window = false;
-  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  const ImGuiStyle& style = ImGui::GetStyle();
+  ImVec4            clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   while (!glfwWindowShouldClose(window())) {
     // Poll and handle events (inputs, window resize, etc.)
@@ -87,8 +115,113 @@ int main() {
     ImGui::NewFrame();
 
     {
-      // draw control panel
-      gui::control_panel_window();
+      static float f = 0.0f;
+      static int   counter = 0;
+
+      gui::reset_window_pos();
+
+      auto [width, height] = gui::get_window_size();
+
+      ImGui::SetNextWindowSize(
+          ImVec2{static_cast<float>(width), static_cast<float>(height)});
+      // ImGui::SetNextWindowContentSize(ImVec2{window_width, window_height});
+
+      ImGui::Begin("Control Panel");  // Create a window called "Hello, world!"
+                                      // and append into it.
+
+      static bool h_borders = true;
+      static bool v_borders = true;
+      static int  top_columns_count = 2;
+      static int  bottom_columns_count = 3;
+
+      // Top Row
+      ImGui::Columns(top_columns_count, NULL, v_borders);
+      {
+        unsigned int status_id = 0;
+        ImGui::BeginChild("inner_status");
+        ImGui::Columns(2, NULL, v_borders);
+        {
+          // Spraying status
+          if (h_borders && ImGui::GetColumnIndex() == 0)
+            ImGui::Separator();
+
+          ImGui::Text("Spraying Status");
+          status_button("Spraying Ready", status_id++, state->spraying_ready());
+          status_button("Spraying Running", status_id++,
+                        state->spraying_running());
+          status_button("Spraying Complete", status_id++,
+                        state->spraying_complete());
+          status_button("Spraying Fault", status_id++, state->spraying_fault());
+          ImGui::NextColumn();
+        }
+
+        {
+          // Tending Status
+          ImGui::Text("Tending Status");
+          status_button("Tending Ready", status_id++, state->tending_ready());
+          status_button("Tending Running", status_id++,
+                        state->tending_running());
+          status_button("Tending Complete", status_id++,
+                        state->tending_complete());
+          status_button("Tending Fault", status_id++, state->tending_fault());
+          ImGui::NextColumn();
+        }
+        ImGui::EndChild();
+      }
+
+      {
+        // Manual Movement
+
+        const ImVec2 button_size{100, 100};
+        ImGui::NextColumn();
+
+        ImGui::BeginChild("inner_movement");
+        ImGui::Columns(2, NULL, false);
+        {
+          ImGui::BeginGroup();
+          {
+            ImGui::Separator();
+            ImGui::SameLine(button_size.x + style.FramePadding.x * 2);
+            ImGui::Button("Y+", button_size);
+            {
+              ImGui::BeginGroup();
+              ImGui::Button("X-", button_size);
+              ImGui::SameLine();
+              ImGui::Button("HOME", button_size);
+              ImGui::SameLine();
+              ImGui::Button("X+", button_size);
+              ImGui::EndGroup();
+            }
+            ImGui::SetCursorPosX(ImGui::GetColumnOffset() + button_size.x +
+                                 style.FramePadding.x * 4);
+            ImGui::Button("Y-", button_size);
+            ImGui::EndGroup();
+          }
+          ImGui::EndGroup();
+          ImGui::NextColumn();
+        }
+
+        {
+          ImGui::SetCursorPosX(ImGui::GetColumnOffset() + button_size.x +
+                               style.FramePadding.x * 4);
+          ImGui::SetCursorPosY(style.FramePadding.y * 20);
+          ImGui::Button("Z+", button_size);
+          ImGui::SetCursorPosX(ImGui::GetColumnOffset() + button_size.x +
+                               style.FramePadding.x * 4);
+          ImGui::Button("Z-", button_size);
+          ImGui::NextColumn();
+        }
+        ImGui::EndChild();
+      }
+
+      // Bottom Row
+      ImGui::Columns(1);
+      if (h_borders)
+        ImGui::Separator();
+
+      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+                  1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+      ImGui::End();
     }
 
     // Rendering

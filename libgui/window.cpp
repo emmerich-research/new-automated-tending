@@ -9,9 +9,9 @@ NAMESPACE_BEGIN
 
 namespace gui {
 void control_panel_window() {
-  gui::reset_window_pos();
+  reset_window_pos();
 
-  auto [width, height] = gui::get_window_size();
+  auto [width, height] = get_window_size();
 
   ImGui::SetNextWindowSize(
       ImVec2{static_cast<float>(width), static_cast<float>(height)});

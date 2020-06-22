@@ -12,7 +12,7 @@ namespace gui {
 namespace widget {
 static void status_button(const char* label, unsigned int status_id, bool active
                           /* const std::function<void()>& callback */) {
-  ImGui::PushID(status_id++);
+  ImGui::PushID(status_id);
 
   if (active) {
     // green
@@ -60,21 +60,21 @@ void status() {
         ImGui::Separator();
 
       ImGui::Text("Spraying Status");
-      status_button("Spraying Ready", status_id++, state->spraying().ready);
-      status_button("Spraying Running", status_id++, state->spraying().running);
+      status_button("Spraying Ready", status_id++, state->spraying_ready());
+      status_button("Spraying Running", status_id++, state->spraying_running());
       status_button("Spraying Complete", status_id++,
-                    state->spraying().complete);
-      status_button("Spraying Fault", status_id++, state->spraying().fault);
+                    state->spraying_complete());
+      status_button("Spraying Fault", status_id++, state->spraying_fault());
       ImGui::NextColumn();
     }
 
     {
       // Tending Status
       ImGui::Text("Tending Status");
-      status_button("Tending Ready", status_id++, state->tending().ready);
-      status_button("Tending Running", status_id++, state->tending().running);
-      status_button("Tending Complete", status_id++, state->tending().complete);
-      status_button("Tending Fault", status_id++, state->tending().fault);
+      status_button("Tending Ready", status_id++, state->tending_ready());
+      status_button("Tending Running", status_id++, state->tending_running());
+      status_button("Tending Complete", status_id++, state->tending_complete());
+      status_button("Tending Fault", status_id++, state->tending_fault());
       ImGui::NextColumn();
     }
 
