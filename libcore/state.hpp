@@ -21,6 +21,7 @@ NAMESPACE_BEGIN
 
 // forward declaration
 struct Coordinate;
+struct TaskState;
 namespace impl {
 class StateImpl;
 }
@@ -50,6 +51,12 @@ struct Coordinate {
    * Z-axis
    */
   Point z;
+};
+
+struct Task {
+  bool ready;
+  bool running;
+  bool completed;
 };
 
 namespace impl {
@@ -193,6 +200,14 @@ class StateImpl : public StackObj {
    * State read mutex
    */
   StateMutex mutex_;
+  /**
+   * Tending task
+   */
+  Task tending_;
+  /**
+   * Spraying task
+   */
+  Task spraying_;
 };
 }  // namespace impl
 

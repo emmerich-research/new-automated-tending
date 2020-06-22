@@ -91,8 +91,8 @@ active-state                 = false
 key                          = "FINGER"
 pin                          = 18
 active-state                 = false
-duty-cycle                   = 127
-homing-duty-cycle            = 200
+duty-cycle                   = 50
+homing-duty-cycle            = 50
 homing-offset                = 30 # in degree
 
 [devices.anomaly]
@@ -149,13 +149,13 @@ active-state                 = false
 [devices.communication.input]
 # communication from PLC to RaspberryPI
 
-[devices.communication.input.tending-height]
-key                          = "INPUT-PLC-TENDING-HEIGHT"
+[devices.communication.input.spraying-height]
+key                          = "INPUT-PLC-SPRAYING-HEIGHT"
 pin                          = 14
 active-state                 = true
 
-[devices.communication.input.spraying-height]
-key                          = "INPUT-PLC-SPRAYING-HEIGHT"
+[devices.communication.input.tending-height]
+key                          = "INPUT-PLC-TENDING-HEIGHT"
 pin                          = 17
 active-state                 = true
 
@@ -229,7 +229,7 @@ rotary-encoder-pin           = 0
 # ----------------------------------------------------------
 [mechanisms.spraying]
 # initial position according to limit switch homing
-position                     = [45.0, 10.0]
+position                     = [100.0, 70.0]
 
 # coordinates after changing `imaginary homing` to
 # initial position of spraying
@@ -238,27 +238,27 @@ path                         = [
 
   # zigzag
   [0.0,   0.0],
-  [400.0,   0.0],
-  [400.0, 100.0],
-  [0.0, 100.0],
-  [0.0, 200.0],
-  [400.0, 200.0],
-  [400.0, 300.0],
-  [0.0, 300.0],
-  [0.0, 400.0],
-  [400.0, 400.0],
+  [500.0, 0.0],
+  [500.0, 100.0],
+  [0.0,   100.0],
+  [0.0,   200.0],
+  [500.0, 200.0],
+  [500.0, 300.0],
+  [0.0,   300.0],
+  [0.0,   400.0],
+  [500.0, 400.0],
 ]
 
 [mechanisms.spraying.stepper]
 [mechanisms.spraying.stepper.x]
-rpm                          = 300.0
-acceleration                 = 2000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 500.0
+acceleration                 = 800.0 # steps / s^2
+deceleration                 = 800.0 # steps / s^2
 
 [mechanisms.spraying.stepper.y]
-rpm                          = 300.0
-acceleration                 = 2000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 500.0
+acceleration                 = 800.0 # steps / s^2
+deceleration                 = 800.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Spraying Mechanism
 # ----------------------------------------------------------
@@ -279,7 +279,7 @@ deceleration                 = 1000.0 # steps / s^2
 # ----------------------------------------------------------
 [mechanisms.tending]
 # initial position according to limit switch homing
-position                     = [160.0, 90.0]
+position                     = [120.0, 0.0]
 
 [mechanisms.tending.path]
 # coordinates after changing `imaginary homing` to
@@ -291,35 +291,35 @@ edge                         = [
   # x    y  (in mm, need to be in floating point)
   [0.0,   0.0],
   [0.0,   400.0],
-  [400.0, 400.0],
-  [400.0, 0.0],
+  [500.0, 400.0],
+  [500.0, 0.0],
   [10.0,  40.0],
 ]
 
 zigzag                       = [
   # x    y  (in mm, need to be in floating point)
-  [0.0,   0.0],
-  [0.0,   400.0],
-  [100.0, 400.0],
-  [100.0, 0.0],
-  [200.0, 0.0],
-  [200.0, 400.0],
-  [300.0, 400.0],
-  [300.0, 0.0],
-  [400.0, 0.0],
-  [400.0, 400.0],
+  [10.0,  40.0],
+  [450.0, 40.0],
+  [450.0, 120.0],
+  [10.0,  120.0],
+  [10.0,  200.0],
+  [450.0, 200.0],
+  [450.0, 280.0],
+  [10.0,  280.0],
+  [10.0,  360.0],
+  [450.0, 360.0],
 ]
 
 [mechanisms.tending.stepper]
 [mechanisms.tending.stepper.x]
-rpm                          = 300.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 500.0
+acceleration                 = 800.0 # steps / s^2
+deceleration                 = 800.0 # steps / s^2
 
 [mechanisms.tending.stepper.y]
-rpm                          = 200.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 500.0
+acceleration                 = 800.0 # steps / s^2
+deceleration                 = 800.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Tending Mechanism
 # ----------------------------------------------------------

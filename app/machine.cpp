@@ -99,8 +99,8 @@ void TendingDef::running::tending::initialize() {
         digital_output_registry->get(device::id::comm::pi::tending_ready()));
     tending_running = std::move(
         digital_output_registry->get(device::id::comm::pi::tending_running()));
-    tending_complete = std::move(digital_output_registry->get(
-        device::id::comm::pi::spraying_complete()));
+    tending_complete = std::move(
+        digital_output_registry->get(device::id::comm::pi::tending_complete()));
     finger = std::move(pwm_registry->get(device::id::finger()));
     initialized = true;
   }
