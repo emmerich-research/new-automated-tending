@@ -21,50 +21,49 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
   massert(mechanism::movement_mechanism()->active(), "sanity");
   massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
 
-  auto*  state = State::get();
-  auto&& movement = mechanism::movement_mechanism();
-  auto*  digital_output_registry = device::DigitalOutputDeviceRegistry::get();
+  root_machine(fsm).thread_pool().enqueue([fsm]() mutable -> void {
+    auto*  state = State::get();
+    auto&& movement = mechanism::movement_mechanism();
+    auto*  digital_output_registry = device::DigitalOutputDeviceRegistry::get();
 
-  auto&& spraying_ready =
-      digital_output_registry->get(device::id::comm::pi::spraying_ready());
-  auto&& tending_ready =
-      digital_output_registry->get(device::id::comm::pi::tending_ready());
+    auto&& spraying_ready =
+        digital_output_registry->get(device::id::comm::pi::spraying_ready());
+    auto&& tending_ready =
+        digital_output_registry->get(device::id::comm::pi::tending_ready());
 
-  state->spraying_fault(false);
-  state->tending_fault(false);
-  state->manual_mode(false);
+    state->spraying_fault(false);
+    state->tending_fault(false);
+    state->manual_mode(false);
 
-  spraying_ready->write(device::digital::value::low);
-  state->spraying_ready(false);
+    spraying_ready->write(device::digital::value::low);
+    state->spraying_ready(false);
 
-  tending_ready->write(device::digital::value::low);
-  state->tending_ready(false);
+    tending_ready->write(device::digital::value::low);
+    state->tending_ready(false);
 
-  LOG_INFO("Homing...");
-  movement->homing();
+    LOG_INFO("Homing...");
+    movement->homing();
 
-  spraying_ready->write(device::digital::value::high);
-  state->spraying_ready(true);
+    spraying_ready->write(device::digital::value::high);
+    state->spraying_ready(true);
 
-  tending_ready->write(device::digital::value::high);
-  state->tending_ready(true);
+    tending_ready->write(device::digital::value::high);
+    state->tending_ready(true);
 
-  guard::spraying::height spraying_height;
-  guard::tending::height  tending_height;
+    guard::spraying::height spraying_height;
+    guard::tending::height  tending_height;
 
-  root_machine(fsm).thread_pool().enqueue(
-      [fsm, state, spraying_height, tending_height]() mutable -> void {
-        while (!root_machine(fsm).is_terminated() && !state->fault()) {
-          if (spraying_height.check()) {
-            root_machine(fsm).start_spraying();
-            break;
-          } else if (tending_height.check()) {
-            root_machine(fsm).start_tending();
-            break;
-          }
-          sleep_for<time_units::millis>(500);
-        }
-      });
+    while (!root_machine(fsm).is_terminated() && !state->fault()) {
+      if (spraying_height.check()) {
+        root_machine(fsm).start_spraying();
+        break;
+      } else if (tending_height.check()) {
+        root_machine(fsm).start_tending();
+        break;
+      }
+      sleep_for<time_units::millis>(500);
+    }
+  });
 }
 
 /**
