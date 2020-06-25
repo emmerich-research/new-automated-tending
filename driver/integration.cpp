@@ -170,7 +170,6 @@ static void do_tending() {
   tending_complete->write(device::digital::value::high);
 }
 
-
 bool menu() {
   massert(Config::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
@@ -178,6 +177,9 @@ bool menu() {
 
   auto* config = Config::get();
   massert(config != nullptr, "sanity");
+
+  auto* state = State::get();
+  massert(state != nullptr, "sanity");
 
   auto* output_registry = device::DigitalOutputDeviceRegistry::get();
   massert(output_registry != nullptr, "sanity");
@@ -207,10 +209,10 @@ bool menu() {
   auto&& spray = output_registry->get(device::id::spray());
 
   auto&& spraying_height =
-    input_registry->get(device::id::comm::plc::spraying_height());
+      input_registry->get(device::id::comm::plc::spraying_height());
 
   auto&& tending_height =
-    input_registry->get(device::id::comm::plc::tending_height());
+      input_registry->get(device::id::comm::plc::tending_height());
 
   spraying_ready->write(device::digital::value::low);
   spraying_running->write(device::digital::value::low);
@@ -229,8 +231,10 @@ bool menu() {
   LOG_INFO("4. Just X");
   LOG_INFO("5. Just Y");
   LOG_INFO("6. Just Z");
-  LOG_INFO("7. X and Y");
-  LOG_INFO("8. Spraying and Tending trigger");
+  // LOG_INFO("7. X and Y");
+  LOG_INFO("7. Spraying and Tending trigger");
+  LOG_INFO("8. Move X with specified distance (in mm, can be negative)");
+  LOG_INFO("9. Move Y with specified distance (in mm, can be negative)");
   LOG_INFO("0. Exit");
 
   unsigned int choice;
@@ -273,23 +277,31 @@ bool menu() {
     }
     stepper_z->disable();
   } else if (choice == 7) {
-    movement->move<mechanism::movement::unit::mm>(50.0, 50.0, 0.0);
-  } else if (choice == 8) {
     while (true) {
       auto spraying_height_status = spraying_height->read_bool();
       auto tending_height_status = tending_height->read_bool();
 
-      LOG_INFO("Spraying height {}, tending height {}",
-               spraying_height_status, tending_height_status);
+      LOG_INFO("Spraying height {}, tending height {}", spraying_height_status,
+               tending_height_status);
 
       if (spraying_height_status) {
         do_spraying();
       } else if (tending_height_status) {
         do_tending();
       }
-     
+
       sleep_for<time_units::millis>(500);
     }
+  } else if (choice == 8 || choice == 9) {
+    double distance;
+    std::cin >> distance;
+
+    if (choice == 8) {
+      movement->move<mechanism::movement::unit::cm>(distance, 0.0, 0.0);
+    } else if (choice == 9) {
+      movement->move<mechanism::movement::unit::cm>(0.0, distance, 0.0);
+    }
+    state->reset_coordinate();
   } else if (choice == 0) {
     return true;
   }

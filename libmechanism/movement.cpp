@@ -136,7 +136,7 @@ template <>
 long Movement::convert_length_to_steps<movement::unit::cm>(
     double                       length,
     const device::stepper::step& steps_per_mm) {
-  return length * steps_per_mm / 100.0;
+  return length * steps_per_mm * 10.0;
 }
 
 template <>

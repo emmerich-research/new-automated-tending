@@ -20,6 +20,7 @@ target_include_directories(app PUBLIC
   "$<BUILD_INTERFACE:${AFSM_INCLUDE_DIRS}>")
 
 target_link_libraries(app PRIVATE
+  "${PROJECT_NAMESPACE}::util"
   "${PROJECT_NAMESPACE}::core"
   "${PROJECT_NAMESPACE}::algo"
   "${PROJECT_NAMESPACE}::device"
