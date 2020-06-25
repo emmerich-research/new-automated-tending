@@ -79,7 +79,7 @@ namespace impl {
 template <>
 void StepperDeviceImpl<stepper::speed::constant>::start_move(long      steps,
                                                              time_unit time) {
-  if (steps == 0)
+  if (steps <= 0)
     return;
 
   pre_start_move(steps);
@@ -146,12 +146,15 @@ void StepperDeviceImpl<stepper::speed::linear>::start_move(long      steps,
   // Save cruise timing since we will no longer have the calculated target speed
   // later
   cruise_step_pulse_ = static_cast<stepper::pulse>(1e+6 / speed / microsteps());
+
+  // LOG_DEBUG("Steps to cruise {}, steps to brake {}", steps_to_cruise(),
+  //           steps_to_brake());
 }
 
 template <>
 void StepperDeviceImpl<stepper::speed::linear>::calc_step_pulse() {
   // this should not be happening, but avoids strange calculations
-  if (remaining_steps() == 0) {
+  if (remaining_steps() <= 0) {
     return;
   }
 
@@ -184,12 +187,15 @@ void StepperDeviceImpl<stepper::speed::linear>::calc_step_pulse() {
     default:
       break;  // no speed changes
   }
+
+  LOG_DEBUG("CalcStepPulse state {} step_pulse {} rest_steps {}", state(),
+            step_pulse(), rest_steps());
 }
 
 template <>
 time_unit StepperDeviceImpl<stepper::speed::constant>::time_for_move(
     long steps) {
-  if (steps == 0) {
+  if (steps <= 0) {
     return 0;
   }
 
@@ -200,7 +206,7 @@ time_unit StepperDeviceImpl<stepper::speed::constant>::time_for_move(
 
 template <>
 time_unit StepperDeviceImpl<stepper::speed::linear>::time_for_move(long steps) {
-  if (steps == 0) {
+  if (steps <= 0) {
     return 0;
   }
 
