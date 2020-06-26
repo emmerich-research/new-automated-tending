@@ -482,13 +482,13 @@ void Movement::spraying_motor_params() const {
   auto* config = Config::get();
 
   LOG_INFO("Configuring motors' parameters to spraying...");
-  stepper_x()->rpm(config->spraying_stepper_x<double>("rpm"));
-  stepper_x()->acceleration(config->spraying_stepper_x<double>("acceleration"));
-  stepper_x()->deceleration(config->spraying_stepper_x<double>("deceleration"));
+  // stepper_x()->rpm(config->spraying_stepper_x<double>("rpm"));
+  // stepper_x()->acceleration(config->spraying_stepper_x<double>("acceleration"));
+  // stepper_x()->deceleration(config->spraying_stepper_x<double>("deceleration"));
 
-  stepper_y()->rpm(config->spraying_stepper_y<double>("rpm"));
-  stepper_y()->acceleration(config->spraying_stepper_y<double>("acceleration"));
-  stepper_y()->deceleration(config->spraying_stepper_y<double>("deceleration"));
+  // stepper_y()->rpm(config->spraying_stepper_y<double>("rpm"));
+  // stepper_y()->acceleration(config->spraying_stepper_y<double>("acceleration"));
+  // stepper_y()->deceleration(config->spraying_stepper_y<double>("deceleration"));
 }
 
 void Movement::follow_spraying_paths() {
@@ -507,13 +507,14 @@ void Movement::tending_motor_params() const {
   auto* config = Config::get();
 
   LOG_INFO("Configuring motors' parameters to tending...");
-  stepper_x()->rpm(config->tending_stepper_x<double>("rpm"));
-  stepper_x()->acceleration(config->tending_stepper_x<double>("acceleration"));
-  stepper_x()->deceleration(config->tending_stepper_x<double>("deceleration"));
 
-  stepper_y()->rpm(config->tending_stepper_y<double>("rpm"));
-  stepper_y()->acceleration(config->tending_stepper_y<double>("acceleration"));
-  stepper_y()->deceleration(config->tending_stepper_y<double>("deceleration"));
+  // stepper_x()->rpm(config->tending_stepper_x<double>("rpm"));
+  // stepper_x()->acceleration(config->tending_stepper_x<double>("acceleration"));
+  // stepper_x()->deceleration(config->tending_stepper_x<double>("deceleration"));
+
+  // stepper_y()->rpm(config->tending_stepper_y<double>("rpm"));
+  // stepper_y()->acceleration(config->tending_stepper_y<double>("acceleration"));
+  // stepper_y()->deceleration(config->tending_stepper_y<double>("deceleration"));
 }
 
 void Movement::follow_tending_paths_edge() {
@@ -546,17 +547,17 @@ void Movement::revert_motor_params() const {
   auto* config = Config::get();
 
   LOG_INFO("Reverting to default motors' parameters...");
-  stepper_x()->rpm(config->stepper_x<double>("rpm"));
-  stepper_x()->acceleration(config->stepper_x<double>("acceleration"));
-  stepper_x()->deceleration(config->stepper_x<double>("deceleration"));
+  // stepper_x()->rpm(config->stepper_x<double>("rpm"));
+  // stepper_x()->acceleration(config->stepper_x<double>("acceleration"));
+  // stepper_x()->deceleration(config->stepper_x<double>("deceleration"));
 
-  stepper_y()->rpm(config->stepper_y<double>("rpm"));
-  stepper_y()->acceleration(config->stepper_y<double>("acceleration"));
-  stepper_y()->deceleration(config->stepper_y<double>("deceleration"));
+  // stepper_y()->rpm(config->stepper_y<double>("rpm"));
+  // stepper_y()->acceleration(config->stepper_y<double>("acceleration"));
+  // stepper_y()->deceleration(config->stepper_y<double>("deceleration"));
 
-  stepper_z()->rpm(config->stepper_z<double>("rpm"));
-  stepper_z()->acceleration(config->stepper_z<double>("acceleration"));
-  stepper_z()->deceleration(config->stepper_z<double>("deceleration"));
+  // stepper_z()->rpm(config->stepper_z<double>("rpm"));
+  // stepper_z()->acceleration(config->stepper_z<double>("acceleration"));
+  // stepper_z()->deceleration(config->stepper_z<double>("deceleration"));
 }
 
 void Movement::move_finger_up() {

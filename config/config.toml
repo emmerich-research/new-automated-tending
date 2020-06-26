@@ -147,69 +147,31 @@ active-state                 = false
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------
-# Communication
+# PLC to PI Communication
 #
-# Brief: Communication between PLC and RaspberryPI
+# Brief: Communication between PLC to RaspberryPI
 # ----------------------------------------------------------
-[devices.communication]
-
-[devices.communication.input]
-# communication from PLC to RaspberryPI
-
-[devices.communication.input.spraying-height]
-key                          = "INPUT-PLC-SPRAYING-HEIGHT"
+[devices.plc-to-pi]
+[devices.plc-to-pi.spraying-tending-height]
+key                          = "INPUT-PLC-SPRAYING-TENDING-HEIGHT"
 pin                          = 14
 active-state                 = true
 
-[devices.communication.input.tending-height]
-key                          = "INPUT-PLC-TENDING-HEIGHT"
+[devices.plc-to-pi.cleaning-height]
+key                          = "INPUT-PLC-CLEANING-HEIGHT"
 pin                          = 17
 active-state                 = true
 
-[devices.communication.input.reset]
+[devices.plc-to-pi.reset]
 key                          = "INPUT-PLC-RESET"
 pin                          = 27
 active-state                 = true
 
-[devices.communication.input.e-stop]
+[devices.plc-to-pi.e-stop]
 key                          = "INPUT-PLC-E-STOP"
 pin                          = 10
 active-state                 = true
 
-[devices.communication.output]
-# communication from PLC to RaspberryPI
-# notes that this needs to be pulled up via Raspberry PI PIN
-# and the logic needs to be flipped (active-state = false)
-
-[devices.communication.output.tending-ready]
-key                          = "OUTPUT-PI-TENDING-READY"
-pin                          = 22
-active-state                 = false
-
-[devices.communication.output.spraying-ready]
-key                          = "OUTPUT-PI-SPRAYING-READY"
-pin                          = 4
-active-state                 = false
-
-[devices.communication.output.tending-running]
-key                          = "OUTPUT-PI-TENDING-RUNNING"
-pin                          = 23
-active-state                 = false
-
-[devices.communication.output.spraying-running]
-key                          = "OUTPUT-PI-SPRAYING-RUNNING"
-pin                          = 24
-active-state                 = false
-
-[devices.communication.output.tending-complete]
-key                          = "OUTPUT-PI-TENDING-COMPLETE"
-pin                          = 25
-active-state                 = false
-
-[devices.communication.output.spraying-complete]
-key                          = "OUTPUT-PI-SPRAYING-COMPLETE"
-pin                          = 20
-active-state                 = false
 # ----------------------------------------------------------
 # End of Communication
 # ----------------------------------------------------------
@@ -220,6 +182,44 @@ key                          = "PCF8591"
 rotary-encoder-pin           = 0
 water-level-pin              = 1
 disinfectant-level-pin       = 2
+
+# shift register
+[devices.shift-register]
+
+[devices.shift-register.pi-to-plc]
+# communication from RaspberryPI to PLC
+# notes that this needs to be pulled up via Raspberry PI PIN
+# and the logic needs to be flipped (active-state = false)
+
+[devices.shift-register.pi-to-plc.tending-ready]
+key                          = "OUTPUT-PI-TENDING-READY"
+address                      = 1
+active-state                 = false
+
+[devices.shift-register.pi-to-plc.spraying-ready]
+key                          = "OUTPUT-PI-SPRAYING-READY"
+address                      = 2
+active-state                 = false
+
+[devices.shift-register.pi-to-plc.tending-running]
+key                          = "OUTPUT-PI-TENDING-RUNNING"
+address                      = 3
+active-state                 = false
+
+[devices.shift-register.pi-to-plc.spraying-running]
+key                          = "OUTPUT-PI-SPRAYING-RUNNING"
+address                      = 4
+active-state                 = false
+
+[devices.shift-register.pi-to-plc.tending-complete]
+key                          = "OUTPUT-PI-TENDING-COMPLETE"
+address                      = 5
+active-state                 = false
+
+[devices.shift-register.pi-to-plc.spraying-complete]
+key                          = "OUTPUT-PI-SPRAYING-COMPLETE"
+address                      = 6
+active-state                 = false
 
 [mechanisms]
 

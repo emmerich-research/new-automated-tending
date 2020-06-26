@@ -54,4 +54,7 @@
 #include "A4988.hpp"
 #include "A4988.inline.hpp"
 
+// 4.4. Shift Register Device
+#include "shift_register.hpp"
+
 #endif  // LIB_DEVICE_DEVICE_HPP_

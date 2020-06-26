@@ -46,17 +46,18 @@ static ATM_STATUS initialize_plc_to_pi_comm() {
   auto* digital_input_registry = DigitalInputDeviceRegistry::get();
 
   status = digital_input_registry->create(
-      id::comm::plc::spraying_height(),
-      config->plc_to_pi<PI_PIN>("spraying-height", "pin"),
-      config->plc_to_pi<bool>("spraying-height", "active-state"), PI_PUD_DOWN);
+      id::comm::plc::spraying_tending_height(),
+      config->plc_to_pi<PI_PIN>("spraying-tending-height", "pin"),
+      config->plc_to_pi<bool>("spraying-tending-height", "active-state"),
+      PI_PUD_DOWN);
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   status = digital_input_registry->create(
-      id::comm::plc::tending_height(),
-      config->plc_to_pi<PI_PIN>("tending-height", "pin"),
-      config->plc_to_pi<bool>("tending-height", "active-state"), PI_PUD_DOWN);
+      id::comm::plc::cleaning_height(),
+      config->plc_to_pi<PI_PIN>("cleaning-height", "pin"),
+      config->plc_to_pi<bool>("cleaning-height", "active-state"), PI_PUD_DOWN);
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
@@ -155,53 +156,53 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
 
   auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
 
-  status = digital_output_registry->create(
-      id::comm::pi::tending_ready(),
-      config->pi_to_plc<PI_PIN>("tending-ready", "pin"),
-      config->pi_to_plc<bool>("tending-ready", "active-state"));
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
+  // status = digital_output_registry->create(
+  //     id::comm::pi::tending_ready(),
+  //     config->pi_to_plc<PI_PIN>("tending-ready", "pin"),
+  //     config->pi_to_plc<bool>("tending-ready", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return ATM_ERR;
+  // }
 
-  status = digital_output_registry->create(
-      id::comm::pi::spraying_ready(),
-      config->pi_to_plc<PI_PIN>("spraying-ready", "pin"),
-      config->pi_to_plc<bool>("spraying-ready", "active-state"));
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
+  // status = digital_output_registry->create(
+  //     id::comm::pi::spraying_ready(),
+  //     config->pi_to_plc<PI_PIN>("spraying-ready", "pin"),
+  //     config->pi_to_plc<bool>("spraying-ready", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return ATM_ERR;
+  // }
 
-  status = digital_output_registry->create(
-      id::comm::pi::tending_running(),
-      config->pi_to_plc<PI_PIN>("tending-running", "pin"),
-      config->pi_to_plc<bool>("tending-running", "active-state"));
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
+  // status = digital_output_registry->create(
+  //     id::comm::pi::tending_running(),
+  //     config->pi_to_plc<PI_PIN>("tending-running", "pin"),
+  //     config->pi_to_plc<bool>("tending-running", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return ATM_ERR;
+  // }
 
-  status = digital_output_registry->create(
-      id::comm::pi::spraying_running(),
-      config->pi_to_plc<PI_PIN>("spraying-running", "pin"),
-      config->pi_to_plc<bool>("spraying-running", "active-state"));
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
+  // status = digital_output_registry->create(
+  //     id::comm::pi::spraying_running(),
+  //     config->pi_to_plc<PI_PIN>("spraying-running", "pin"),
+  //     config->pi_to_plc<bool>("spraying-running", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return ATM_ERR;
+  // }
 
-  status = digital_output_registry->create(
-      id::comm::pi::tending_complete(),
-      config->pi_to_plc<PI_PIN>("tending-complete", "pin"),
-      config->pi_to_plc<bool>("tending-complete", "active-state"));
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
+  // status = digital_output_registry->create(
+  //     id::comm::pi::tending_complete(),
+  //     config->pi_to_plc<PI_PIN>("tending-complete", "pin"),
+  //     config->pi_to_plc<bool>("tending-complete", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return ATM_ERR;
+  // }
 
-  status = digital_output_registry->create(
-      id::comm::pi::spraying_complete(),
-      config->pi_to_plc<PI_PIN>("spraying-complete", "pin"),
-      config->pi_to_plc<bool>("spraying-complete", "active-state"));
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
+  // status = digital_output_registry->create(
+  //     id::comm::pi::spraying_complete(),
+  //     config->pi_to_plc<PI_PIN>("spraying-complete", "pin"),
+  //     config->pi_to_plc<bool>("spraying-complete", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return ATM_ERR;
+  // }
 
   return status;
 }
@@ -309,9 +310,9 @@ static ATM_STATUS initialize_stepper_devices() {
   // set additional configurations
   auto&& stepper_x = stepper_registry->get(id::stepper::x());
   stepper_x->microsteps(config->stepper_x<const stepper::step>("microsteps"));
-  stepper_x->rpm(config->stepper_x<double>("rpm"));
-  stepper_x->acceleration(config->stepper_x<double>("acceleration"));
-  stepper_x->deceleration(config->stepper_x<double>("deceleration"));
+  // stepper_x->rpm(config->stepper_x<double>("rpm"));
+  // stepper_x->acceleration(config->stepper_x<double>("acceleration"));
+  // stepper_x->deceleration(config->stepper_x<double>("deceleration"));
   stepper_x->step_active_state(config->stepper_x<bool>("step-active-state"));
   stepper_x->dir_active_state(config->stepper_x<bool>("dir-active-state"));
   stepper_x->enable_active_state(
@@ -319,9 +320,9 @@ static ATM_STATUS initialize_stepper_devices() {
 
   auto&& stepper_y = stepper_registry->get(id::stepper::y());
   stepper_y->microsteps(config->stepper_y<const stepper::step>("microsteps"));
-  stepper_y->rpm(config->stepper_y<double>("rpm"));
-  stepper_y->acceleration(config->stepper_y<double>("acceleration"));
-  stepper_y->deceleration(config->stepper_y<double>("deceleration"));
+  // stepper_y->rpm(config->stepper_y<double>("rpm"));
+  // stepper_y->acceleration(config->stepper_y<double>("acceleration"));
+  // stepper_y->deceleration(config->stepper_y<double>("deceleration"));
   stepper_y->step_active_state(config->stepper_y<bool>("step-active-state"));
   stepper_y->dir_active_state(config->stepper_y<bool>("dir-active-state"));
   stepper_y->enable_active_state(
@@ -329,9 +330,9 @@ static ATM_STATUS initialize_stepper_devices() {
 
   auto&& stepper_z = stepper_registry->get(id::stepper::z());
   stepper_z->microsteps(config->stepper_z<const stepper::step>("microsteps"));
-  stepper_z->rpm(config->stepper_z<double>("rpm"));
-  stepper_z->acceleration(config->stepper_z<double>("acceleration"));
-  stepper_z->deceleration(config->stepper_z<double>("deceleration"));
+  // stepper_z->rpm(config->stepper_z<double>("rpm"));
+  // stepper_z->acceleration(config->stepper_z<double>("acceleration"));
+  // stepper_z->deceleration(config->stepper_z<double>("deceleration"));
   stepper_z->step_active_state(config->stepper_z<bool>("step-active-state"));
   stepper_z->dir_active_state(config->stepper_z<bool>("dir-active-state"));
   stepper_z->enable_active_state(

@@ -1,5 +1,6 @@
 #include "core.hpp"
 
+#include "config.hpp"
 #include "state.hpp"
 
 NAMESPACE_BEGIN

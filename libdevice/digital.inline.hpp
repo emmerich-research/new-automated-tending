@@ -1,5 +1,5 @@
-#ifndef LIB_DEVICE_DIGITAL_DIGITAL_INLINE_HPP_
-#define LIB_DEVICE_DIGITAL_DIGITAL_INLINE_HPP_
+#ifndef LIB_DEVICE_DIGITAL_INLINE_HPP_
+#define LIB_DEVICE_DIGITAL_INLINE_HPP_
 
 #include "digital.hpp"
 
@@ -172,7 +172,7 @@ ATM_STATUS DigitalDevice<Mode>::pull_up() {
         get_mode(Mode), pin());
   }
 
-  return res;       
+  return res;
 }
 
 template <digital::mode Mode>
@@ -206,4 +206,4 @@ ATM_STATUS DigitalDevice<Mode>::pull_off() {
 
 NAMESPACE_END
 
-#endif  // LIB_DEVICE_DIGITAL_DIGITAL_INLINE_HPP_
+#endif  // LIB_DEVICE_DIGITAL_INLINE_HPP_

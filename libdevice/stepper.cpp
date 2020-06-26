@@ -24,6 +24,9 @@ StepperDevice::StepperDevice(PI_PIN        step_pin,
           DigitalOutputDevice::create(enable_pin, true, PI_PUD_DOWN)},
       motor_steps_{steps} {
   DEBUG_ONLY(obj_name_ = "StepperDevice");
+  massert(step_device()->active(), "sanity");
+  massert(dir_device()->active(), "sanity");
+
   /* Movement mechanism variables initialization */
   last_move_end_ = 0;
   next_move_interval_ = 0;

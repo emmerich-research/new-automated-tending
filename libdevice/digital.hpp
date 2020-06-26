@@ -1,5 +1,5 @@
-#ifndef LIB_DEVICE_DIGITAL_DIGITAL_HPP_
-#define LIB_DEVICE_DIGITAL_DIGITAL_HPP_
+#ifndef LIB_DEVICE_DIGITAL_HPP_
+#define LIB_DEVICE_DIGITAL_HPP_
 
 /** @file digital.hpp
  *  @brief Digital device class definition
@@ -254,4 +254,4 @@ class DigitalDevice : public StackObj {
 
 NAMESPACE_END
 
-#endif  // LIB_DEVICE_DIGITAL_DIGITAL_HPP_
+#endif  // LIB_DEVICE_DIGITAL_HPP_

@@ -30,7 +30,6 @@ class StateImpl;
 /** impl::StateImpl singleton class using StaticObj */
 using State = StaticObj<impl::StateImpl>;
 
-/** impl::StateImpl singleton class using StaticObj */
 using Point = double;
 
 /**

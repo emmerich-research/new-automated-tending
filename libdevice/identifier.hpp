@@ -108,22 +108,44 @@ static auto        anomaly = []() {
 
 namespace comm {
 namespace plc {
-static std::string spraying_height_;
-static auto        spraying_height = []() {
-  if (spraying_height_.empty()) {
-    spraying_height_ =
-        Config::get()->plc_to_pi<std::string>("spraying-height", "key");
+static std::string spraying_tending_height_;
+static auto        spraying_tending_height = []() {
+  if (spraying_tending_height_.empty()) {
+    spraying_tending_height_ =
+        Config::get()->plc_to_pi<std::string>("spraying-tending-height", "key");
   }
-  return spraying_height_;
+  return spraying_tending_height_;
 };
 
-static std::string tending_height_;
-static auto        tending_height = []() {
-  if (tending_height_.empty()) {
-    tending_height_ =
-        Config::get()->plc_to_pi<std::string>("tending-height", "key");
+/**
+ * Obsolete
+ */
+static auto spraying_height = []() {
+  if (spraying_tending_height_.empty()) {
+    spraying_tending_height_ =
+        Config::get()->plc_to_pi<std::string>("spraying-tending-height", "key");
   }
-  return tending_height_;
+  return spraying_tending_height_;
+};
+
+/**
+ * Obsolete
+ */
+static auto tending_height = []() {
+  if (spraying_tending_height_.empty()) {
+    spraying_tending_height_ =
+        Config::get()->plc_to_pi<std::string>("spraying-tending-height", "key");
+  }
+  return spraying_tending_height_;
+};
+
+static std::string cleaning_height_;
+static auto        cleaning_height = []() {
+  if (cleaning_height_.empty()) {
+    cleaning_height_ =
+        Config::get()->plc_to_pi<std::string>("cleaning-height", "key");
+  }
+  return cleaning_height_;
 };
 
 static std::string reset_;

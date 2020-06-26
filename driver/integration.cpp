@@ -208,11 +208,10 @@ bool menu() {
 
   auto&& spray = output_registry->get(device::id::spray());
 
-  auto&& spraying_height =
-      input_registry->get(device::id::comm::plc::spraying_height());
-
-  auto&& tending_height =
-      input_registry->get(device::id::comm::plc::tending_height());
+  auto&& spraying_tending_height =
+      input_registry->get(device::id::comm::plc::spraying_tending_height());
+  auto&& cleaning_height =
+      input_registry->get(device::id::comm::plc::cleaning_height());
 
   spraying_ready->write(device::digital::value::low);
   spraying_running->write(device::digital::value::low);
@@ -225,8 +224,8 @@ bool menu() {
   spray->write(device::digital::value::low);
 
   LOG_INFO("----MENU-----");
-  LOG_INFO("1. Spraying with trigger");
-  LOG_INFO("2. Tending with trigger");
+  LOG_INFO("1. Spraying and Tending with trigger");
+  LOG_INFO("2. Cleaning with trigger");
   LOG_INFO("3. Homing");
   LOG_INFO("4. Just X");
   LOG_INFO("5. Just Y");
@@ -242,9 +241,10 @@ bool menu() {
 
   if (choice == 1) {
     do_spraying();
+    do_tending();
     return false;
   } else if (choice == 2) {
-    do_tending();
+    // do_tending();
     return false;
   } else if (choice == 3) {
     movement->homing();
@@ -278,16 +278,18 @@ bool menu() {
     stepper_z->disable();
   } else if (choice == 7) {
     while (true) {
-      auto spraying_height_status = spraying_height->read_bool();
-      auto tending_height_status = tending_height->read_bool();
+      auto spraying_tending_height_status =
+          spraying_tending_height->read_bool();
+      auto cleaning_height_status = cleaning_height->read_bool();
 
-      LOG_INFO("Spraying height {}, tending height {}", spraying_height_status,
-               tending_height_status);
+      LOG_INFO("Spraying and Tending height {}, Cleaning height {}",
+               spraying_tending_height_status, cleaning_height_status);
 
-      if (spraying_height_status) {
+      if (spraying_tending_height_status) {
         do_spraying();
-      } else if (tending_height_status) {
         do_tending();
+      } else if (cleaning_height_status) {
+        // noop
       }
 
       sleep_for<time_units::millis>(500);
