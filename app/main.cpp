@@ -11,39 +11,6 @@
 
 USE_NAMESPACE
 
-static int throw_message() {
-  std::cerr << "Failed to initialize machine, something is wrong" << std::endl;
-  return ATM_ERR;
-}
-
-static void status_button(const char* label, unsigned int status_id, bool active
-                          /* const std::function<void()>& callback */) {
-  ImGui::PushID(status_id);
-
-  if (active) {
-    // green
-    ImGui::PushStyleColor(ImGuiCol_Button,
-                          (ImVec4)ImColor::HSV(2 / 7.0f, 0.6f, 0.6f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                          (ImVec4)ImColor::HSV(2 / 7.0f, 0.7f, 0.7f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                          (ImVec4)ImColor::HSV(2 / 7.0f, 0.8f, 0.8f));
-  } else {
-    // red
-    ImGui::PushStyleColor(ImGuiCol_Button,
-                          (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                          (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                          (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-  }
-
-  // callback();
-  [[maybe_unused]] bool result = ImGui::Button(label, ImVec2(-FLT_MIN, 50.0f));
-  ImGui::PopStyleColor(3);
-  ImGui::PopID();
-}
-
 static void key_callback(GLFWwindow* window,
                          int         key,
                          int         scancode,

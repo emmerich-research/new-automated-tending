@@ -7,6 +7,7 @@
  * Project's configuration
  */
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
@@ -22,12 +23,67 @@
 
 NAMESPACE_BEGIN
 
+struct SpeedConfig;
+struct MechanismSpeedProfile;
+struct SpeedProfile;
+
+NAMESPACE_END;
+
+namespace toml {
+template <>
+struct from<ns(SpeedConfig)>;
+
+template <>
+struct from<ns(MechanismSpeedProfile)>;
+
+template <>
+struct from<ns(SpeedProfile)>;
+}  // namespace toml
+
+NAMESPACE_BEGIN
+
 namespace impl {
 class ConfigImpl;
 }
 
 /** impl::ConfigImpl singleton class using StaticObj */
 using Config = StaticObj<impl::ConfigImpl>;
+
+struct SpeedConfig {
+  SpeedConfig();
+  DEBUG_ONLY(void print(std::ostream& os) const);
+
+  double rpm;
+  double acceleration;
+  double deceleration;
+};
+
+struct MechanismSpeedProfile {
+  MechanismSpeedProfile();
+  DEBUG_ONLY(void print(std::ostream& os) const);
+
+  SpeedConfig  x;
+  SpeedConfig  y;
+  SpeedConfig  z;
+  unsigned int duty_cycle;
+};
+
+struct SpeedProfile {
+  SpeedProfile();
+  DEBUG_ONLY(void print(std::ostream& os) const);
+
+  MechanismSpeedProfile slow;
+  MechanismSpeedProfile normal;
+  MechanismSpeedProfile fast;
+};
+
+template <class T>
+auto operator<<(std::ostream& os, T const& t) -> decltype(t.print(os), os) {
+  t.print(os);
+  return os;
+}
+
+enum class Speed { slow, normal, fast };
 
 namespace impl {
 /**
@@ -65,13 +121,90 @@ class ConfigImpl : public StackObj {
    */
   bool debug() const;
   /**
-   * Get stepper type
+   * Get speed Profile of Fault mechanism
    *
-   * It should be in key "devices.stepper"
+   * @tparam Speed type of speed
    *
-   * @return stepper type
+   * @return fault speed profile
    */
-  std::string stepper_type() const;
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& fault_speed_profile() const {
+    if (speed == Speed::slow) {
+      return fault_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return fault_speed_profile_.normal;
+    } else {
+      return fault_speed_profile_.fast;
+    }
+  }
+  /**
+   * Get speed Profile of Homing mechanism
+   *
+   * @tparam Speed type of speed
+   *
+   * @return homing speed profile
+   */
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& homing_speed_profile() const {
+    if (speed == Speed::slow) {
+      return homing_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return homing_speed_profile_.normal;
+    } else {
+      return homing_speed_profile_.fast;
+    }
+  }
+  /**
+   * Get speed Profile of Spraying mechanism
+   *
+   * @tparam Speed type of speed
+   *
+   * @return spraying speed profile
+   */
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& spraying_speed_profile() const {
+    if (speed == Speed::slow) {
+      return spraying_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return spraying_speed_profile_.normal;
+    } else {
+      return spraying_speed_profile_.fast;
+    }
+  }
+  /**
+   * Get speed Profile of Tending mechanism
+   *
+   * @tparam Speed type of speed
+   *
+   * @return spraying speed profile
+   */
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& tending_speed_profile() const {
+    if (speed == Speed::slow) {
+      return tending_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return tending_speed_profile_.normal;
+    } else {
+      return tending_speed_profile_.fast;
+    }
+  }
+  /**
+   * Get speed Profile of Cleaning mechanism
+   *
+   * @tparam Speed type of speed
+   *
+   * @return cleaning speed profile
+   */
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& cleaning_speed_profile() const {
+    if (speed == Speed::slow) {
+      return cleaning_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return cleaning_speed_profile_.normal;
+    } else {
+      return cleaning_speed_profile_.fast;
+    }
+  }
   /**
    * Get stepper x-axis device info
    *
@@ -432,8 +565,20 @@ class ConfigImpl : public StackObj {
   inline T find(Keys&&... keys) const {
     return toml::find<T>(config(), std::forward<Keys>(keys)...);
   }
+  /**
+   * Load speed profile for all mechanisms
+   */
+  void load_speed_profiles();
 
  private:
+  /**
+   * TOML config data
+   */
+  const toml::value config_;
+  /**
+   * Config file
+   */
+  const std::string config_path_;
   /**
    * Spraying movement path
    */
@@ -455,13 +600,25 @@ class ConfigImpl : public StackObj {
    */
   coordinate tending_position_;
   /**
-   * TOML config data
+   * Fault speed profile
    */
-  const toml::value config_;
+  SpeedProfile fault_speed_profile_;
   /**
-   * Config file
+   * Homing speed profile
    */
-  const std::string config_path_;
+  SpeedProfile homing_speed_profile_;
+  /**
+   * Tending speed profile
+   */
+  SpeedProfile tending_speed_profile_;
+  /**
+   * Spraying speed profile
+   */
+  SpeedProfile spraying_speed_profile_;
+  /**
+   * Cleaning speed profile
+   */
+  SpeedProfile cleaning_speed_profile_;
 };
 }  // namespace impl
 

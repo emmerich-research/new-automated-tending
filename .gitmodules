@@ -19,3 +19,9 @@
 [submodule "external/glad"]
 	path = external/glad
 	url = https://github.com/Dav1dde/glad.git
+[submodule "external/ucm"]
+	path = external/ucm
+	url = https://github.com/onqtam/ucm.git
+[submodule "external/cotire"]
+	path = external/cotire
+	url = https://github.com/sakra/cotire.git

@@ -207,6 +207,16 @@ bool StateImpl::manual_mode() {
   const StateImpl::StateLock lock(mutex());
   return manual_mode_;
 }
+
+void StateImpl::speed_profile(const Speed& speed_profile) {
+  const StateImpl::StateLock lock(mutex());
+  speed_profile_ = speed_profile;
+}
+
+const Speed& StateImpl::speed_profile() {
+  const StateImpl::StateLock lock(mutex());
+  return speed_profile_;
+}
 }  // namespace impl
 
 NAMESPACE_END
