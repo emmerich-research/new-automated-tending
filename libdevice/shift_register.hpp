@@ -161,6 +161,18 @@ class ShiftRegisterDeviceImpl : public StackObj {
    * @return active status of device
    */
   bool active() const;
+  /**
+   * Get bits
+   *
+   * @return bits
+   */
+  inline const byte& bits() const { return bits_; }
+  /**
+   * Get bits
+   *
+   * @return bits
+   */
+  inline byte& bits() { return bits_; }
 
  protected:
   /**
@@ -195,6 +207,10 @@ class ShiftRegisterDeviceImpl : public StackObj {
    * Data digital output device
    */
   const std::shared_ptr<DigitalOutputDevice> data_device_;
+  /**
+   * Last bits
+   */
+  byte bits_;
 };
 
 /**

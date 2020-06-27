@@ -18,6 +18,7 @@ ShiftRegisterDeviceImpl::ShiftRegisterDeviceImpl(
       clock_pin_{clock_pin},
       data_pin_{data_pin},
       order_{order},
+      bits_{0},
       latch_device_{DigitalOutputDevice::create(latch_pin)},
       clock_device_{DigitalOutputDevice::create(clock_pin)},
       data_device_{DigitalOutputDevice::create(data_pin)} {
@@ -33,18 +34,15 @@ ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
     return ATM_ERR;
   }
 
-  // bits to send
-  byte bits = 0;
-
   // turn off the output so the pins don't
   // light up while the bits are being shifted in
   latch_device()->write(digital::value::low);
 
   // turn on the next highest bit in bits
-  bit_write(bits, pin, level);
+  bit_write(bits(), pin, level);
 
   // shift the bits out
-  shift_out(bits);
+  shift_out(bits());
 
   // turn on the output
   latch_device()->write(digital::value::high);
@@ -53,7 +51,7 @@ ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
 }
 
 void ShiftRegisterDeviceImpl::shift_out(const byte& value) const {
-  for (unsigned int i = 0; i < 8; i++) {
+  for (unsigned int i = 0; i < ShiftRegisterDeviceImpl::cascade_num; i++) {
     if (order() == shift_register::bit_order::lsb) {
       data_device()->write(!!(value & (1 << i)) ? digital::value::high
                                                 : digital::value::low);
