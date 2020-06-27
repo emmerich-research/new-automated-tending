@@ -504,7 +504,7 @@ class StepperDeviceImpl : public StepperDevice {
    *
    * Close the StepperDeviceImpl that has been initialized
    */
-  virtual ~StepperDeviceImpl() = default;
+  virtual ~StepperDeviceImpl() override = default;
   /**
    * Get step pulse
    */

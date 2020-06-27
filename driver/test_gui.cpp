@@ -31,9 +31,9 @@ int main(int, char**) {
 #endif
 #endif
 
-  GLFWwindow* window =
-      glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL example", NULL, NULL);
-  if (window == NULL)
+  GLFWwindow* window = glfwCreateWindow(
+      1280, 720, "Dear ImGui GLFW+OpenGL example", nullptr, nullptr);
+  if (window == nullptr)
     return 1;
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);  // Enable vsync

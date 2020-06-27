@@ -177,10 +177,10 @@ struct TendingDef : public StackObj,
       bool initialized;
       void initialize();
 
-      std::shared_ptr<device::DigitalOutputDevice> tending_ready;
-      std::shared_ptr<device::DigitalOutputDevice> tending_running;
-      std::shared_ptr<device::DigitalOutputDevice> tending_complete;
-      std::shared_ptr<device::PWMDevice>           finger;
+      // std::shared_ptr<device::DigitalOutputDevice> tending_ready;
+      // std::shared_ptr<device::DigitalOutputDevice> tending_running;
+      // std::shared_ptr<device::DigitalOutputDevice> tending_complete;
+      // std::shared_ptr<device::PWMDevice>           finger;
     };
 
     using initial_state = no_task;

@@ -160,25 +160,25 @@ static ATM_STATUS initialize_input_digital_devices() {
 }
 
 static ATM_STATUS initialize_output_digital_devices() {
-  auto*      config = Config::get();
-  ATM_STATUS status = ATM_OK;
+  [[maybe_unused]] auto* config = Config::get();
+  ATM_STATUS             status = ATM_OK;
 
   status = DigitalOutputDeviceRegistry::create();
   if (status == ATM_ERR) {
     return status;
   }
 
-  auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
+  // auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
 
-  status = digital_output_registry->create(
-      id::spray(), config->spray<PI_PIN>("pin"),
-      config->spray<bool>("active-state"), PI_PUD_UP);
-  if (status == ATM_ERR) {
-    return status;
-  }
+  // status = digital_output_registry->create(
+  //     id::spray(), config->spray<PI_PIN>("pin"),
+  //     config->spray<bool>("active-state"), PI_PUD_UP);
+  // if (status == ATM_ERR) {
+  //   return status;
+  // }
 
-  auto&& spray = digital_output_registry->get(id::spray());
-  spray->write(device::digital::value::low);
+  // auto&& spray = digital_output_registry->get(id::spray());
+  // spray->write(device::digital::value::low);
 
   /**
    * Anomaly with Pin 18 BCM
@@ -203,53 +203,102 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
     return ATM_ERR;
   }
 
-  // status = shift_register->assign(
-  //     id::comm::pi::tending_ready(),
-  //     config->pi_to_plc<byte>("tending-ready", "address"),
-  //     config->pi_to_plc<bool>("tending-ready", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return status;
-  // }
+  // PI to Cleaning Station
+  status = shift_register->assign(
+      id::comm::pi::water_in(),
+      config->shift_register<byte>("water-in", "address"),
+      config->shift_register<bool>("water-in", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
 
-  // status = shift_register->assign(
-  //     id::comm::pi::spraying_ready(),
-  //     config->pi_to_plc<byte>("spraying-ready", "address"),
-  //     config->pi_to_plc<bool>("spraying-ready", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return status;
-  // }
+  status = shift_register->assign(
+      id::comm::pi::water_out(),
+      config->shift_register<byte>("water-out", "address"),
+      config->shift_register<bool>("water-out", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
 
-  // status = shift_register->assign(
-  //     id::comm::pi::tending_running(),
-  //     config->pi_to_plc<byte>("tending-running", "address"),
-  //     config->pi_to_plc<bool>("tending-running", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return status;
-  // }
+  status = shift_register->assign(
+      id::comm::pi::disinfectant_in(),
+      config->shift_register<byte>("disinfectant-in", "address"),
+      config->shift_register<bool>("disinfectant-in", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
 
-  // status = shift_register->assign(
-  //     id::comm::pi::spraying_running(),
-  //     config->pi_to_plc<byte>("spraying-running", "address"),
-  //     config->pi_to_plc<bool>("spraying-running", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return status;
-  // }
+  status = shift_register->assign(
+      id::comm::pi::disinfectant_out(),
+      config->shift_register<byte>("disinfectant-out", "address"),
+      config->shift_register<bool>("disinfectant-out", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
 
-  // status = shift_register->assign(
-  //     id::comm::pi::tending_complete(),
-  //     config->pi_to_plc<byte>("tending-complete", "address"),
-  //     config->pi_to_plc<bool>("tending-complete", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return status;
-  // }
+  status = shift_register->assign(
+      id::comm::pi::sonicator_relay(),
+      config->shift_register<byte>("sonicator-relay", "address"),
+      config->shift_register<bool>("sonicator-relay", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
 
-  // status = shift_register->assign(
-  //     id::comm::pi::spraying_complete(),
-  //     config->pi_to_plc<byte>("spraying-complete", "address"),
-  //     config->pi_to_plc<bool>("spraying-complete", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return status;
-  // }
+  // PLC to PI
+  status = shift_register->assign(
+      id::comm::pi::tending_ready(),
+      config->shift_register<byte>("tending-ready", "address"),
+      config->shift_register<bool>("tending-ready", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::spraying_ready(),
+      config->shift_register<byte>("spraying-ready", "address"),
+      config->shift_register<bool>("spraying-ready", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::tending_running(),
+      config->shift_register<byte>("tending-running", "address"),
+      config->shift_register<bool>("tending-running", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::spraying_running(),
+      config->shift_register<byte>("spraying-running", "address"),
+      config->shift_register<bool>("spraying-running", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::tending_complete(),
+      config->shift_register<byte>("tending-complete", "address"),
+      config->shift_register<bool>("tending-complete", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::spraying_complete(),
+      config->shift_register<byte>("spraying-complete", "address"),
+      config->shift_register<bool>("spraying-complete", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::spray(), config->shift_register<byte>("spray", "address"),
+      config->shift_register<bool>("spray", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
 
   return status;
 }

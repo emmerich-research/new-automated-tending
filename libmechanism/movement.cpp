@@ -13,6 +13,8 @@ namespace mechanism {
 namespace impl {
 MovementBuilderImpl::MovementBuilderImpl() {}
 
+MovementBuilderImpl::~MovementBuilderImpl() {}
+
 ATM_STATUS MovementBuilderImpl::setup_x(
     const std::string&           stepper_x_id,
     const device::stepper::step& steps_per_mm,
@@ -132,18 +134,20 @@ Movement::Movement(const impl::MovementBuilderImpl* builder)
   }
 }
 
+Movement::~Movement() {}
+
 template <>
 long Movement::convert_length_to_steps<movement::unit::cm>(
     double                       length,
     const device::stepper::step& steps_per_mm) {
-  return length * steps_per_mm * 10.0;
+  return static_cast<long>(length * steps_per_mm * 10.0);
 }
 
 template <>
 long Movement::convert_length_to_steps<movement::unit::mm>(
     double                       length,
     const device::stepper::step& steps_per_mm) {
-  return length * steps_per_mm;
+  return static_cast<long>(length * steps_per_mm);
 }
 
 void Movement::setup_stepper() {
@@ -479,7 +483,7 @@ void Movement::move_to_tending_position() {
 
 void Movement::spraying_motor_params() const {
   massert(Config::get() != nullptr, "sanity");
-  auto* config = Config::get();
+  [[maybe_unused]] auto* config = Config::get();
 
   LOG_INFO("Configuring motors' parameters to spraying...");
   // stepper_x()->rpm(config->spraying_stepper_x<double>("rpm"));
@@ -504,7 +508,7 @@ void Movement::follow_spraying_paths() {
 }
 
 void Movement::tending_motor_params() const {
-  auto* config = Config::get();
+  [[maybe_unused]] auto* config = Config::get();
 
   LOG_INFO("Configuring motors' parameters to tending...");
 
@@ -544,7 +548,7 @@ void Movement::follow_tending_paths_zigzag() {
 }
 
 void Movement::revert_motor_params() const {
-  auto* config = Config::get();
+  [[maybe_unused]] auto* config = Config::get();
 
   LOG_INFO("Reverting to default motors' parameters...");
   // stepper_x()->rpm(config->stepper_x<double>("rpm"));

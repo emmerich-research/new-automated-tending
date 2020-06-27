@@ -38,8 +38,8 @@
  * @brief Assertion with message.
  *        Enabled only in development.
  *
- * taken from https://stackoverflow.com/a/37264642/6808347 \n
- * credits to Eugene Magdalits \n
+ * taken from https://stackoverflow.com/a/37264642/6808347 <br />
+ * credits to Eugene Magdalits <br />
  * with some changes by Ray Andrew <raydreww@gmail.com>
  *
  * This function will output message and abort if expr equal false

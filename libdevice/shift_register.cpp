@@ -19,14 +19,11 @@ ShiftRegisterDeviceImpl::ShiftRegisterDeviceImpl(
       clock_pin_{clock_pin},
       data_pin_{data_pin},
       order_{order},
-      bits_{0},
       latch_device_{DigitalOutputDevice::create(latch_pin)},
       clock_device_{DigitalOutputDevice::create(clock_pin)},
       data_device_{DigitalOutputDevice::create(data_pin)} {
   DEBUG_ONLY(obj_name_ = "ShiftRegisterDevice");
-  massert(latch_device()->active(), "sanity");
-  massert(clock_device()->active(), "sanity");
-  massert(data_device()->active(), "sanity");
+  massert(active(), "sanity");
 
   bits_ = new byte[cascade_num];
   reset_bits();
@@ -44,7 +41,7 @@ void ShiftRegisterDeviceImpl::reset_bits() {
 
 ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
                                           const digital::value& level) {
-  if (pin < 0 && pin >= cascade_num) {
+  if (pin >= cascade_num) {
     return ATM_ERR;
   }
 
@@ -111,6 +108,8 @@ ShiftRegisterImpl::ShiftRegisterImpl(PI_PIN                    latch_pin,
   massert(active(), "sanity");
 }
 
+ShiftRegisterImpl::~ShiftRegisterImpl() {}
+
 ATM_STATUS ShiftRegisterImpl::assign(const std::string& id,
                                      const byte&        pin,
                                      const bool&        active_state) {
@@ -121,6 +120,8 @@ ATM_STATUS ShiftRegisterImpl::assign(const std::string& id,
   LOG_DEBUG("ShiftRegisterImpl::assign device with key {} and bit {}", id,
             static_cast<int>(pin));
   container_[id] = {pin, active_state};
+  // enforce to write low
+  write(id, digital::value::low);
   return ATM_OK;
 }
 

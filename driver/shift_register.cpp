@@ -9,7 +9,7 @@
 #include <libdevice/device.hpp>
 #include <libutil/util.hpp>
 
-USE_NAMESPACE
+USE_NAMESPACE;
 
 // forward declarations
 static ATM_STATUS init();

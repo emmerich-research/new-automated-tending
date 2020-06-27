@@ -7,15 +7,15 @@
 #include <libmechanism/mechanism.hpp>
 #include <libutil/util.hpp>
 
-USE_NAMESPACE
+USE_NAMESPACE;
 
 // forward declaration
-bool        stop = false;
+static bool stop = false;
 static void init();
 static void shutdown_hook();
 // static void sigint_hook(int signal);  // for SIGINT
-static int throw_message();
-bool       menu(const std::shared_ptr<mechanism::Movement>& movement);
+static int  throw_message();
+static bool menu();
 
 static void init() {
   // struct sigaction sigint_handler;
@@ -61,9 +61,9 @@ static void do_spraying() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto* config = Config::get();
+  // auto* config = Config::get();
   auto* output_registry = device::DigitalOutputDeviceRegistry::get();
-  auto* input_registry = device::DigitalInputDeviceRegistry::get();
+  // auto* input_registry = device::DigitalInputDeviceRegistry::get();
 
   auto&& movement = mechanism::movement_mechanism();
 
@@ -118,7 +118,6 @@ static void do_tending() {
 
   auto* config = Config::get();
   auto* output_registry = device::DigitalOutputDeviceRegistry::get();
-  auto* input_registry = device::DigitalInputDeviceRegistry::get();
   auto* pwm_registry = device::PWMDeviceRegistry::get();
 
   auto&& movement = mechanism::movement_mechanism();
@@ -170,7 +169,7 @@ static void do_tending() {
   tending_complete->write(device::digital::value::high);
 }
 
-bool menu() {
+static bool menu() {
   massert(Config::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");

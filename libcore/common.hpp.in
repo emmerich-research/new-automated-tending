@@ -49,7 +49,7 @@
  * @def USE_NAMESPACE
  * using project namespace (auto generated from cmake)
  */
-#define USE_NAMESPACE         using namespace @PROJECT_NAMESPACE@;
+#define USE_NAMESPACE         using namespace @PROJECT_NAMESPACE@
 
 
 NAMESPACE_BEGIN
@@ -64,13 +64,13 @@ using ATM_STATUS = int;
  * @var ATM_OK = 0
  * OK status for all project
  */
-static const int ATM_OK  = 0;
+extern const int ATM_OK;
 
 /**
  * @var ATM_ERR = -1
  * ERROR status for all project
  */
-static const int ATM_ERR = -1;
+extern const int ATM_ERR;
 
 /**
  * @var using byte = unsigned char
@@ -78,16 +78,16 @@ static const int ATM_ERR = -1;
  */
 using byte = unsigned char;
 
-static const char* PROJECT_CONFIG_DIR  = "@PROJECT_CONFIG_DIR@";
-static const char* PROJECT_CONFIG_FILE = "@PROJECT_CONFIG_FILE@";
-static const char* PROJECT_STATE_FILE  = "@PROJECT_STATE_FILE@";
-static const char* APP_AUTHOR          = "@PROJECT_AUTHOR@";
-static const char* LOGS_DIR            = "logs";
-static const char* APP_NAME            = "@PROJECT_TITLE@";
-static const char* APP_ALT_NAME        = "@PROJECT_ALT_TITLE@";
-static const char* APP_DESC            = "@PROJECT_DESCRIPTION@";
-static const bool  DEBUG               = false;
-static const char* TIME_FMT            = "%Y-%m-%dT%H:%M:%S";
+extern const char* PROJECT_CONFIG_DIR;
+extern const char* PROJECT_CONFIG_FILE;
+extern const char* PROJECT_STATE_FILE;
+extern const char* APP_AUTHOR;
+extern const char* LOGS_DIR;
+extern const char* APP_NAME;
+extern const char* APP_ALT_NAME;
+extern const char* APP_DESC;
+extern const bool  DEBUG;
+extern const char* TIME_FMT;
 
 NAMESPACE_END
 

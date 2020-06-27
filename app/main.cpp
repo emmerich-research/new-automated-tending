@@ -9,17 +9,17 @@
 
 #include "machine.hpp"
 
-USE_NAMESPACE
+USE_NAMESPACE;
 
-static void key_callback(GLFWwindow* window,
-                         int         key,
-                         int         scancode,
-                         int         action,
-                         int         mods) {
+static void key_callback(GLFWwindow*          current_window,
+                         int                  key,
+                         [[maybe_unused]] int scancode,
+                         int                  action,
+                         int                  mods) {
   if (mods == GLFW_MOD_ALT && key == GLFW_KEY_F4 && action == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, GL_TRUE);
+    glfwSetWindowShouldClose(current_window, GL_TRUE);
   } else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, GL_TRUE);
+    glfwSetWindowShouldClose(current_window, GL_TRUE);
   }
 }
 
@@ -53,12 +53,9 @@ int main() {
 
   massert(window() != nullptr, "sanity");
 
-  auto* state = State::get();
-
   glfwSetKeyCallback(window(), key_callback);  // setup key callback
 
-  const ImGuiStyle& style = ImGui::GetStyle();
-  ImVec4            clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   while (!glfwWindowShouldClose(window())) {
     // Poll and handle events (inputs, window resize, etc.)

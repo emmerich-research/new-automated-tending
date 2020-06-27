@@ -1,0 +1,19 @@
+#include "common.hpp"
+
+NAMESPACE_BEGIN
+
+const int ATM_OK                = 0;
+const int ATM_ERR               = -1;
+
+const char* PROJECT_CONFIG_DIR  = "@PROJECT_CONFIG_DIR@";
+const char* PROJECT_CONFIG_FILE = "@PROJECT_CONFIG_FILE@";
+const char* PROJECT_STATE_FILE  = "@PROJECT_STATE_FILE@";
+const char* APP_AUTHOR          = "@PROJECT_AUTHOR@";
+const char* LOGS_DIR            = "logs";
+const char* APP_NAME            = "@PROJECT_TITLE@";
+const char* APP_ALT_NAME        = "@PROJECT_ALT_TITLE@";
+const char* APP_DESC            = "@PROJECT_DESCRIPTION@";
+const bool  DEBUG               = false;
+const char* TIME_FMT            = "%Y-%m-%dT%H:%M:%S";
+
+NAMESPACE_END

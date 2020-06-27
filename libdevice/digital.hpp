@@ -149,7 +149,7 @@ class DigitalDevice : public StackObj {
    *
    * @return gpio pin
    */
-  inline unsigned char pin() const { return pin_; }
+  inline const PI_PIN& pin() const { return pin_; }
   /**
    * Get current device mode of GPIO pin
    *
@@ -191,7 +191,7 @@ class DigitalDevice : public StackObj {
    *
    * @return string representation of device mode
    */
-  static inline constexpr char* get_mode(const digital::mode& mode) {
+  static inline constexpr const char* get_mode(const digital::mode& mode) {
     if (mode == digital::mode::input) {
       return "input";
     } else {

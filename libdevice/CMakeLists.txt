@@ -4,6 +4,8 @@ ucm_add_files(
   "init.cpp"
   "gpio.cpp"
 
+  "identifier.cpp"
+
   # analog devices
   "analog.cpp"
   "PCF8591.cpp"

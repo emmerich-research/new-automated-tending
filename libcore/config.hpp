@@ -108,7 +108,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Fault mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return fault speed profile
    */
@@ -125,7 +125,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Homing mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return homing speed profile
    */
@@ -142,7 +142,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Spraying mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return spraying speed profile
    */
@@ -159,7 +159,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Tending mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return spraying speed profile
    */
@@ -176,7 +176,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Cleaning mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return cleaning speed profile
    */
@@ -463,10 +463,10 @@ class ConfigImpl : public StackObj {
    *
    * @return communication device info from RaspberryPI to PLC with type T
    */
-  template <typename T, typename... Keys>
-  inline T pi_to_plc(Keys&&... keys) const {
-    return shift_register<T>("pi-to-plc", std::forward<Keys>(keys)...);
-  }
+  // template <typename T, typename... Keys>
+  // inline T pi_to_plc(Keys&&... keys) const {
+  //   return shift_register<T>("pi-to-plc", std::forward<Keys>(keys)...);
+  // }
 
  private:
   /**

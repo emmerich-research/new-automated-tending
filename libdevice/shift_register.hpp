@@ -152,7 +152,6 @@ class ShiftRegisterDeviceImpl : public StackObj {
    * least-significant (rightmost) bit.
    * @param bit_value  value to write to the bit
    *
-   * @return change of value based on the bit_value
    */
   static void bit_write(byte& value, byte bit, const digital::value& bit_value);
   /**
@@ -198,10 +197,6 @@ class ShiftRegisterDeviceImpl : public StackObj {
    */
   static const unsigned int shift_bits;
   /**
-   * Bit order
-   */
-  const shift_register::bit_order order_;
-  /**
    * Latch GPIO pin
    */
   const PI_PIN latch_pin_;
@@ -213,6 +208,10 @@ class ShiftRegisterDeviceImpl : public StackObj {
    * Data GPIO pin
    */
   const PI_PIN data_pin_;
+  /**
+   * Bit order
+   */
+  const shift_register::bit_order order_;
   /**
    * Latch digital output device
    */
@@ -272,11 +271,10 @@ class ShiftRegisterImpl : public ShiftRegisterDeviceImpl {
   ATM_STATUS assign(const std::string& id,
                     const byte&        pin,
                     const bool&        active_state = true);
-
   /**
    * Write the HIGH/LOW data to ShiftRegisterDeviceImpl
    *
-   * @param  pin   shift register pin/bit
+   * @param  id    device unique id
    * @param  level HIGH/LOW
    *
    * @return ATM_OK or ATM_ERR, but not both
@@ -320,7 +318,7 @@ class ShiftRegisterImpl : public ShiftRegisterDeviceImpl {
    *
    * Close the ShiftRegisterImpl that has been initialized
    */
-  virtual ~ShiftRegisterImpl() = default;
+  virtual ~ShiftRegisterImpl() override;
 
  protected:
   /**

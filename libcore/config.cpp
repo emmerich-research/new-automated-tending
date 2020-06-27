@@ -97,8 +97,7 @@ DEBUG_ONLY(void SpeedProfile::print(std::ostream& os) const {
 
 namespace impl {
 ConfigImpl::ConfigImpl(const std::string& config_path)
-    : config_path_{std::move(config_path)},
-      config_{std::move(toml::parse(config_path))} {
+    : config_{toml::parse(config_path)}, config_path_{std::move(config_path)} {
   DEBUG_ONLY(obj_name_ = "ConfigImpl");
   load_speed_profiles();
 }

@@ -47,12 +47,18 @@ inline ATM_STATUS InstanceRegistryImpl<T>::create(
 
 template <typename T>
 inline const std::shared_ptr<T>& InstanceRegistryImpl<T>::get(
-    const std::string& id) {
+    const std::string& id) const {
   try {
     return container_.at(id);
   } catch ([[maybe_unused]] const std::out_of_range& e) {
     return nullptr;
   }
+}
+
+template <typename T>
+inline std::shared_ptr<T>& InstanceRegistryImpl<T>::get(const std::string& id) {
+  massert(exist(id), "sanity");
+  return container_.at(id);
 }
 
 template <typename T>

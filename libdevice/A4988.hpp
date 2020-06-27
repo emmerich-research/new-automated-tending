@@ -71,7 +71,7 @@ class A4988Device : public impl::StepperDeviceImpl<Speed> {
    *
    * Close the A4988Device that has been initialized
    */
-  virtual ~A4988Device() = default;
+  virtual ~A4988Device() override = default;
   /**
    * Set stepper microsteps
    *

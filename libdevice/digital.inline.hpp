@@ -12,7 +12,7 @@ template <digital::mode Mode>
 DigitalDevice<Mode>::DigitalDevice(PI_PIN        pin,
                                    const bool&   active_state,
                                    const PI_PUD& pull)
-    : pin_{pin}, active_{true}, mode_{Mode}, active_state_{active_state} {
+    : pin_{pin}, mode_{Mode}, active_state_{active_state}, active_{true} {
   DEBUG_ONLY(obj_name_ = fmt::format("DigitalDevice<{}> pin {} active_state {}",
                                      get_mode(Mode), pin, active_state));
 
@@ -58,11 +58,10 @@ ATM_STATUS DigitalDevice<Mode>::write(const digital::value& level) {
     case digital::value::high:
       res = gpioWrite(pin_, process_value(level, active_state()));
       break;
-    default:
-      LOG_DEBUG(
-          "[FAILED] DigitalDevice<{}> with pin {}, message = invalid level "
-          "value",
-          get_mode(Mode), pin_);
+      // default:
+      //   LOG_DEBUG(
+      //       "[FAILED] DigitalDevice<{}> with pin {}, message = invalid level
+      //       " "value", get_mode(Mode), pin_);
   }
 
   if (res == PI_OK) {
@@ -163,7 +162,7 @@ void DigitalDevice<Mode>::active_state(bool active_state) {
 
 template <digital::mode Mode>
 ATM_STATUS DigitalDevice<Mode>::pull_up() {
-  ATM_STATUS res = gpioSetPullUpDown(pin_, PI_PUD_UP);
+  ATM_STATUS res = gpioSetPullUpDown(pin(), PI_PUD_UP);
 
   if (res != PI_OK) {
     LOG_DEBUG(
@@ -177,7 +176,7 @@ ATM_STATUS DigitalDevice<Mode>::pull_up() {
 
 template <digital::mode Mode>
 ATM_STATUS DigitalDevice<Mode>::pull_down() {
-  ATM_STATUS res = gpioSetPullUpDown(pin_, PI_PUD_DOWN);
+  ATM_STATUS res = gpioSetPullUpDown(pin(), PI_PUD_DOWN);
 
   if (res != PI_OK) {
     LOG_DEBUG(
