@@ -29,10 +29,17 @@ ShiftRegisterDeviceImpl::ShiftRegisterDeviceImpl(
   massert(data_device()->active(), "sanity");
 
   bits_ = new byte[cascade_num];
+  reset_bits();
 }
 
 ShiftRegisterDeviceImpl::~ShiftRegisterDeviceImpl() {
   delete bits_;
+}
+
+void ShiftRegisterDeviceImpl::reset_bits() {
+  for (unsigned int idx = 0; idx < cascade_num; ++idx) {
+    bits_[idx] = 0;
+  }
 }
 
 ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,

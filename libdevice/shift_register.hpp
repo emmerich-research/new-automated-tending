@@ -183,6 +183,10 @@ class ShiftRegisterDeviceImpl : public StackObj {
     massert(idx >= 0 && idx < cascade_num, "sanity");
     return bits_[idx];
   }
+  /**
+   * Reset bits
+   */
+  void reset_bits();
 
  protected:
   /**
