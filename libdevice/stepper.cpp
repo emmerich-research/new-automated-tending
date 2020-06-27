@@ -80,8 +80,8 @@ void StepperDevice::dir_active_state(const bool& active_state) {
 namespace impl {
 /** For constant speed */
 template <>
-void StepperDeviceImpl<stepper::speed::constant>::start_move(long      steps,
-                                                             time_unit time) {
+void StepperDeviceImpl<stepper::speed::constant>::start_move(long steps,
+                                                             long time) {
   if (steps <= 0)
     return;
 
@@ -91,8 +91,8 @@ void StepperDeviceImpl<stepper::speed::constant>::start_move(long      steps,
   step_pulse_ = cruise_step_pulse_ =
       calc_step_pulse_from_rpm(motor_steps(), microsteps(), rpm());
   if (time > remaining_steps() * step_pulse()) {
-    step_pulse_ = static_cast<unsigned long>(static_cast<float>(time) /
-                                             remaining_steps());
+    step_pulse_ = static_cast<stepper::pulse>(static_cast<float>(time) /
+                                              remaining_steps());
   }
 }
 
@@ -109,8 +109,8 @@ void StepperDeviceImpl<stepper::speed::constant>::calc_step_pulse() {
 
 /** For linear speed */
 template <>
-void StepperDeviceImpl<stepper::speed::linear>::start_move(long      steps,
-                                                           time_unit time) {
+void StepperDeviceImpl<stepper::speed::linear>::start_move(long steps,
+                                                           long time) {
   pre_start_move(steps);
 
   // speed is in [steps/s]
@@ -191,8 +191,8 @@ void StepperDeviceImpl<stepper::speed::linear>::calc_step_pulse() {
       break;  // no speed changes
   }
 
-  LOG_DEBUG("CalcStepPulse state {} step_pulse {} rest_steps {}", state(),
-            step_pulse(), rest_steps());
+  // LOG_DEBUG("CalcStepPulse state {} step_pulse {} rest_steps {}", state(),
+  //           step_pulse(), rest_steps());
 }
 
 template <>

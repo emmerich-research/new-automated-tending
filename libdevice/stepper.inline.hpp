@@ -142,6 +142,15 @@ stepper::step StepperDeviceImpl<Speed>::stop() {
   remaining_steps_ = 0;
   return retval;
 }
+
+template <stepper::speed Speed>
+double StepperDeviceImpl<Speed>::current_rpm() const {
+  if (step_pulse() == 0) {
+    return 0.0;
+  }
+  return static_cast<double>(60.0 * 1000000L / step_pulse() / microsteps() /
+                             motor_steps());
+}
 }  // namespace impl
 }  // namespace device
 

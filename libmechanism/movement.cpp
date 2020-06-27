@@ -448,6 +448,9 @@ time_unit Movement::next() {
 
   ready_ = (next_move_interval() == 0);
 
+  LOG_DEBUG("RPM X {} Y {} Z {}", stepper_x()->current_rpm(),
+            stepper_y()->current_rpm(), stepper_z()->current_rpm());
+
   return next_move_interval();
 }
 
