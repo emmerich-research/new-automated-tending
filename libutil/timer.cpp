@@ -6,10 +6,10 @@
 #include <thread>
 
 time_unit millis() {
-  uint64_t ms =
+  uint64_t ms = static_cast<uint64_t>(
       std::chrono::duration_cast<std::chrono::milliseconds>(
           std::chrono::high_resolution_clock::now().time_since_epoch())
-          .count();
+          .count());
   return static_cast<time_unit>(ms);
 }
 
@@ -31,10 +31,10 @@ void sleep_until<time_units::millis>(time_unit time, time_unit start_time) {
 }
 
 time_unit micros() {
-  uint64_t us =
+  uint64_t us = static_cast<uint64_t>(
       std::chrono::duration_cast<std::chrono::microseconds>(
           std::chrono::high_resolution_clock::now().time_since_epoch())
-          .count();
+          .count());
   return static_cast<time_unit>(us);
 }
 
@@ -56,10 +56,10 @@ void sleep_until<time_units::micros>(time_unit time, time_unit start_time) {
 }
 
 time_unit nanos() {
-  uint64_t ns =
+  uint64_t ns = static_cast<uint64_t>(
       std::chrono::duration_cast<std::chrono::nanoseconds>(
           std::chrono::high_resolution_clock::now().time_since_epoch())
-          .count();
+          .count());
   return static_cast<time_unit>(ns);
 }
 

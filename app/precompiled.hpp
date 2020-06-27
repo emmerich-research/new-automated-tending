@@ -1,6 +1,8 @@
 #ifndef APP_PRECOMPILED_HPP_
 #define APP_PRECOMPILED_HPP_
 
+#pragma GCC system_header
+
 // 1. STD
 #include <cstdlib>
 #include <iostream>

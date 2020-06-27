@@ -26,13 +26,20 @@ option(BUILD_SHARED_LIBS "Build shared libs in order for some libraries to work"
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Include stuffs
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+# Include stuffs
+set(CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH}
+  "${CMAKE_SOURCE_DIR}/external/cotire/CMake/"
+  "${CMAKE_SOURCE_DIR}/external/ucm/cmake/"
+  "${CMAKE_SOURCE_DIR}/cmake/")
+
+include(Warnings)
 
 include(GNUInstallDirs)
 include(AFSM)
 include(ConfigSafeGuards)
 include(Colors)
-include(Cotire)
+include(cotire)
 include(CTest)
 include(Doctest)
 include(Documentation)
@@ -42,8 +49,7 @@ include(LTO)
 include(Misc)
 include(Spdlog)
 include(Toml)
-include(Ucm)
-include(Warnings)
+include(ucm)
 
 # enable unity build
 set(UCM_UNITY_BUILD ON)

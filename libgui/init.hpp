@@ -10,7 +10,7 @@
 #include <libcore/core.hpp>
 
 // forward declaration
-class GLFWwindow;
+struct GLFWwindow;
 
 NAMESPACE_BEGIN
 

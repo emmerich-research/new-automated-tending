@@ -28,7 +28,7 @@ namespace analog {
  * @brief Type definition for analog value
  */
 using value = unsigned char;
-};  // namespace analog
+}  // namespace analog
 
 /**
  * @brief Analog Device class

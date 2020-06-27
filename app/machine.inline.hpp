@@ -19,35 +19,44 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
   massert(State::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
-  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
 
   root_machine(fsm).thread_pool().enqueue([fsm]() mutable -> void {
     auto*  state = State::get();
+    auto*  shift_register = device::ShiftRegister::get();
     auto&& movement = mechanism::movement_mechanism();
-    auto*  digital_output_registry = device::DigitalOutputDeviceRegistry::get();
 
-    auto&& spraying_ready =
-        digital_output_registry->get(device::id::comm::pi::spraying_ready());
-    auto&& tending_ready =
-        digital_output_registry->get(device::id::comm::pi::tending_ready());
+    // auto&& spraying_ready =
+    //     digital_output_registry->get(device::id::comm::pi::spraying_ready());
+    // auto&& tending_ready =
+    //     digital_output_registry->get(device::id::comm::pi::tending_ready());
 
     state->spraying_fault(false);
     state->tending_fault(false);
     state->manual_mode(false);
 
-    spraying_ready->write(device::digital::value::low);
+    shift_register->write(device::id::comm::pi::spraying_ready(),
+                          device::digital::value::low);
     state->spraying_ready(false);
 
-    tending_ready->write(device::digital::value::low);
+    shift_register->write(device::id::comm::pi::tending_ready(),
+                          device::digital::value::low);
     state->tending_ready(false);
+
+    // spraying_ready->write(device::digital::value::low);
+    // tending_ready->write(device::digital::value::low);
 
     LOG_INFO("Homing...");
     movement->homing();
 
-    spraying_ready->write(device::digital::value::high);
+    shift_register->write(device::id::comm::pi::spraying_ready(),
+                          device::digital::value::high);
+    // spraying_ready->write(device::digital::value::high);
     state->spraying_ready(true);
 
-    tending_ready->write(device::digital::value::high);
+    shift_register->write(device::id::comm::pi::tending_ready(),
+                          device::digital::value::high);
+    // tending_ready->write(device::digital::value::high);
     state->tending_ready(true);
 
     guard::spraying::height spraying_height;
@@ -81,16 +90,22 @@ void TendingDef::running::spraying::preparation::on_enter(Event&&, FSM& fsm) {
   massert(State::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
 
   auto*  state = State::get();
+  auto*  shift_register = device::ShiftRegister::get();
   auto&& movement = mechanism::movement_mechanism();
 
   LOG_INFO("Spraying preparation...");
 
-  fsm.spraying_running->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_running(),
+                        device::digital::value::low);
+  // fsm.spraying_running->write(device::digital::value::low);
   state->spraying_running(false);
 
-  fsm.spraying_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_complete(),
+                        device::digital::value::low);
+  // fsm.spraying_complete->write(device::digital::value::low);
   state->spraying_complete(false);
 
   LOG_INFO("Homing to make sure ready to spray...");
@@ -103,13 +118,19 @@ template <typename Event, typename FSM>
 void TendingDef::running::spraying::preparation::on_exit(Event&&,
                                                          FSM const& fsm) const {
   massert(State::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
 
   auto* state = State::get();
+  auto* shift_register = device::ShiftRegister::get();
 
-  fsm.spraying_running->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
+  // fsm.spraying_running->write(device::digital::value::low);
   state->spraying_running(false);
 
-  fsm.spraying_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::low);
+  // fsm.spraying_complete->write(device::digital::value::low);
   state->spraying_complete(false);
 
   LOG_INFO("Spraying is ready, waiting for 3 seconds...");
@@ -150,16 +171,22 @@ void TendingDef::running::tending::preparation::on_enter(Event&&, FSM& fsm) {
   massert(State::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
 
   auto*  state = State::get();
+  auto*  shift_register = device::ShiftRegister::get();
   auto&& movement = mechanism::movement_mechanism();
 
   LOG_INFO("Tending preparation...");
 
-  fsm.tending_running->write(device::digital::value::low);
+  // fsm.tending_running->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
   state->tending_running(false);
 
-  fsm.tending_complete->write(device::digital::value::low);
+  // fsm.tending_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::low);
   state->tending_complete(false);
 
   LOG_INFO("Homing to make sure ready to tend...");
@@ -177,11 +204,16 @@ void TendingDef::running::tending::preparation::on_exit(Event&&,
   massert(State::get() != nullptr, "sanity");
 
   auto* state = State::get();
+  auto* shift_register = device::ShiftRegister::get();
 
-  fsm.tending_running->write(device::digital::value::low);
+  // fsm.tending_running->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
   state->tending_running(false);
 
-  fsm.tending_complete->write(device::digital::value::low);
+  // fsm.tending_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::low);
   state->tending_complete(false);
 
   LOG_INFO("Tending is ready, waiting for 3 seconds...");

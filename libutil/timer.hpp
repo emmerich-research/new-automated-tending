@@ -18,8 +18,8 @@ enum class time_units {
 /**
  * @brief Get time stamp in milliseconds.
  *
- * taken from https://stackoverflow.com/a/49066369/6808347 \n
- * credits to Gabriel Staples \n
+ * taken from https://stackoverflow.com/a/49066369/6808347 <br />
+ * credits to Gabriel Staples <br />
  *
  * @return time stamp in microseconds
  */
@@ -28,8 +28,8 @@ time_unit millis(void);
 /**
  * @brief Get time stamp in microseconds.
  *
- * taken from https://stackoverflow.com/a/49066369/6808347 \n
- * credits to Gabriel Staples \n
+ * taken from https://stackoverflow.com/a/49066369/6808347 <br />
+ * credits to Gabriel Staples <br />
  *
  * @return time stamp in microseconds
  */
@@ -55,6 +55,15 @@ time_unit nanos(void);
 template <time_units TimeUnits>
 void sleep_for(time_unit time);
 
+template <>
+void sleep_for<time_units::millis>(time_unit time);
+
+template <>
+void sleep_for<time_units::micros>(time_unit time);
+
+template <>
+void sleep_for<time_units::nanos>(time_unit time);
+
 /**
  * @brief Sleep for absolute time from given start time
  *
@@ -65,5 +74,14 @@ void sleep_for(time_unit time);
  */
 template <time_units TimeUnits>
 void sleep_until(time_unit time, time_unit start_time = 0);
+
+template <>
+void sleep_until<time_units::millis>(time_unit time, time_unit start_time);
+
+template <>
+void sleep_until<time_units::micros>(time_unit time, time_unit start_time);
+
+template <>
+void sleep_until<time_units::nanos>(time_unit time, time_unit start_time);
 
 #endif  // LIB_CORE_TIMER_HPP_

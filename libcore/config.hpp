@@ -7,6 +7,7 @@
  * Project's configuration
  */
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
@@ -22,12 +23,52 @@
 
 NAMESPACE_BEGIN
 
+struct SpeedConfig;
+struct MechanismSpeedProfile;
+struct SpeedProfile;
+
 namespace impl {
 class ConfigImpl;
 }
 
 /** impl::ConfigImpl singleton class using StaticObj */
 using Config = StaticObj<impl::ConfigImpl>;
+
+struct SpeedConfig {
+  SpeedConfig();
+  DEBUG_ONLY(void print(std::ostream& os) const);
+
+  double rpm;
+  double acceleration;
+  double deceleration;
+};
+
+struct MechanismSpeedProfile {
+  MechanismSpeedProfile();
+  DEBUG_ONLY(void print(std::ostream& os) const);
+
+  SpeedConfig  x;
+  SpeedConfig  y;
+  SpeedConfig  z;
+  unsigned int duty_cycle;
+};
+
+struct SpeedProfile {
+  SpeedProfile();
+  DEBUG_ONLY(void print(std::ostream& os) const);
+
+  MechanismSpeedProfile slow;
+  MechanismSpeedProfile normal;
+  MechanismSpeedProfile fast;
+};
+
+template <class T>
+auto operator<<(std::ostream& os, T const& t) -> decltype(t.print(os), os) {
+  t.print(os);
+  return os;
+}
+
+enum class Speed { slow, normal, fast };
 
 namespace impl {
 /**
@@ -65,13 +106,90 @@ class ConfigImpl : public StackObj {
    */
   bool debug() const;
   /**
-   * Get stepper type
+   * Get speed Profile of Fault mechanism
    *
-   * It should be in key "devices.stepper"
+   * @tparam speed type of speed
    *
-   * @return stepper type
+   * @return fault speed profile
    */
-  std::string stepper_type() const;
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& fault_speed_profile() const {
+    if (speed == Speed::slow) {
+      return fault_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return fault_speed_profile_.normal;
+    } else {
+      return fault_speed_profile_.fast;
+    }
+  }
+  /**
+   * Get speed Profile of Homing mechanism
+   *
+   * @tparam speed type of speed
+   *
+   * @return homing speed profile
+   */
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& homing_speed_profile() const {
+    if (speed == Speed::slow) {
+      return homing_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return homing_speed_profile_.normal;
+    } else {
+      return homing_speed_profile_.fast;
+    }
+  }
+  /**
+   * Get speed Profile of Spraying mechanism
+   *
+   * @tparam speed type of speed
+   *
+   * @return spraying speed profile
+   */
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& spraying_speed_profile() const {
+    if (speed == Speed::slow) {
+      return spraying_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return spraying_speed_profile_.normal;
+    } else {
+      return spraying_speed_profile_.fast;
+    }
+  }
+  /**
+   * Get speed Profile of Tending mechanism
+   *
+   * @tparam speed type of speed
+   *
+   * @return spraying speed profile
+   */
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& tending_speed_profile() const {
+    if (speed == Speed::slow) {
+      return tending_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return tending_speed_profile_.normal;
+    } else {
+      return tending_speed_profile_.fast;
+    }
+  }
+  /**
+   * Get speed Profile of Cleaning mechanism
+   *
+   * @tparam speed type of speed
+   *
+   * @return cleaning speed profile
+   */
+  template <Speed speed = Speed::normal>
+  inline const MechanismSpeedProfile& cleaning_speed_profile() const {
+    if (speed == Speed::slow) {
+      return cleaning_speed_profile_.slow;
+    } else if (speed == Speed::normal) {
+      return cleaning_speed_profile_.normal;
+    } else {
+      return cleaning_speed_profile_.fast;
+    }
+  }
   /**
    * Get stepper x-axis device info
    *
@@ -245,36 +363,6 @@ class ConfigImpl : public StackObj {
    */
   const path_container& spraying_path();
   /**
-   * Get stepper x-axis info for spraying mechanism
-   *
-   * It should be in key "devices.communication.spraying.stepper.x"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return stepper x-axis info for spraying mechanism
-   */
-  template <typename T, typename... Keys>
-  inline T spraying_stepper_x(Keys&&... keys) const {
-    return find<T>("mechanisms", "spraying", "stepper", "x",
-                   std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get stepper y-axis info for spraying mechanism
-   *
-   * It should be in key "devices.communication.spraying.stepper.y"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return stepper y-axis info for spraying mechanism
-   */
-  template <typename T, typename... Keys>
-  inline T spraying_stepper_y(Keys&&... keys) const {
-    return find<T>("mechanisms", "spraying", "stepper", "y",
-                   std::forward<Keys>(keys)...);
-  }
-  /**
    * Get spraying movement path coordinate at specified index
    *
    * @param idx index to get
@@ -323,39 +411,9 @@ class ConfigImpl : public StackObj {
    */
   const coordinate& tending_path_zigzag(size_t idx);
   /**
-   * Get stepper x-axis info for tending mechanism
-   *
-   * It should be in key "devices.communication.tending.stepper.x"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return stepper x-axis info for tending mechanism
-   */
-  template <typename T, typename... Keys>
-  inline T tending_stepper_x(Keys&&... keys) const {
-    return find<T>("mechanisms", "tending", "stepper", "x",
-                   std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get stepper y-axis info for tending mechanism
-   *
-   * It should be in key "devices.communication.tending.stepper.y"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return stepper y-axis info for tending mechanism
-   */
-  template <typename T, typename... Keys>
-  inline T tending_stepper_y(Keys&&... keys) const {
-    return find<T>("mechanisms", "tending", "stepper", "y",
-                   std::forward<Keys>(keys)...);
-  }
-  /**
    * Get mechanisms fault manual mode movement
    *
-   * It should be in key "mechanisms.fault.manual-mode.movement"
+   * It should be in key "mechanisms.fault.manual.movement"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
@@ -364,13 +422,27 @@ class ConfigImpl : public StackObj {
    */
   template <typename T, typename... Keys>
   inline T fault_manual_movement(Keys&&... keys) const {
-    return find<T>("mechanisms", "fault", "manual-mode", "movement",
+    return find<T>("mechanisms", "fault", "manual", "movement",
                    std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get shift register device configuration
+   *
+   * It should be in key "devices.shift-register"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return shift register device configuration
+   */
+  template <typename T, typename... Keys>
+  inline T shift_register(Keys&&... keys) const {
+    return find<T>("devices", "shift-register", std::forward<Keys>(keys)...);
   }
   /**
    * Get communication device from PLC to RaspberryPI
    *
-   * It should be in key "devices.communication.input"
+   * It should be in key "devices.plc-to-pi"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
@@ -379,24 +451,22 @@ class ConfigImpl : public StackObj {
    */
   template <typename T, typename... Keys>
   inline T plc_to_pi(Keys&&... keys) const {
-    return find<T>("devices", "communication", "input",
-                   std::forward<Keys>(keys)...);
+    return find<T>("devices", "plc-to-pi", std::forward<Keys>(keys)...);
   }
   /**
    * Get communication device from RaspberryPI to PLC
    *
-   * It should be in key "devices.communication.output"
+   * It should be in key "devices.shift-register.pi-to-plc"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
    *
    * @return communication device info from RaspberryPI to PLC with type T
    */
-  template <typename T, typename... Keys>
-  inline T pi_to_plc(Keys&&... keys) const {
-    return find<T>("devices", "communication", "output",
-                   std::forward<Keys>(keys)...);
-  }
+  // template <typename T, typename... Keys>
+  // inline T pi_to_plc(Keys&&... keys) const {
+  //   return shift_register<T>("pi-to-plc", std::forward<Keys>(keys)...);
+  // }
 
  private:
   /**
@@ -432,8 +502,20 @@ class ConfigImpl : public StackObj {
   inline T find(Keys&&... keys) const {
     return toml::find<T>(config(), std::forward<Keys>(keys)...);
   }
+  /**
+   * Load speed profile for all mechanisms
+   */
+  void load_speed_profiles();
 
  private:
+  /**
+   * TOML config data
+   */
+  const toml::value config_;
+  /**
+   * Config file
+   */
+  const std::string config_path_;
   /**
    * Spraying movement path
    */
@@ -455,13 +537,25 @@ class ConfigImpl : public StackObj {
    */
   coordinate tending_position_;
   /**
-   * TOML config data
+   * Fault speed profile
    */
-  const toml::value config_;
+  SpeedProfile fault_speed_profile_;
   /**
-   * Config file
+   * Homing speed profile
    */
-  const std::string config_path_;
+  SpeedProfile homing_speed_profile_;
+  /**
+   * Tending speed profile
+   */
+  SpeedProfile tending_speed_profile_;
+  /**
+   * Spraying speed profile
+   */
+  SpeedProfile spraying_speed_profile_;
+  /**
+   * Cleaning speed profile
+   */
+  SpeedProfile cleaning_speed_profile_;
 };
 }  // namespace impl
 

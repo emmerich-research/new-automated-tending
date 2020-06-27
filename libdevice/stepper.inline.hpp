@@ -96,9 +96,6 @@ time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
       case stepper::direction::backward:
         dir_device()->write(digital::value::low);
         break;
-      default:
-        // noop
-        break;
     }
 
     // sleep_until<time_units::micros>(next_move_interval(), last_move_end());

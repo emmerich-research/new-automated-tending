@@ -1,5 +1,6 @@
 #include "core.hpp"
 
+#include "config.hpp"
 #include "state.hpp"
 
 NAMESPACE_BEGIN
@@ -8,8 +9,8 @@ namespace impl {
 StateImpl::StateImpl()
     : path_id_{0},
       coordinate_{0.0, 0.0, 0.0},
-      spraying_{},
       tending_{},
+      spraying_{},
       manual_mode_{false} {
   DEBUG_ONLY(obj_name_ = "StateImpl");
 }
@@ -206,6 +207,16 @@ void StateImpl::manual_mode(bool manual) {
 bool StateImpl::manual_mode() {
   const StateImpl::StateLock lock(mutex());
   return manual_mode_;
+}
+
+void StateImpl::speed_profile(const Speed& speed_profile) {
+  const StateImpl::StateLock lock(mutex());
+  speed_profile_ = speed_profile;
+}
+
+const Speed& StateImpl::speed_profile() {
+  const StateImpl::StateLock lock(mutex());
+  return speed_profile_;
 }
 }  // namespace impl
 

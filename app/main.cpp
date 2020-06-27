@@ -9,54 +9,20 @@
 
 #include "machine.hpp"
 
-USE_NAMESPACE
-
-static int throw_message() {
-  std::cerr << "Failed to initialize machine, something is wrong" << std::endl;
-  return ATM_ERR;
-}
-
-static void status_button(const char* label, unsigned int status_id, bool active
-                          /* const std::function<void()>& callback */) {
-  ImGui::PushID(status_id);
-
-  if (active) {
-    // green
-    ImGui::PushStyleColor(ImGuiCol_Button,
-                          (ImVec4)ImColor::HSV(2 / 7.0f, 0.6f, 0.6f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                          (ImVec4)ImColor::HSV(2 / 7.0f, 0.7f, 0.7f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                          (ImVec4)ImColor::HSV(2 / 7.0f, 0.8f, 0.8f));
-  } else {
-    // red
-    ImGui::PushStyleColor(ImGuiCol_Button,
-                          (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                          (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                          (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-  }
-
-  // callback();
-  [[maybe_unused]] bool result = ImGui::Button(label, ImVec2(-FLT_MIN, 50.0f));
-  ImGui::PopStyleColor(3);
-  ImGui::PopID();
-}
-
-static void key_callback(GLFWwindow* window,
-                         int         key,
-                         int         scancode,
-                         int         action,
-                         int         mods) {
+static void key_callback(GLFWwindow*          current_window,
+                         int                  key,
+                         [[maybe_unused]] int scancode,
+                         int                  action,
+                         int                  mods) {
   if (mods == GLFW_MOD_ALT && key == GLFW_KEY_F4 && action == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, GL_TRUE);
+    glfwSetWindowShouldClose(current_window, GL_TRUE);
   } else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, GL_TRUE);
+    glfwSetWindowShouldClose(current_window, GL_TRUE);
   }
 }
 
 int main() {
+  USE_NAMESPACE;
   ATM_STATUS status = ATM_OK;
   // run state machine
   machine::tending tsm;
@@ -86,12 +52,9 @@ int main() {
 
   massert(window() != nullptr, "sanity");
 
-  auto* state = State::get();
-
   glfwSetKeyCallback(window(), key_callback);  // setup key callback
 
-  const ImGuiStyle& style = ImGui::GetStyle();
-  ImVec4            clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   while (!glfwWindowShouldClose(window())) {
     // Poll and handle events (inputs, window resize, etc.)

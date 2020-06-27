@@ -22,10 +22,12 @@ NAMESPACE_BEGIN
 // forward declaration
 struct Coordinate;
 struct TaskState;
+enum class Speed;
 namespace impl {
 class StateImpl;
 }
 
+/** impl::StateImpl singleton class using StaticObj */
 using State = StaticObj<impl::StateImpl>;
 
 using Point = double;
@@ -131,7 +133,7 @@ class StateImpl : public StackObj {
   /**
    * Set y-axis coordinate
    *
-   * @param x set new x-axis coordinate
+   * @param y set new y-axis coordinate
    */
   void y(const Point& y);
   /**
@@ -292,6 +294,16 @@ class StateImpl : public StackObj {
    * @return status of manual mode
    */
   bool manual_mode();
+  /**
+   * Set profile speed
+   */
+  void speed_profile(const Speed& speed_profile);
+  /**
+   * Get profile speed
+   *
+   * @return profile speed
+   */
+  const Speed& speed_profile();
 
  private:
   /**
@@ -317,6 +329,7 @@ class StateImpl : public StackObj {
   StateMutex& mutex();
 
  private:
+  Speed speed_profile_;
   /**
    * Latest path id
    */
@@ -343,8 +356,6 @@ class StateImpl : public StackObj {
   bool manual_mode_;
 };
 }  // namespace impl
-
-/** impl::StateImpl singleton class using StaticObj */
 
 NAMESPACE_END
 

@@ -8,6 +8,8 @@
  * enabled or not
  */
 
+#pragma GCC system_header
+
 #if defined(X_H)
 #undef None
 #endif

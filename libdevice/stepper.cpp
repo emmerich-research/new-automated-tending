@@ -17,13 +17,16 @@ StepperDevice::StepperDevice(PI_PIN        step_pin,
     : step_pin_{step_pin},
       dir_pin_{dir_pin},
       enable_pin_{enable_pin},
-      rpm_{rpm},
       step_device_{DigitalOutputDevice::create(step_pin)},
       dir_device_{DigitalOutputDevice::create(dir_pin)},
       enable_device_{
           DigitalOutputDevice::create(enable_pin, true, PI_PUD_DOWN)},
+      rpm_{rpm},
       motor_steps_{steps} {
   DEBUG_ONLY(obj_name_ = "StepperDevice");
+  massert(step_device()->active(), "sanity");
+  massert(dir_device()->active(), "sanity");
+
   /* Movement mechanism variables initialization */
   last_move_end_ = 0;
   next_move_interval_ = 0;
@@ -142,7 +145,7 @@ void StepperDeviceImpl<stepper::speed::linear>::start_move(long      steps,
   }
   // Initial pulse (c0) including error correction factor 0.676 [us]
   step_pulse_ = static_cast<stepper::pulse>(
-      (1e+6) * 0.676 * std::sqrt(2.0f / acceleration() / microsteps()));
+      (1e+6) * 0.676 * std::sqrt(2.0 / acceleration() / microsteps()));
   // Save cruise timing since we will no longer have the calculated target speed
   // later
   cruise_step_pulse_ = static_cast<stepper::pulse>(1e+6 / speed / microsteps());

@@ -1,5 +1,5 @@
-#ifndef LIB_DEVICE_DIGITAL_DIGITAL_HPP_
-#define LIB_DEVICE_DIGITAL_DIGITAL_HPP_
+#ifndef LIB_DEVICE_DIGITAL_HPP_
+#define LIB_DEVICE_DIGITAL_HPP_
 
 /** @file digital.hpp
  *  @brief Digital device class definition
@@ -96,7 +96,7 @@ class DigitalDevice : public StackObj {
    *
    * @return active status of GPIO pin
    */
-  bool active() const { return active_; }
+  inline bool active() const { return active_; }
   /**
    * Pull up at specified pin
    */
@@ -149,7 +149,13 @@ class DigitalDevice : public StackObj {
    *
    * @return gpio pin
    */
-  inline unsigned char pin() const { return pin_; }
+  // inline const PI_PIN& pin() const { return pin_; }
+  /**
+   * Get GPIO pin that has been initialized
+   *
+   * @return gpio pin
+   */
+  inline unsigned int pin() const { return static_cast<unsigned int>(pin_); }
   /**
    * Get current device mode of GPIO pin
    *
@@ -191,7 +197,7 @@ class DigitalDevice : public StackObj {
    *
    * @return string representation of device mode
    */
-  static inline constexpr char* get_mode(const digital::mode& mode) {
+  static inline constexpr const char* get_mode(const digital::mode& mode) {
     if (mode == digital::mode::input) {
       return "input";
     } else {
@@ -254,4 +260,4 @@ class DigitalDevice : public StackObj {
 
 NAMESPACE_END
 
-#endif  // LIB_DEVICE_DIGITAL_DIGITAL_HPP_
+#endif  // LIB_DEVICE_DIGITAL_HPP_
