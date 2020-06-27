@@ -203,53 +203,53 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
     return ATM_ERR;
   }
 
-  status = shift_register->assign(
-      id::comm::pi::tending_ready(),
-      config->pi_to_plc<byte>("tending-ready", "address"),
-      config->pi_to_plc<bool>("tending-ready", "active-state"));
-  if (status == ATM_ERR) {
-    return status;
-  }
+  // status = shift_register->assign(
+  //     id::comm::pi::tending_ready(),
+  //     config->pi_to_plc<byte>("tending-ready", "address"),
+  //     config->pi_to_plc<bool>("tending-ready", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return status;
+  // }
 
-  status = shift_register->assign(
-      id::comm::pi::spraying_ready(),
-      config->pi_to_plc<byte>("spraying-ready", "address"),
-      config->pi_to_plc<bool>("spraying-ready", "active-state"));
-  if (status == ATM_ERR) {
-    return status;
-  }
+  // status = shift_register->assign(
+  //     id::comm::pi::spraying_ready(),
+  //     config->pi_to_plc<byte>("spraying-ready", "address"),
+  //     config->pi_to_plc<bool>("spraying-ready", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return status;
+  // }
 
-  status = shift_register->assign(
-      id::comm::pi::tending_running(),
-      config->pi_to_plc<byte>("tending-running", "address"),
-      config->pi_to_plc<bool>("tending-running", "active-state"));
-  if (status == ATM_ERR) {
-    return status;
-  }
+  // status = shift_register->assign(
+  //     id::comm::pi::tending_running(),
+  //     config->pi_to_plc<byte>("tending-running", "address"),
+  //     config->pi_to_plc<bool>("tending-running", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return status;
+  // }
 
-  status = shift_register->assign(
-      id::comm::pi::spraying_running(),
-      config->pi_to_plc<byte>("spraying-running", "address"),
-      config->pi_to_plc<bool>("spraying-running", "active-state"));
-  if (status == ATM_ERR) {
-    return status;
-  }
+  // status = shift_register->assign(
+  //     id::comm::pi::spraying_running(),
+  //     config->pi_to_plc<byte>("spraying-running", "address"),
+  //     config->pi_to_plc<bool>("spraying-running", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return status;
+  // }
 
-  status = shift_register->assign(
-      id::comm::pi::tending_complete(),
-      config->pi_to_plc<byte>("tending-complete", "address"),
-      config->pi_to_plc<bool>("tending-complete", "active-state"));
-  if (status == ATM_ERR) {
-    return status;
-  }
+  // status = shift_register->assign(
+  //     id::comm::pi::tending_complete(),
+  //     config->pi_to_plc<byte>("tending-complete", "address"),
+  //     config->pi_to_plc<bool>("tending-complete", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return status;
+  // }
 
-  status = shift_register->assign(
-      id::comm::pi::spraying_complete(),
-      config->pi_to_plc<byte>("spraying-complete", "address"),
-      config->pi_to_plc<bool>("spraying-complete", "active-state"));
-  if (status == ATM_ERR) {
-    return status;
-  }
+  // status = shift_register->assign(
+  //     id::comm::pi::spraying_complete(),
+  //     config->pi_to_plc<byte>("spraying-complete", "address"),
+  //     config->pi_to_plc<bool>("spraying-complete", "active-state"));
+  // if (status == ATM_ERR) {
+  //   return status;
+  // }
 
   return status;
 }
