@@ -61,22 +61,23 @@ int main() {
                               8, 9, 10, 11, 12, 13, 14, 15};
 
   std::for_each(ids.begin(), ids.end(), [shift_register](const byte& id) {
-    shift_register->assign(std::to_string(id), id, false);
+    shift_register->assign(std::to_string(id), id, true);
+    shift_register->write(std::to_string(id), device::digital::value::low);
   });
 
   std::for_each(ids.begin(), ids.end(), [shift_register](const byte& id) {
     // turn on
     shift_register->write(std::to_string(id), device::digital::value::high);
-    sleep_for<time_units::millis>(1000);
+    sleep_for<time_units::millis>(100);
   });
 
-  LOG_INFO("Wait for 3 seconds");
-  sleep_for<time_units::millis>(3000);
+  LOG_INFO("Wait for 2 seconds");
+  sleep_for<time_units::millis>(2000);
 
   std::for_each(ids.begin(), ids.end(), [shift_register](const byte& id) {
     // turn off
     shift_register->write(std::to_string(id), device::digital::value::low);
-    sleep_for<time_units::millis>(1000);
+    sleep_for<time_units::millis>(100);
   });
 
   return status;

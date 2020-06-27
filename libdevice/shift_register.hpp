@@ -86,7 +86,7 @@ class ShiftRegisterDeviceImpl : public StackObj {
    *
    * Close the ShiftRegisterDeviceImpl that has been initialized
    */
-  virtual ~ShiftRegisterDeviceImpl() = default;
+  virtual ~ShiftRegisterDeviceImpl();
   /**
    * Get Latch DigitalOutputDevice that has been initialized
    *
@@ -162,23 +162,37 @@ class ShiftRegisterDeviceImpl : public StackObj {
    */
   bool active() const;
   /**
-   * Get bits
+   * Get bits with specified index
    *
-   * @return bits
+   * @param idx index of bits
+   *
+   * @return bits with specified index
    */
-  inline const byte& bits() const { return bits_; }
+  inline const byte& bits(unsigned int idx) const {
+    massert(idx >= 0 && idx < cascade_num, "sanity");
+    return bits_[idx];
+  }
   /**
-   * Get bits
+   * Get bits with specified index
    *
-   * @return bits
+   * @param idx index of bits
+   *
+   * @return bits with specified index
    */
-  inline byte& bits() { return bits_; }
+  inline byte& bits(unsigned int idx) {
+    massert(idx >= 0 && idx < cascade_num, "sanity");
+    return bits_[idx];
+  }
 
  protected:
   /**
    * Shift register cascade number
    */
-  static const PI_PIN cascade_num;
+  static const unsigned int cascade_num;
+  /**
+   * Shift register bits
+   */
+  static const unsigned int shift_bits;
   /**
    * Bit order
    */
@@ -208,9 +222,9 @@ class ShiftRegisterDeviceImpl : public StackObj {
    */
   const std::shared_ptr<DigitalOutputDevice> data_device_;
   /**
-   * Last bits
+   * Last bits of registers
    */
-  byte bits_;
+  byte* bits_;
 };
 
 /**

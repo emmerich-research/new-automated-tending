@@ -7,7 +7,8 @@ NAMESPACE_BEGIN
 namespace device {
 
 namespace impl {
-const PI_PIN ShiftRegisterDeviceImpl::cascade_num = 16;
+const unsigned int ShiftRegisterDeviceImpl::cascade_num = 2;
+const unsigned int ShiftRegisterDeviceImpl::shift_bits = 8;
 
 ShiftRegisterDeviceImpl::ShiftRegisterDeviceImpl(
     PI_PIN                    latch_pin,
@@ -26,23 +27,38 @@ ShiftRegisterDeviceImpl::ShiftRegisterDeviceImpl(
   massert(latch_device()->active(), "sanity");
   massert(clock_device()->active(), "sanity");
   massert(data_device()->active(), "sanity");
+
+  bits_ = new byte[cascade_num];
+}
+
+ShiftRegisterDeviceImpl::~ShiftRegisterDeviceImpl() {
+  delete bits_;
 }
 
 ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
                                           const digital::value& level) {
-  if (pin < 0 && pin >= ShiftRegisterDeviceImpl::cascade_num) {
+  if (pin < 0 && pin >= cascade_num) {
     return ATM_ERR;
   }
+
+  unsigned int reg = pin / shift_bits;
+
+  // Determines address for actual register
+  byte address = static_cast<byte>(pin - (shift_bits * reg));
 
   // turn off the output so the pins don't
   // light up while the bits are being shifted in
   latch_device()->write(digital::value::low);
 
-  // turn on the next highest bit in bits
-  bit_write(bits(), pin, level);
+  for (unsigned int idx = 0; idx < shift_bits; ++idx) {
+    if (reg == idx) {
+      // turn on the next highest bit in bits
+      bit_write(bits(idx), address, level);
+    }
 
-  // shift the bits out
-  shift_out(bits());
+    // shift the bits out
+    shift_out(bits(idx));
+  }
 
   // turn on the output
   latch_device()->write(digital::value::high);
@@ -51,7 +67,7 @@ ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
 }
 
 void ShiftRegisterDeviceImpl::shift_out(const byte& value) const {
-  for (unsigned int i = 0; i < ShiftRegisterDeviceImpl::cascade_num; i++) {
+  for (unsigned int i = 0; i < 8; i++) {
     if (order() == shift_register::bit_order::lsb) {
       data_device()->write(!!(value & (1 << i)) ? digital::value::high
                                                 : digital::value::low);
