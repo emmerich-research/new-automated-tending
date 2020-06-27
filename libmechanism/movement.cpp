@@ -136,20 +136,6 @@ Movement::Movement(const impl::MovementBuilderImpl* builder)
 
 Movement::~Movement() {}
 
-template <>
-long Movement::convert_length_to_steps<movement::unit::cm>(
-    double                       length,
-    const device::stepper::step& steps_per_mm) {
-  return static_cast<long>(length * steps_per_mm * 10.0);
-}
-
-template <>
-long Movement::convert_length_to_steps<movement::unit::mm>(
-    double                       length,
-    const device::stepper::step& steps_per_mm) {
-  return static_cast<long>(length * steps_per_mm);
-}
-
 void Movement::setup_stepper() {
   auto*  stepper_registry = device::StepperRegistry::get();
   auto&& stepper_x = stepper_registry->get(builder()->stepper_x_id());

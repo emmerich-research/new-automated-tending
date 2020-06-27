@@ -56,94 +56,89 @@ static int throw_message() {
 
 static void do_spraying() {
   massert(Config::get() != nullptr, "sanity");
-  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
-  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  // auto* config = Config::get();
-  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
-  // auto* input_registry = device::DigitalInputDeviceRegistry::get();
-
+  auto*  shift_register = device::ShiftRegister::get();
   auto&& movement = mechanism::movement_mechanism();
 
-  auto&& spraying_ready =
-      output_registry->get(device::id::comm::pi::spraying_ready());
-  auto&& spraying_running =
-      output_registry->get(device::id::comm::pi::spraying_running());
-  auto&& spraying_complete =
-      output_registry->get(device::id::comm::pi::spraying_complete());
-
-  auto&& spray = output_registry->get(device::id::spray());
-  spraying_ready->write(device::digital::value::low);
-  spraying_running->write(device::digital::value::low);
-  spraying_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_ready(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_complete(),
+                        device::digital::value::low);
 
   movement->homing();
 
-  spraying_ready->write(device::digital::value::high);
-  spraying_running->write(device::digital::value::low);
-  spraying_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_ready(),
+                        device::digital::value::high);
+  shift_register->write(device::id::comm::pi::spraying_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_complete(),
+                        device::digital::value::low);
 
   sleep_for<time_units::millis>(3000);
-
-  spraying_running->write(device::digital::value::high);
+  shift_register->write(device::id::comm::pi::spraying_running(),
+                        device::digital::value::high);
 
   movement->move_to_spraying_position();
 
   sleep_for<time_units::millis>(3000);
 
-  spray->write(device::digital::value::high);
+  shift_register->write(device::id::spray(), device::digital::value::high);
 
   sleep_for<time_units::millis>(3000);
 
   movement->follow_spraying_paths();
 
-  spray->write(device::digital::value::low);
+  shift_register->write(device::id::spray(), device::digital::value::low);
 
   movement->homing();
 
-  spraying_ready->write(device::digital::value::high);
-  spraying_running->write(device::digital::value::low);
-  spraying_complete->write(device::digital::value::high);
+  shift_register->write(device::id::comm::pi::spraying_ready(),
+                        device::digital::value::high);
+  shift_register->write(device::id::comm::pi::spraying_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_complete(),
+                        device::digital::value::high);
 }
 
 static void do_tending() {
   massert(Config::get() != nullptr, "sanity");
-  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
-  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
   massert(device::PWMDeviceRegistry::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto* config = Config::get();
-  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
-  auto* pwm_registry = device::PWMDeviceRegistry::get();
-
+  auto*  config = Config::get();
+  auto*  shift_register = device::ShiftRegister::get();
+  auto*  pwm_registry = device::PWMDeviceRegistry::get();
   auto&& movement = mechanism::movement_mechanism();
-
-  auto&& tending_ready =
-      output_registry->get(device::id::comm::pi::tending_ready());
-  auto&& tending_running =
-      output_registry->get(device::id::comm::pi::tending_running());
-  auto&& tending_complete =
-      output_registry->get(device::id::comm::pi::tending_complete());
-
   auto&& finger = pwm_registry->get(device::id::finger());
 
-  tending_ready->write(device::digital::value::low);
-  tending_running->write(device::digital::value::low);
-  tending_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_ready(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::low);
 
   movement->homing();
 
-  tending_ready->write(device::digital::value::high);
-  tending_running->write(device::digital::value::low);
-  tending_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_ready(),
+                        device::digital::value::high);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::low);
 
   sleep_for<time_units::millis>(3000);
 
-  tending_running->write(device::digital::value::high);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::high);
+
   movement->move_to_tending_position();
   sleep_for<time_units::millis>(3000);
   movement->move_finger_down();
@@ -164,63 +159,50 @@ static void do_tending() {
   }
   movement->homing();
 
-  tending_ready->write(device::digital::value::high);
-  tending_running->write(device::digital::value::low);
-  tending_complete->write(device::digital::value::high);
+  shift_register->write(device::id::comm::pi::tending_ready(),
+                        device::digital::value::high);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::high);
 }
 
 static bool menu() {
   massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
+  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
+  massert(device::StepperRegistry::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto* config = Config::get();
-  massert(config != nullptr, "sanity");
-
-  auto* state = State::get();
-  massert(state != nullptr, "sanity");
-
-  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
-  massert(output_registry != nullptr, "sanity");
-
-  auto* stepper_registry = device::StepperRegistry::get();
-  massert(stepper_registry != nullptr, "sanity");
-
-  auto* input_registry = device::DigitalInputDeviceRegistry::get();
-  massert(input_registry != nullptr, "sanity");
-
+  auto*  state = State::get();
+  auto*  shift_register = device::ShiftRegister::get();
+  auto*  stepper_registry = device::StepperRegistry::get();
+  auto*  input_registry = device::DigitalInputDeviceRegistry::get();
   auto&& movement = mechanism::movement_mechanism();
-
-  auto&& spraying_ready =
-      output_registry->get(device::id::comm::pi::spraying_ready());
-  auto&& spraying_running =
-      output_registry->get(device::id::comm::pi::spraying_running());
-  auto&& spraying_complete =
-      output_registry->get(device::id::comm::pi::spraying_complete());
-
-  auto&& tending_ready =
-      output_registry->get(device::id::comm::pi::tending_ready());
-  auto&& tending_running =
-      output_registry->get(device::id::comm::pi::tending_running());
-  auto&& tending_complete =
-      output_registry->get(device::id::comm::pi::tending_complete());
-
-  auto&& spray = output_registry->get(device::id::spray());
 
   auto&& spraying_tending_height =
       input_registry->get(device::id::comm::plc::spraying_tending_height());
   auto&& cleaning_height =
       input_registry->get(device::id::comm::plc::cleaning_height());
 
-  spraying_ready->write(device::digital::value::low);
-  spraying_running->write(device::digital::value::low);
-  spraying_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_ready(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::spraying_complete(),
+                        device::digital::value::low);
 
-  tending_ready->write(device::digital::value::low);
-  tending_running->write(device::digital::value::low);
-  tending_complete->write(device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_ready(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::low);
 
-  spray->write(device::digital::value::low);
+  shift_register->write(device::id::spray(), device::digital::value::low);
 
   LOG_INFO("----MENU-----");
   LOG_INFO("1. Spraying and Tending with trigger");
@@ -229,7 +211,6 @@ static bool menu() {
   LOG_INFO("4. Just X");
   LOG_INFO("5. Just Y");
   LOG_INFO("6. Just Z");
-  // LOG_INFO("7. X and Y");
   LOG_INFO("7. Spraying and Tending trigger");
   LOG_INFO("8. Move X with specified distance (in mm, can be negative)");
   LOG_INFO("9. Move Y with specified distance (in mm, can be negative)");

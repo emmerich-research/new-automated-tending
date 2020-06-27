@@ -149,7 +149,13 @@ class DigitalDevice : public StackObj {
    *
    * @return gpio pin
    */
-  inline const PI_PIN& pin() const { return pin_; }
+  // inline const PI_PIN& pin() const { return pin_; }
+  /**
+   * Get GPIO pin that has been initialized
+   *
+   * @return gpio pin
+   */
+  inline unsigned int pin() const { return static_cast<unsigned int>(pin_); }
   /**
    * Get current device mode of GPIO pin
    *

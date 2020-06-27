@@ -15,9 +15,6 @@ USE_NAMESPACE;
 static ATM_STATUS init();
 static int        throw_message();
 
-// global variables
-bool stop = false;
-
 static ATM_STATUS init() {
   ATM_STATUS status = ATM_OK;
 
@@ -50,12 +47,6 @@ int main() {
   }
 
   auto* shift_register = device::ShiftRegister::get();
-  // std::array<std::string, 6> ids{device::id::comm::pi::tending_ready(),
-  //                                device::id::comm::pi::spraying_ready(),
-  //                                device::id::comm::pi::tending_running(),
-  //                                device::id::comm::pi::spraying_running(),
-  //                                device::id::comm::pi::tending_complete(),
-  //                                device::id::comm::pi::spraying_complete()};
 
   std::array<byte, 16> ids = {0, 1, 2,  3,  4,  5,  6,  7,
                               8, 9, 10, 11, 12, 13, 14, 15};

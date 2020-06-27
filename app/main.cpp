@@ -9,8 +9,6 @@
 
 #include "machine.hpp"
 
-USE_NAMESPACE;
-
 static void key_callback(GLFWwindow*          current_window,
                          int                  key,
                          [[maybe_unused]] int scancode,
@@ -24,6 +22,7 @@ static void key_callback(GLFWwindow*          current_window,
 }
 
 int main() {
+  USE_NAMESPACE;
   ATM_STATUS status = ATM_OK;
   // run state machine
   machine::tending tsm;
