@@ -168,7 +168,7 @@ class ShiftRegisterDeviceImpl : public StackObj {
    * @return bits with specified index
    */
   inline const byte& bits(unsigned int idx) const {
-    massert(idx >= 0 && idx < cascade_num, "sanity");
+    massert(idx < cascade_num, "sanity");
     return bits_[idx];
   }
   /**
@@ -179,7 +179,7 @@ class ShiftRegisterDeviceImpl : public StackObj {
    * @return bits with specified index
    */
   inline byte& bits(unsigned int idx) {
-    massert(idx >= 0 && idx < cascade_num, "sanity");
+    massert(idx < cascade_num, "sanity");
     return bits_[idx];
   }
   /**
