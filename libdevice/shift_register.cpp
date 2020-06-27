@@ -50,7 +50,7 @@ ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
   // light up while the bits are being shifted in
   latch_device()->write(digital::value::low);
 
-  for (unsigned int idx = 0; idx < shift_bits; ++idx) {
+  for (unsigned int idx = 0; idx < cascade_num; ++idx) {
     if (reg == idx) {
       // turn on the next highest bit in bits
       bit_write(bits(idx), address, level);
