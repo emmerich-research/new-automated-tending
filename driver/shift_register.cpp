@@ -1,7 +1,5 @@
 #include <algorithm>
 #include <array>
-#include <csignal>
-#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -13,6 +11,7 @@ USE_NAMESPACE;
 
 // forward declarations
 static ATM_STATUS init();
+static void       shutdown_hook();
 static int        throw_message();
 
 static ATM_STATUS init() {
@@ -31,6 +30,13 @@ static ATM_STATUS init() {
   }
 
   return status;
+}
+
+static void shutdown_hook() {
+  std::cout << "Shutting down..." << std::endl;
+  destroy_device();
+  destroy_core();
+  std::cout << "Shutting down is completed!" << std::endl;
 }
 
 static int throw_message() {
@@ -70,6 +76,8 @@ int main() {
     shift_register->write(std::to_string(id), device::digital::value::low);
     sleep_for<time_units::millis>(100);
   });
+
+  shutdown_hook();
 
   return status;
 }

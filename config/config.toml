@@ -271,12 +271,14 @@ active-state                 = false
 [devices.ultrasonic]
 
 [devices.ultrasonic.water-level]
+key                          = "ULTRASONIC-WATER-LEVEL"
 trigger-pin                  = 24
 trigger-active-state         = true
 echo-pin                     = 25
 echo-active-state            = true
 
 [devices.ultrasonic.disinfectant-level]
+key                          = "ULTRASONIC-DISINFECTANT-LEVEL"
 trigger-pin                  = 20
 trigger-active-state         = true
 echo-pin                     = 21

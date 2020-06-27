@@ -10,10 +10,21 @@
 using time_unit = uint64_t;
 
 enum class time_units {
+  seconds,
   millis,
   micros,
   nanos,
 };
+
+/**
+ * @brief Get time stamp in seconds.
+ *
+ * taken from https://stackoverflow.com/a/49066369/6808347 <br />
+ * credits to Gabriel Staples <br />
+ *
+ * @return time stamp in seconds
+ */
+time_unit seconds(void);
 
 /**
  * @brief Get time stamp in milliseconds.
@@ -21,7 +32,7 @@ enum class time_units {
  * taken from https://stackoverflow.com/a/49066369/6808347 <br />
  * credits to Gabriel Staples <br />
  *
- * @return time stamp in microseconds
+ * @return time stamp in milliseconds
  */
 time_unit millis(void);
 
