@@ -57,6 +57,8 @@ class InstanceRegistryImpl : public StackObj {
    *
    * @param  id    unique identifier of instance
    * @param  args  arguments to pass to constructor of U
+   *
+   * @return status ATM_ERR or ATM_OK
    */
   template <typename U = T,
             typename... Args,

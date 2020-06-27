@@ -426,6 +426,20 @@ class ConfigImpl : public StackObj {
                    std::forward<Keys>(keys)...);
   }
   /**
+   * Get shift register device configuration
+   *
+   * It should be in key "devices.shift-register"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return shift register device configuration
+   */
+  template <typename T, typename... Keys>
+  inline T shift_register(Keys&&... keys) const {
+    return find<T>("devices", "shift-register", std::forward<Keys>(keys)...);
+  }
+  /**
    * Get communication device from PLC to RaspberryPI
    *
    * It should be in key "devices.plc-to-pi"
@@ -451,8 +465,7 @@ class ConfigImpl : public StackObj {
    */
   template <typename T, typename... Keys>
   inline T pi_to_plc(Keys&&... keys) const {
-    return find<T>("devices", "shift-register", "pi-to-plc",
-                   std::forward<Keys>(keys)...);
+    return shift_register<T>("pi-to-plc", std::forward<Keys>(keys)...);
   }
 
  private:

@@ -185,6 +185,9 @@ disinfectant-level-pin       = 2
 
 # shift register
 [devices.shift-register]
+latch-pin                    = 12
+clock-pin                    = 13
+data-pin                     = 14
 
 [devices.shift-register.pi-to-plc]
 # communication from RaspberryPI to PLC

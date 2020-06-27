@@ -96,7 +96,7 @@ class DigitalDevice : public StackObj {
    *
    * @return active status of GPIO pin
    */
-  bool active() const { return active_; }
+  inline bool active() const { return active_; }
   /**
    * Pull up at specified pin
    */

@@ -72,6 +72,12 @@ static const int ATM_OK  = 0;
  */
 static const int ATM_ERR = -1;
 
+/**
+ * @var using byte = unsigned char
+ * @brief Type definition for byte
+ */
+using byte = unsigned char;
+
 static const char* PROJECT_CONFIG_DIR  = "@PROJECT_CONFIG_DIR@";
 static const char* PROJECT_CONFIG_FILE = "@PROJECT_CONFIG_FILE@";
 static const char* PROJECT_STATE_FILE  = "@PROJECT_STATE_FILE@";

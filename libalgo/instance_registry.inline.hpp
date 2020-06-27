@@ -21,8 +21,8 @@ template <typename T>
 template <typename U, typename... Args, typename>
 inline ATM_STATUS InstanceRegistryImpl<T>::create(const std::string& id,
                                                   Args&&... args) {
-  massert(container_.count(id) == 0, "instance id is not unique");
-  if (container_.count(id) == 1) {
+  massert(container_.count(id) == 0, "instance id must be unique");
+  if (container_.count(id) > 0) {
     return ATM_ERR;
   }
   LOG_DEBUG("InstanceRegistryImpl::create instance with key {}", id);

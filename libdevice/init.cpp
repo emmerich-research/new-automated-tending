@@ -12,16 +12,31 @@
 #include "A4988.hpp"
 #include "PCF8591.hpp"
 
+#include "shift_register.hpp"
+
 NAMESPACE_BEGIN
 
 using namespace device;
+
+// NOTE: Early stopping is a must in here
+
+// forward declarations
+static ATM_STATUS initialize_analog_devices();
+static ATM_STATUS initialize_plc_to_pi_comm();
+static ATM_STATUS initialize_limit_switches();
+static ATM_STATUS initialize_input_digital_devices();
+static ATM_STATUS initialize_output_digital_devices();
+static ATM_STATUS initialize_pi_to_plc_comm();
+static ATM_STATUS initialize_shift_register_devices();
+static ATM_STATUS initialize_pwm_devices();
+static ATM_STATUS initialize_stepper_devices();
 
 static ATM_STATUS initialize_analog_devices() {
   ATM_STATUS status = ATM_OK;
 
   status = PCF8591Device::create();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   auto* analog_device = PCF8591Device::get();
@@ -29,12 +44,6 @@ static ATM_STATUS initialize_analog_devices() {
   if (analog_device == nullptr) {
     return ATM_ERR;
   }
-
-  // status =
-  // analog_device_registry->create<analog::PCF8591Device>(id::analog());
-  // if (status == ATM_ERR) {
-  //   return ATM_ERR;
-  // }
 
   return status;
 }
@@ -51,7 +60,7 @@ static ATM_STATUS initialize_plc_to_pi_comm() {
       config->plc_to_pi<bool>("spraying-tending-height", "active-state"),
       PI_PUD_DOWN);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = digital_input_registry->create(
@@ -59,21 +68,21 @@ static ATM_STATUS initialize_plc_to_pi_comm() {
       config->plc_to_pi<PI_PIN>("cleaning-height", "pin"),
       config->plc_to_pi<bool>("cleaning-height", "active-state"), PI_PUD_DOWN);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = digital_input_registry->create(
       id::comm::plc::reset(), config->plc_to_pi<PI_PIN>("reset", "pin"),
       config->plc_to_pi<bool>("reset", "active-state"), PI_PUD_DOWN);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = digital_input_registry->create(
       id::comm::plc::e_stop(), config->plc_to_pi<PI_PIN>("e-stop", "pin"),
       config->plc_to_pi<bool>("e-stop", "active-state"), PI_PUD_DOWN);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   return status;
@@ -90,28 +99,28 @@ static ATM_STATUS initialize_limit_switches() {
       id::limit_switch::x(), config->limit_switch_x<PI_PIN>("pin"),
       config->limit_switch_x<bool>("active-state"), PI_PUD_UP);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = digital_input_registry->create(
       id::limit_switch::y(), config->limit_switch_y<PI_PIN>("pin"),
       config->limit_switch_y<bool>("active-state"), PI_PUD_UP);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = digital_input_registry->create(
       id::limit_switch::z1(), config->limit_switch_z1<PI_PIN>("pin"),
       config->limit_switch_z1<bool>("active-state"), PI_PUD_UP);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = digital_input_registry->create(
       id::limit_switch::z2(), config->limit_switch_z2<PI_PIN>("pin"),
       config->limit_switch_z2<bool>("active-state"), PI_PUD_UP);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   return status;
@@ -123,17 +132,17 @@ static ATM_STATUS initialize_input_digital_devices() {
 
   status = DigitalInputDeviceRegistry::create();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = initialize_limit_switches();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = initialize_plc_to_pi_comm();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   /**
@@ -144,65 +153,8 @@ static ATM_STATUS initialize_input_digital_devices() {
       id::anomaly(), config->anomaly<PI_PIN>("pin"),
       config->anomaly<bool>("active-state"), PI_PUD_DOWN);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
-
-  return status;
-}
-
-static ATM_STATUS initialize_pi_to_plc_comm() {
-  auto*      config = Config::get();
-  ATM_STATUS status = ATM_OK;
-
-  auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
-
-  // status = digital_output_registry->create(
-  //     id::comm::pi::tending_ready(),
-  //     config->pi_to_plc<PI_PIN>("tending-ready", "pin"),
-  //     config->pi_to_plc<bool>("tending-ready", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return ATM_ERR;
-  // }
-
-  // status = digital_output_registry->create(
-  //     id::comm::pi::spraying_ready(),
-  //     config->pi_to_plc<PI_PIN>("spraying-ready", "pin"),
-  //     config->pi_to_plc<bool>("spraying-ready", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return ATM_ERR;
-  // }
-
-  // status = digital_output_registry->create(
-  //     id::comm::pi::tending_running(),
-  //     config->pi_to_plc<PI_PIN>("tending-running", "pin"),
-  //     config->pi_to_plc<bool>("tending-running", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return ATM_ERR;
-  // }
-
-  // status = digital_output_registry->create(
-  //     id::comm::pi::spraying_running(),
-  //     config->pi_to_plc<PI_PIN>("spraying-running", "pin"),
-  //     config->pi_to_plc<bool>("spraying-running", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return ATM_ERR;
-  // }
-
-  // status = digital_output_registry->create(
-  //     id::comm::pi::tending_complete(),
-  //     config->pi_to_plc<PI_PIN>("tending-complete", "pin"),
-  //     config->pi_to_plc<bool>("tending-complete", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return ATM_ERR;
-  // }
-
-  // status = digital_output_registry->create(
-  //     id::comm::pi::spraying_complete(),
-  //     config->pi_to_plc<PI_PIN>("spraying-complete", "pin"),
-  //     config->pi_to_plc<bool>("spraying-complete", "active-state"));
-  // if (status == ATM_ERR) {
-  //   return ATM_ERR;
-  // }
 
   return status;
 }
@@ -213,7 +165,7 @@ static ATM_STATUS initialize_output_digital_devices() {
 
   status = DigitalOutputDeviceRegistry::create();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
@@ -222,16 +174,11 @@ static ATM_STATUS initialize_output_digital_devices() {
       id::spray(), config->spray<PI_PIN>("pin"),
       config->spray<bool>("active-state"), PI_PUD_UP);
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   auto&& spray = digital_output_registry->get(id::spray());
   spray->write(device::digital::value::low);
-
-  status = initialize_pi_to_plc_comm();
-  if (status == ATM_ERR) {
-    return ATM_ERR;
-  }
 
   /**
    * Anomaly with Pin 18 BCM
@@ -246,13 +193,93 @@ static ATM_STATUS initialize_output_digital_devices() {
   return status;
 }
 
+static ATM_STATUS initialize_pi_to_plc_comm() {
+  auto*      config = Config::get();
+  ATM_STATUS status = ATM_OK;
+
+  auto* shift_register = ShiftRegister::get();
+
+  if (shift_register == nullptr) {
+    return ATM_ERR;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::tending_ready(),
+      config->pi_to_plc<byte>("tending-ready", "address"),
+      config->pi_to_plc<bool>("tending-ready", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::spraying_ready(),
+      config->pi_to_plc<byte>("spraying-ready", "address"),
+      config->pi_to_plc<bool>("spraying-ready", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::tending_running(),
+      config->pi_to_plc<byte>("tending-running", "address"),
+      config->pi_to_plc<bool>("tending-running", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::spraying_running(),
+      config->pi_to_plc<byte>("spraying-running", "address"),
+      config->pi_to_plc<bool>("spraying-running", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::tending_complete(),
+      config->pi_to_plc<byte>("tending-complete", "address"),
+      config->pi_to_plc<bool>("tending-complete", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = shift_register->assign(
+      id::comm::pi::spraying_complete(),
+      config->pi_to_plc<byte>("spraying-complete", "address"),
+      config->pi_to_plc<bool>("spraying-complete", "active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  return status;
+}
+
+static ATM_STATUS initialize_shift_register_devices() {
+  auto*      config = Config::get();
+  ATM_STATUS status = ATM_OK;
+
+  status = ShiftRegister::create(config->shift_register<PI_PIN>("latch-pin"),
+                                 config->shift_register<PI_PIN>("clock-pin"),
+                                 config->shift_register<PI_PIN>("data-pin"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = initialize_pi_to_plc_comm();
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  return status;
+}
+
 static ATM_STATUS initialize_pwm_devices() {
   auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
 
   status = PWMDeviceRegistry::create();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   auto* pwm_registry = PWMDeviceRegistry::get();
@@ -260,7 +287,7 @@ static ATM_STATUS initialize_pwm_devices() {
   status = pwm_registry->create(id::finger(), config->finger<PI_PIN>("pin"),
                                 config->finger<bool>("active-state"));
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   auto&& finger = pwm_registry->get(id::finger());
@@ -278,7 +305,7 @@ static ATM_STATUS initialize_stepper_devices() {
 
   status = StepperRegistry::create();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   auto* stepper_registry = StepperRegistry::get();
@@ -288,7 +315,7 @@ static ATM_STATUS initialize_stepper_devices() {
       config->stepper_x<PI_PIN>("dir-pin"),
       config->stepper_x<PI_PIN>("enable-pin"));
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = stepper_registry->create<LinearSpeedA4988Device>(
@@ -296,7 +323,7 @@ static ATM_STATUS initialize_stepper_devices() {
       config->stepper_y<PI_PIN>("dir-pin"),
       config->stepper_y<PI_PIN>("enable-pin"));
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   status = stepper_registry->create<LinearSpeedA4988Device>(
@@ -304,7 +331,7 @@ static ATM_STATUS initialize_stepper_devices() {
       config->stepper_z<PI_PIN>("dir-pin"),
       config->stepper_z<PI_PIN>("enable-pin"));
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   // set additional configurations
@@ -351,34 +378,40 @@ ATM_STATUS initialize_device() {
   LOG_INFO("Initializing analog devices...");
   status = initialize_analog_devices();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   LOG_INFO("Initializing input digital devices...");
   status = initialize_input_digital_devices();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   LOG_INFO("Initializing output digital devices...");
   status = initialize_output_digital_devices();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
+  }
+
+  LOG_INFO("Initializing shift register-connected devices...");
+  status = initialize_shift_register_devices();
+  if (status == ATM_ERR) {
+    return status;
   }
 
   LOG_INFO("Initializing pwm devices...");
   status = initialize_pwm_devices();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
   LOG_INFO("Initializing stepper devices...");
   status = initialize_stepper_devices();
   if (status == ATM_ERR) {
-    return ATM_ERR;
+    return status;
   }
 
-  return ATM_OK;
+  return status;
 }
 
 void destroy_device() {
