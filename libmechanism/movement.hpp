@@ -222,7 +222,7 @@ class MovementBuilderImpl : public StackObj {
    *
    * Will destroy all the spdlog logger instances
    */
-  ~MovementBuilderImpl() = default;
+  ~MovementBuilderImpl();
 
  private:
   /**
@@ -404,7 +404,7 @@ class Movement : public StackObj {
    *
    * Clean up movement mechanism
    */
-  virtual ~Movement() = default;
+  ~Movement();
   /**
    * Convert steps_per_mm to specified length
    *

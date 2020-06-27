@@ -76,6 +76,15 @@ using ConstantSpeedStepperDevice =
 using LinearSpeedStepperDevice =
     impl::StepperDeviceImpl<stepper::speed::linear>;
 
+/**
+ * @brief Stepper Device implementation.
+ *
+ * Stepper Device implementation using multiple
+ * device::DigitalOutputDevice
+ *
+ * @author Ray Andrew
+ * @date   May 2020
+ */
 class StepperDevice : public StackObj {
  public:
   /**
@@ -495,7 +504,7 @@ class StepperDeviceImpl : public StepperDevice {
    *
    * Close the StepperDeviceImpl that has been initialized
    */
-  virtual ~StepperDeviceImpl() = default;
+  virtual ~StepperDeviceImpl() override = default;
   /**
    * Get step pulse
    */

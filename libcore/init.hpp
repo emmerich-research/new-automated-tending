@@ -23,8 +23,6 @@ ATM_STATUS initialize_core();
 
 /**
  * Destroy core
- *
- * @return void
  */
 void destroy_core();
 

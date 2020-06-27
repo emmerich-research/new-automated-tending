@@ -12,6 +12,8 @@ PWMDevice::PWMDevice(unsigned char pin, const bool& active_state)
   LOG_DEBUG("Initializing PWMDevice using GPIO with pin {}", pin);
 }
 
+PWMDevice::~PWMDevice() {}
+
 ATM_STATUS PWMDevice::duty_cycle(unsigned int duty_cycle) {
   PI_RES res = gpioPWM(pin(), duty_cycle);
 

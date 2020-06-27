@@ -12,8 +12,7 @@
 NAMESPACE_BEGIN
 
 namespace impl {
-LoggerImpl::LoggerImpl(const impl::ConfigImpl* config)
-    : name_(std::move(config->name())) {
+LoggerImpl::LoggerImpl(const impl::ConfigImpl* config) : name_{config->name()} {
   DEBUG_ONLY(obj_name_ = "LoggerImpl");
 
   spdlog::init_thread_pool(8192, 1);

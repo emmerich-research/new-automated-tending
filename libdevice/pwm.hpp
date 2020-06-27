@@ -116,7 +116,7 @@ class PWMDevice : public DigitalOutputDevice {
    *
    * Close the pwm device that has been initialized
    */
-  ~PWMDevice() = default;
+  virtual ~PWMDevice() override;
 };
 }  // namespace device
 

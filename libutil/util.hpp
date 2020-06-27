@@ -8,6 +8,10 @@
  * enabled or not
  */
 
+#pragma GCC system_header
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wweak-vtables"
+
 // 1. STL
 #include <chrono>
 #include <cstdlib>
@@ -24,5 +28,7 @@
 #include "macros.hpp"
 #include "pair.hpp"
 #include "timer.hpp"
+
+#pragma GCC diagnostic pop
 
 #endif  // LIBUTIL_UTIL_HPP_

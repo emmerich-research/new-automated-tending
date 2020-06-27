@@ -7,6 +7,17 @@ NAMESPACE_BEGIN
 
 namespace mechanism {
 template <movement::unit Unit>
+long Movement::convert_length_to_steps(
+    double                       length,
+    const device::stepper::step& steps_per_mm) {
+  if (Unit == movement::unit::cm) {
+    return static_cast<long>(length * steps_per_mm * 10.0);
+  } else {
+    return static_cast<long>(length * steps_per_mm);
+  }
+}
+
+template <movement::unit Unit>
 void Movement::move(Point x, Point y, Point z) {
   if (ready()) {
     // enabling motor

@@ -1,8 +1,10 @@
 project(core)
 
 configure_file(common.hpp.in common.hpp @ONLY)
+configure_file(common.cpp.in common.cpp @ONLY)
 
 ucm_add_files(
+  "${CMAKE_CURRENT_BINARY_DIR}/common.cpp"
   "init.cpp"
   "config.cpp"
   "logger.cpp"

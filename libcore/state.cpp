@@ -1,5 +1,6 @@
 #include "core.hpp"
 
+#include "config.hpp"
 #include "state.hpp"
 
 NAMESPACE_BEGIN
@@ -8,8 +9,8 @@ namespace impl {
 StateImpl::StateImpl()
     : path_id_{0},
       coordinate_{0.0, 0.0, 0.0},
-      spraying_{},
       tending_{},
+      spraying_{},
       manual_mode_{false} {
   DEBUG_ONLY(obj_name_ = "StateImpl");
 }

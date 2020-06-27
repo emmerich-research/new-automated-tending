@@ -27,21 +27,6 @@ struct SpeedConfig;
 struct MechanismSpeedProfile;
 struct SpeedProfile;
 
-NAMESPACE_END;
-
-namespace toml {
-template <>
-struct from<ns(SpeedConfig)>;
-
-template <>
-struct from<ns(MechanismSpeedProfile)>;
-
-template <>
-struct from<ns(SpeedProfile)>;
-}  // namespace toml
-
-NAMESPACE_BEGIN
-
 namespace impl {
 class ConfigImpl;
 }
@@ -123,7 +108,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Fault mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return fault speed profile
    */
@@ -140,7 +125,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Homing mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return homing speed profile
    */
@@ -157,7 +142,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Spraying mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return spraying speed profile
    */
@@ -174,7 +159,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Tending mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return spraying speed profile
    */
@@ -191,7 +176,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Cleaning mechanism
    *
-   * @tparam Speed type of speed
+   * @tparam speed type of speed
    *
    * @return cleaning speed profile
    */
@@ -378,36 +363,6 @@ class ConfigImpl : public StackObj {
    */
   const path_container& spraying_path();
   /**
-   * Get stepper x-axis info for spraying mechanism
-   *
-   * It should be in key "devices.communication.spraying.stepper.x"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return stepper x-axis info for spraying mechanism
-   */
-  template <typename T, typename... Keys>
-  inline T spraying_stepper_x(Keys&&... keys) const {
-    return find<T>("mechanisms", "spraying", "stepper", "x",
-                   std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get stepper y-axis info for spraying mechanism
-   *
-   * It should be in key "devices.communication.spraying.stepper.y"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return stepper y-axis info for spraying mechanism
-   */
-  template <typename T, typename... Keys>
-  inline T spraying_stepper_y(Keys&&... keys) const {
-    return find<T>("mechanisms", "spraying", "stepper", "y",
-                   std::forward<Keys>(keys)...);
-  }
-  /**
    * Get spraying movement path coordinate at specified index
    *
    * @param idx index to get
@@ -456,39 +411,9 @@ class ConfigImpl : public StackObj {
    */
   const coordinate& tending_path_zigzag(size_t idx);
   /**
-   * Get stepper x-axis info for tending mechanism
-   *
-   * It should be in key "devices.communication.tending.stepper.x"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return stepper x-axis info for tending mechanism
-   */
-  template <typename T, typename... Keys>
-  inline T tending_stepper_x(Keys&&... keys) const {
-    return find<T>("mechanisms", "tending", "stepper", "x",
-                   std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get stepper y-axis info for tending mechanism
-   *
-   * It should be in key "devices.communication.tending.stepper.y"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return stepper y-axis info for tending mechanism
-   */
-  template <typename T, typename... Keys>
-  inline T tending_stepper_y(Keys&&... keys) const {
-    return find<T>("mechanisms", "tending", "stepper", "y",
-                   std::forward<Keys>(keys)...);
-  }
-  /**
    * Get mechanisms fault manual mode movement
    *
-   * It should be in key "mechanisms.fault.manual-mode.movement"
+   * It should be in key "mechanisms.fault.manual.movement"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
@@ -497,13 +422,27 @@ class ConfigImpl : public StackObj {
    */
   template <typename T, typename... Keys>
   inline T fault_manual_movement(Keys&&... keys) const {
-    return find<T>("mechanisms", "fault", "manual-mode", "movement",
+    return find<T>("mechanisms", "fault", "manual", "movement",
                    std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get shift register device configuration
+   *
+   * It should be in key "devices.shift-register"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return shift register device configuration
+   */
+  template <typename T, typename... Keys>
+  inline T shift_register(Keys&&... keys) const {
+    return find<T>("devices", "shift-register", std::forward<Keys>(keys)...);
   }
   /**
    * Get communication device from PLC to RaspberryPI
    *
-   * It should be in key "devices.communication.input"
+   * It should be in key "devices.plc-to-pi"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
@@ -512,24 +451,22 @@ class ConfigImpl : public StackObj {
    */
   template <typename T, typename... Keys>
   inline T plc_to_pi(Keys&&... keys) const {
-    return find<T>("devices", "communication", "input",
-                   std::forward<Keys>(keys)...);
+    return find<T>("devices", "plc-to-pi", std::forward<Keys>(keys)...);
   }
   /**
    * Get communication device from RaspberryPI to PLC
    *
-   * It should be in key "devices.communication.output"
+   * It should be in key "devices.shift-register.pi-to-plc"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
    *
    * @return communication device info from RaspberryPI to PLC with type T
    */
-  template <typename T, typename... Keys>
-  inline T pi_to_plc(Keys&&... keys) const {
-    return find<T>("devices", "communication", "output",
-                   std::forward<Keys>(keys)...);
-  }
+  // template <typename T, typename... Keys>
+  // inline T pi_to_plc(Keys&&... keys) const {
+  //   return shift_register<T>("pi-to-plc", std::forward<Keys>(keys)...);
+  // }
 
  private:
   /**

@@ -8,6 +8,8 @@
  * enabled or not
  */
 
+#pragma GCC system_header
+
 // 1. STL
 #include <cstddef>
 #include <cstdlib>

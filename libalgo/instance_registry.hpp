@@ -57,6 +57,8 @@ class InstanceRegistryImpl : public StackObj {
    *
    * @param  id    unique identifier of instance
    * @param  args  arguments to pass to constructor of U
+   *
+   * @return status ATM_ERR or ATM_OK
    */
   template <typename U = T,
             typename... Args,
@@ -80,13 +82,21 @@ class InstanceRegistryImpl : public StackObj {
   inline ATM_STATUS create(
       const std::map<const std::string&, Args&&...>& initializers);
   /**
+   * Get instance of T with unique id (const)
+   *
+   * @param  id    unique identifier of instance
+   *
+   * @return instance of given id or fail
+   */
+  inline const std::shared_ptr<T>& get(const std::string& id) const;
+  /**
    * Get instance of T with unique id
    *
    * @param  id    unique identifier of instance
    *
    * @return instance of given id or fail
    */
-  inline const std::shared_ptr<T>& get(const std::string& id);
+  inline std::shared_ptr<T>& get(const std::string& id);
   /**
    * Check instance of T with unique id
    *

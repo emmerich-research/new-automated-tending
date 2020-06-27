@@ -172,11 +172,13 @@ void manual() {
                          style.FramePadding.x * 4);
     ImGui::SetCursorPosY(style.FramePadding.y * 20);
     if (ImGui::Button("Z+", button_size)) {
+      movement->move<mechanism::movement::unit::mm>(0.0, 0.0, z_manual);
     }
 
     ImGui::SetCursorPosX(ImGui::GetColumnOffset() + button_size.x +
                          style.FramePadding.x * 4);
     if (ImGui::Button("Z-", button_size)) {
+      movement->move<mechanism::movement::unit::mm>(0.0, 0.0, -z_manual);
     }
     ImGui::NextColumn();
   }

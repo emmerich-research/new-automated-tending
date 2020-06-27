@@ -97,8 +97,7 @@ DEBUG_ONLY(void SpeedProfile::print(std::ostream& os) const {
 
 namespace impl {
 ConfigImpl::ConfigImpl(const std::string& config_path)
-    : config_path_{std::move(config_path)},
-      config_{std::move(toml::parse(config_path))} {
+    : config_{toml::parse(config_path)}, config_path_{std::move(config_path)} {
   DEBUG_ONLY(obj_name_ = "ConfigImpl");
   load_speed_profiles();
 }
@@ -181,25 +180,28 @@ const ConfigImpl::coordinate& ConfigImpl::tending_path_zigzag(size_t idx) {
 void ConfigImpl::load_speed_profiles() {
   // Fault speed profile
   fault_speed_profile_ = find<SpeedProfile>("mechanisms", "fault", "manual");
-  std::cout << "Fault Speed Profile " << fault_speed_profile_ << std::endl;
+  DEBUG_ONLY(std::cout << "Fault Speed Profile " << fault_speed_profile_
+                       << std::endl);
 
   // Homing speed profile
   homing_speed_profile_ = find<SpeedProfile>("mechanisms", "homing");
-  std::cout << "Homing Speed Profile " << homing_speed_profile_ << std::endl;
+  DEBUG_ONLY(std::cout << "Homing Speed Profile " << homing_speed_profile_
+                       << std::endl);
 
   // Spraying speed profile
   spraying_speed_profile_ = find<SpeedProfile>("mechanisms", "spraying");
-  std::cout << "Spraying Speed Profile " << spraying_speed_profile_
-            << std::endl;
+  DEBUG_ONLY(std::cout << "Spraying Speed Profile " << spraying_speed_profile_
+                       << std::endl);
 
   // Tending speed profile
   tending_speed_profile_ = find<SpeedProfile>("mechanisms", "tending");
-  std::cout << "Tending Speed Profile " << tending_speed_profile_ << std::endl;
+  DEBUG_ONLY(std::cout << "Tending Speed Profile " << tending_speed_profile_
+                       << std::endl);
 
   // Cleaning speed profile
   cleaning_speed_profile_ = find<SpeedProfile>("mechanisms", "cleaning");
-  std::cout << "Cleaning Speed Profile " << cleaning_speed_profile_
-            << std::endl;
+  DEBUG_ONLY(std::cout << "Cleaning Speed Profile " << cleaning_speed_profile_
+                       << std::endl);
 }
 }  // namespace impl
 

@@ -30,7 +30,6 @@ class StateImpl;
 /** impl::StateImpl singleton class using StaticObj */
 using State = StaticObj<impl::StateImpl>;
 
-/** impl::StateImpl singleton class using StaticObj */
 using Point = double;
 
 /**
@@ -134,7 +133,7 @@ class StateImpl : public StackObj {
   /**
    * Set y-axis coordinate
    *
-   * @param x set new x-axis coordinate
+   * @param y set new y-axis coordinate
    */
   void y(const Point& y);
   /**

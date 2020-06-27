@@ -4,6 +4,8 @@ ucm_add_files(
   "init.cpp"
   "gpio.cpp"
 
+  "identifier.cpp"
+
   # analog devices
   "analog.cpp"
   "PCF8591.cpp"
@@ -13,6 +15,9 @@ ucm_add_files(
 
   # stepper
   "stepper.cpp"
+
+  # shift register
+  "shift_register.cpp"
   TO SOURCES)
 
 ucm_add_target(

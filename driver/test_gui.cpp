@@ -31,9 +31,9 @@ int main(int, char**) {
 #endif
 #endif
 
-  GLFWwindow* window =
-      glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL example", NULL, NULL);
-  if (window == NULL)
+  GLFWwindow* window = glfwCreateWindow(
+      1280, 720, "Dear ImGui GLFW+OpenGL example", nullptr, nullptr);
+  if (window == nullptr)
     return 1;
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);  // Enable vsync
@@ -146,7 +146,8 @@ int main(int, char**) {
           1.0f);  // Edit 1 float using a slider from 0.0f to 1.0f
       ImGui::ColorEdit3(
           "clear color",
-          (float*)&clear_color);  // Edit 3 floats representing a color
+          reinterpret_cast<float*>(
+              &clear_color));  // Edit 3 floats representing a color
 
       if (ImGui::Button(
               "Button"))  // Buttons return true when clicked (most widgets
@@ -156,7 +157,8 @@ int main(int, char**) {
       ImGui::Text("counter = %d", counter);
 
       ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                  1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+                  1000.0 / static_cast<double>(ImGui::GetIO().Framerate),
+                  static_cast<double>(ImGui::GetIO().Framerate));
       ImGui::End();
     }
 

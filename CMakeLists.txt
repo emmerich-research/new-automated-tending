@@ -33,6 +33,8 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/external/ucm/cmake/"
   "${CMAKE_SOURCE_DIR}/cmake/")
 
+include(Warnings)
+
 include(GNUInstallDirs)
 include(AFSM)
 include(ConfigSafeGuards)
@@ -48,7 +50,6 @@ include(Misc)
 include(Spdlog)
 include(Toml)
 include(ucm)
-include(Warnings)
 
 # enable unity build
 set(UCM_UNITY_BUILD ON)
