@@ -51,8 +51,10 @@ static int throw_message() {
 }
 
 static bool menu() {
+  massert(Config::get() != nullptr, "sanity");
   massert(device::UltrasonicDeviceRegistry::get() != nullptr, "sanity");
 
+  auto* config = Config::get();
   auto* ultrasonic_device_registry = device::UltrasonicDeviceRegistry::get();
 
   LOG_INFO("----MENU-----");
@@ -67,8 +69,10 @@ static bool menu() {
     auto&& water_level =
         ultrasonic_device_registry->get(device::id::ultrasonic::water_level());
 
-    auto result =
-        thread_pool.enqueue([water_level] { return water_level->distance(); });
+    auto result = thread_pool.enqueue([config, water_level] {
+      return water_level->distance(
+          config->ultrasonic<double>("water-level", "max-range"));
+    });
 
     unsigned int second_count = 0;
     while (second_count != 10) {
@@ -77,38 +81,28 @@ static bool menu() {
       sleep_for<time_units::seconds>(1);
     }
 
-    // can be busy
-    thread_pool.join();
-
-    try {
-      auto res = result.get();
-      LOG_DEBUG("Water Level {}", res);
-    } catch (std::exception& e) {
-      LOG_DEBUG("{}", e.what());
-    }
+    auto res = result.get();
+    LOG_DEBUG("Water Level {}", res.value_or(20.0));
 
     return false;
   } else if (choice == 2) {
     auto&& disinfectant_level = ultrasonic_device_registry->get(
         device::id::ultrasonic::disinfectant_level());
 
-    auto result = thread_pool.enqueue(
-        [disinfectant_level] { return disinfectant_level->distance(); });
+    auto result = thread_pool.enqueue([config, disinfectant_level] {
+      return disinfectant_level->distance(
+          config->ultrasonic<double>("disinfectant-level", "max-range"));
+    });
 
-    time_unit start = seconds();
-    while (seconds() - start != 10) {
-      // noop
+    unsigned int second_count = 0;
+    while (second_count != 10) {
+      LOG_DEBUG("Second {}", second_count);
+      second_count++;
+      sleep_for<time_units::seconds>(1);
     }
 
-    // can be busy
-    thread_pool.join();
-
-    try {
-      auto res = result.get();
-      LOG_DEBUG("Disinfectant Level {}", res);
-    } catch (std::exception& e) {
-      LOG_DEBUG("{}", e.what());
-    }
+    auto res = result.get();
+    LOG_DEBUG("Disinfectant Level {}", res.value_or(0.0));
 
     return false;
   } else if (choice == 0) {

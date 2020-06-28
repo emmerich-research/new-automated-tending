@@ -7,6 +7,8 @@
  * Ultrasonic HC-SR04 Device using GPIO
  */
 
+#include <optional>
+
 #include <libalgo/algo.hpp>
 #include <libcore/core.hpp>
 
@@ -49,9 +51,12 @@ class UltrasonicDevice : public StackObj {
    *
    * BEWARE: that this function can block the current thread!
    *
-   * @return distance in cm
+   * @param max_input_distance max input distance
+   *
+   * @return distance in cm (optional, can be failed)
    */
-  double distance() const;
+  std::optional<double> distance(
+      double max_input_distance = max_distance) const;
   /**
    * Get active status
    *
@@ -110,8 +115,31 @@ class UltrasonicDevice : public StackObj {
   inline const std::shared_ptr<DigitalOutputDevice>& trigger_device() const {
     return trigger_device_;
   }
+  /**
+   * Max echo time
+   *
+   * @param max_input_distance max input distance in cm
+   *
+   * @return max echo time in us
+   */
+  double max_echo_time(double max_input_distance) const;
 
  private:
+  /**
+   * In cm/us
+   *
+   * 0.03432 cm/us
+   * == 34320 cm/s
+   * == 343.2 m/s
+   * == 1/29.1 cm/us
+   */
+  static const double supersonic_speed;
+  /**
+   * Max Distance in cm
+   *
+   * See HC-SR04 datasheet
+   */
+  static const double max_distance;
   /**
    * Echo pin
    */
