@@ -10,25 +10,34 @@
 USE_NAMESPACE;
 
 // forward declaration
-static bool stop = false;
-static void init();
-static void shutdown_hook();
-// static void sigint_hook(int signal);  // for SIGINT
-static int  throw_message();
-static bool menu();
+static bool       stop = false;
+static ATM_STATUS init();
+static void       shutdown_hook();
+static int        throw_message();
+static bool       menu();
 
-static void init() {
-  // struct sigaction sigint_handler;
+static ATM_STATUS init() {
+  ATM_STATUS status = ATM_OK;
 
-  // sigint_handler.sa_handler = sigint_hook;
-  // sigemptyset(&sigint_handler.sa_mask);
-  // sigint_handler.sa_flags = 0;
+  // initialize `core` such as config, logger, and state
+  status = initialize_core();
+  if (status == ATM_ERR) {
+    return status;
+  }
 
-  // if (sigaction(SIGINT, &sigint_handler, NULL) != 0)
-  //   std::perror("sigaction");
+  // initialize `GPIO-based` devices such as analog, digital, and PWM
+  status = initialize_device();
+  if (status == ATM_ERR) {
+    return status;
+  }
 
-  // preparing shutdown hook
-  // std::atexit(shutdown_hook);
+  // initialize `mechanism`
+  status = initialize_mechanism();
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  return status;
 }
 
 // static void sigint_hook([[maybe_unused]] int signal) {
@@ -294,24 +303,9 @@ static bool menu() {
 int main() {
   std::cout << "Booting up..." << std::endl;
 
-  init();
-
   ATM_STATUS status = ATM_OK;
 
-  // initialize `core` such as config, logger, and state
-  status = initialize_core();
-  if (status == ATM_ERR) {
-    return throw_message();
-  }
-
-  // initialize `GPIO-based` devices such as analog, digital, and PWM
-  status = initialize_device();
-  if (status == ATM_ERR) {
-    return throw_message();
-  }
-
-  // initialize `mechanism`
-  status = initialize_mechanism();
+  status = init();
   if (status == ATM_ERR) {
     return throw_message();
   }

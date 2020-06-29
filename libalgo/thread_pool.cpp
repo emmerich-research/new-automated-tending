@@ -25,7 +25,7 @@ ThreadPool::ThreadPool(std::size_t threads) : stop_(false) {
     });
 }
 
-ThreadPool::~ThreadPool() {
+void ThreadPool::join() {
   {
     std::unique_lock<std::mutex> lock(queue_mutex_);
     stop_ = true;
@@ -33,6 +33,10 @@ ThreadPool::~ThreadPool() {
   condition_.notify_all();
   for (std::thread& worker : workers_)
     worker.join();
+}
+
+ThreadPool::~ThreadPool() {
+  join();
 }
 }  // namespace algo
 

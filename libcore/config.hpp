@@ -454,19 +454,19 @@ class ConfigImpl : public StackObj {
     return find<T>("devices", "plc-to-pi", std::forward<Keys>(keys)...);
   }
   /**
-   * Get communication device from RaspberryPI to PLC
+   * Get ultrasonic device
    *
-   * It should be in key "devices.shift-register.pi-to-plc"
+   * It should be in key "devices.ultrasonic"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
    *
-   * @return communication device info from RaspberryPI to PLC with type T
+   * @return ultrasonic device
    */
-  // template <typename T, typename... Keys>
-  // inline T pi_to_plc(Keys&&... keys) const {
-  //   return shift_register<T>("pi-to-plc", std::forward<Keys>(keys)...);
-  // }
+  template <typename T, typename... Keys>
+  inline T ultrasonic(Keys&&... keys) const {
+    return find<T>("devices", "ultrasonic", std::forward<Keys>(keys)...);
+  }
 
  private:
   /**

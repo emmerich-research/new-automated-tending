@@ -106,6 +106,26 @@ static auto        anomaly = []() {
   return anomaly_;
 };
 
+namespace ultrasonic {
+extern std::string water_level_;
+static auto        water_level = []() {
+  if (water_level_.empty()) {
+    water_level_ = Config::get()->ultrasonic<std::string>("water-level", "key");
+  }
+  return water_level_;
+};
+
+extern std::string disinfectant_level_;
+static auto        disinfectant_level = []() {
+  if (disinfectant_level_.empty()) {
+    disinfectant_level_ =
+        Config::get()->ultrasonic<std::string>("disinfectant-level", "key");
+  }
+  return disinfectant_level_;
+};
+
+}  // namespace ultrasonic
+
 namespace comm {
 namespace plc {
 extern std::string spraying_tending_height_;
