@@ -1,6 +1,6 @@
-#include "precompiled.hpp"
-
 #include "machine.hpp"
+
+#include "state.hpp"
 
 NAMESPACE_BEGIN
 

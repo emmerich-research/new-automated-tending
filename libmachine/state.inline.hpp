@@ -1,10 +1,9 @@
 #ifndef APP_MACHINE_INLINE_HPP_
 #define APP_MACHINE_INLINE_HPP_
 
-#include "machine.hpp"
+#include "state.hpp"
 
 #include <libdevice/device.hpp>
-#include <libgui/gui.hpp>
 #include <libmechanism/mechanism.hpp>
 #include <libutil/util.hpp>
 

@@ -16,10 +16,11 @@
 #include <libcore/core.hpp>
 #include <libdevice/device.hpp>
 #include <libmechanism/mechanism.hpp>
+#include <libutil/util.hpp>
 
 // 4. Local
-#include "machine.hpp"
-#include "machine.inline.hpp"
+#include "state.hpp"
+#include "state.inline.hpp"
 
 #include "event.hpp"
 

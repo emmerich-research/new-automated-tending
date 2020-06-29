@@ -15,11 +15,6 @@
 #include "guard.hpp"
 
 NAMESPACE_BEGIN
-// struct StateMachine : public StackObj {
-//   virtual ~common_base() = default;
-//   virtual void do_task() = 0;
-//   virtual void do_b(int) = 0;
-// };
 
 namespace machine {
 /**

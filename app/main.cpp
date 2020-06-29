@@ -1,13 +1,10 @@
-#include "precompiled.hpp"
-
 #include <iostream>
 #include <stdexcept>
 
 #include <libcore/core.hpp>
 #include <libdevice/device.hpp>
 #include <libgui/gui.hpp>
-
-#include "machine.hpp"
+#include <libmachine/machine.hpp>
 
 static void key_callback(GLFWwindow*          current_window,
                          int                  key,
@@ -42,13 +39,6 @@ int main() {
     massert(tsm.is_terminated(), "sanity");
     return status;
   }
-
-  // // main loop
-  // while (!tsm.is_terminated()) {
-  //   // sequences:
-  //   // 1. spraying
-  //   // 2. tending
-  // }
 
   massert(window() != nullptr, "sanity");
 
