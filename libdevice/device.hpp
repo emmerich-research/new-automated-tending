@@ -58,4 +58,7 @@
 // 4.4. Shift Register Device
 #include "shift_register.hpp"
 
+// 4.5. Ultrasonic Device
+#include "ultrasonic.hpp"
+
 #endif  // LIB_DEVICE_DEVICE_HPP_

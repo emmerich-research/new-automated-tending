@@ -135,7 +135,6 @@ class ShiftRegisterDeviceImpl : public StackObj {
    * @return bit order
    */
   inline const shift_register::bit_order& order() const { return order_; }
-
   /**
    * Shift out register
    *

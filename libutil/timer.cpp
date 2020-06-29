@@ -5,6 +5,31 @@
 #include <chrono>
 #include <thread>
 
+time_unit seconds() {
+  uint64_t s = static_cast<uint64_t>(
+      std::chrono::duration_cast<std::chrono::seconds>(
+          std::chrono::high_resolution_clock::now().time_since_epoch())
+          .count());
+  return static_cast<time_unit>(s);
+}
+
+template <>
+void sleep_for<time_units::seconds>(time_unit time) {
+  std::this_thread::sleep_for(std::chrono::seconds(time));
+}
+
+template <>
+void sleep_until<time_units::seconds>(time_unit time, time_unit start_time) {
+  time_unit start = start_time;
+
+  if (start == 0) {
+    start = seconds();
+  }
+
+  std::this_thread::sleep_until(std::chrono::high_resolution_clock::time_point{
+      std::chrono::seconds(start + time)});
+}
+
 time_unit millis() {
   uint64_t ms = static_cast<uint64_t>(
       std::chrono::duration_cast<std::chrono::milliseconds>(

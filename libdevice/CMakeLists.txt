@@ -18,6 +18,9 @@ ucm_add_files(
 
   # shift register
   "shift_register.cpp"
+
+  # ultrasonic
+  "ultrasonic.cpp"
   TO SOURCES)
 
 ucm_add_target(
