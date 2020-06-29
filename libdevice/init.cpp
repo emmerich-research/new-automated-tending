@@ -30,6 +30,7 @@ static ATM_STATUS initialize_pi_to_plc_comm();
 static ATM_STATUS initialize_shift_register_devices();
 static ATM_STATUS initialize_pwm_devices();
 static ATM_STATUS initialize_stepper_devices();
+static ATM_STATUS initialize_ultrasonic_devices();
 
 static ATM_STATUS initialize_analog_devices() {
   ATM_STATUS status = ATM_OK;
@@ -417,6 +418,40 @@ static ATM_STATUS initialize_stepper_devices() {
   return status;
 }
 
+static ATM_STATUS initialize_ultrasonic_devices() {
+  auto*      config = Config::get();
+  ATM_STATUS status = ATM_OK;
+
+  status = UltrasonicDeviceRegistry::create();
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  auto* ultrasonic_device_registry = UltrasonicDeviceRegistry::get();
+
+  status = ultrasonic_device_registry->create(
+      id::ultrasonic::water_level(),
+      config->ultrasonic<PI_PIN>("water-level", "echo-pin"),
+      config->ultrasonic<PI_PIN>("water-level", "trigger-pin"),
+      config->ultrasonic<bool>("water-level", "echo-active-state"),
+      config->ultrasonic<bool>("water-level", "trigger-active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  status = ultrasonic_device_registry->create(
+      id::ultrasonic::disinfectant_level(),
+      config->ultrasonic<PI_PIN>("disinfectant-level", "echo-pin"),
+      config->ultrasonic<PI_PIN>("disinfectant-level", "trigger-pin"),
+      config->ultrasonic<bool>("disinfectant-level", "echo-active-state"),
+      config->ultrasonic<bool>("disinfectant-level", "trigger-active-state"));
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  return status;
+}
+
 ATM_STATUS initialize_device() {
   if (gpioInitialise() < 0) {
     return ATM_ERR;
@@ -456,6 +491,12 @@ ATM_STATUS initialize_device() {
 
   LOG_INFO("Initializing stepper devices...");
   status = initialize_stepper_devices();
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  LOG_INFO("Initializing ultrasonic devices...");
+  status = initialize_ultrasonic_devices();
   if (status == ATM_ERR) {
     return status;
   }

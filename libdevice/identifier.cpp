@@ -26,6 +26,11 @@ std::string finger_;
 
 std::string anomaly_;
 
+namespace ultrasonic {
+std::string water_level_;
+std::string disinfectant_level_;
+}  // namespace ultrasonic
+
 namespace comm {
 namespace plc {
 std::string spraying_tending_height_;
@@ -47,7 +52,7 @@ std::string water_out_;
 std::string disinfectant_in_;
 std::string disinfectant_out_;
 std::string sonicator_relay_;
-}
+}  // namespace pi
 }  // namespace comm
 }  // namespace id
 }  // namespace device

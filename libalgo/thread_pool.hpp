@@ -68,7 +68,6 @@ class ThreadPool : public StackObj {
    * @param threads number of thread workers
    */
   explicit ThreadPool(std::size_t threads);
-
   /**
    * Add new task to the pool
    *
@@ -79,6 +78,10 @@ class ThreadPool : public StackObj {
    */
   template <class F, class... Args>
   decltype(auto) enqueue(F&& f, Args&&... args);
+  /**
+   * Join all threads
+   */
+  void join();
   /**
    * ThreadPool Destructor
    *

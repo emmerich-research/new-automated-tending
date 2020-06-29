@@ -84,14 +84,6 @@ class DigitalDevice : public StackObj {
    */
   MAKE_STD_SHARED(DigitalDevice<Mode>)
   /**
-   * Create unique_ptr<DigitalDevice>
-   *
-   * Pass every args to DigitalDevice()
-   *
-   * @param args arguments that will be passed to DigitalDevice()
-   */
-  MAKE_STD_UNIQUE(DigitalDevice<Mode>)
-  /**
    * Check if pin is active or not
    *
    * @return active status of GPIO pin
