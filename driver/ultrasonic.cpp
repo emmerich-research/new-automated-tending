@@ -69,40 +69,46 @@ static bool menu() {
     auto&& water_level =
         ultrasonic_device_registry->get(device::id::ultrasonic::water_level());
 
-    auto result = thread_pool.enqueue([config, water_level] {
-      return water_level->distance(
-          config->ultrasonic<double>("water-level", "max-range"));
-    });
+    // auto result = thread_pool.enqueue([config, water_level] {
+    //   return water_level->distance(
+    //       config->ultrasonic<double>("water-level", "max-range"));
+    // });
 
-    unsigned int second_count = 0;
-    while (second_count != 10) {
-      LOG_DEBUG("Second {}", second_count);
-      second_count++;
-      sleep_for<time_units::seconds>(1);
+    // unsigned int second_count = 0;
+    while (true) {
+      LOG_DEBUG("Distance {} cm", water_level
+                                      ->distance(config->ultrasonic<double>(
+                                          "water-level", "max-range"))
+                                      .value_or(-99.0));
+      sleep_for<time_units::millis>(10);
     }
 
-    auto res = result.get();
-    LOG_DEBUG("Water Level {}", res.value_or(20.0));
+    // auto res = result.get();
+    // LOG_DEBUG("Water Level {}", res.value_or(20.0));
 
     return false;
   } else if (choice == 2) {
     auto&& disinfectant_level = ultrasonic_device_registry->get(
         device::id::ultrasonic::disinfectant_level());
 
-    auto result = thread_pool.enqueue([config, disinfectant_level] {
-      return disinfectant_level->distance(
-          config->ultrasonic<double>("disinfectant-level", "max-range"));
-    });
+    // auto result = thread_pool.enqueue([config, disinfectant_level] {
+    //   return disinfectant_level->distance(
+    //       config->ultrasonic<double>("disinfectant-level", "max-range"));
+    // });
 
-    unsigned int second_count = 0;
-    while (second_count != 10) {
-      LOG_DEBUG("Second {}", second_count);
-      second_count++;
-      sleep_for<time_units::seconds>(1);
+    // unsigned int count = 0;
+    while (true) {
+      LOG_DEBUG("Distance {} cm", disinfectant_level
+                                      ->distance(config->ultrasonic<double>(
+                                          "disinfectant-level", "max-range"))
+                                      .value_or(-99.0));
+      // LOG_DEBUG("Second {}", second_count);
+      // second_count++;
+      sleep_for<time_units::millis>(10);
     }
 
-    auto res = result.get();
-    LOG_DEBUG("Disinfectant Level {}", res.value_or(0.0));
+    // auto res = result.get();
+    // LOG_DEBUG("Disinfectant Level {}", res.value_or(0.0));
 
     return false;
   } else if (choice == 0) {
