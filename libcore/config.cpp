@@ -159,19 +159,19 @@ const ConfigImpl::path_container& ConfigImpl::tending_path_zigzag() {
   return tending_path_zigzag_;
 }
 
-const ConfigImpl::coordinate& ConfigImpl::spraying_path(size_t idx) {
+const ConfigImpl::coordinate ConfigImpl::spraying_path(size_t idx) {
   const auto paths = spraying_path();
   massert(idx < paths.size(), "sanity");
   return paths[idx];
 }
 
-const ConfigImpl::coordinate& ConfigImpl::tending_path_edge(size_t idx) {
+const ConfigImpl::coordinate ConfigImpl::tending_path_edge(size_t idx) {
   const auto paths = tending_path_edge();
   massert(idx < paths.size(), "sanity");
   return paths[idx];
 }
 
-const ConfigImpl::coordinate& ConfigImpl::tending_path_zigzag(size_t idx) {
+const ConfigImpl::coordinate ConfigImpl::tending_path_zigzag(size_t idx) {
   const auto paths = tending_path_zigzag();
   massert(idx < paths.size(), "sanity");
   return paths[idx];

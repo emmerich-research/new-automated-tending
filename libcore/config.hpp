@@ -369,7 +369,7 @@ class ConfigImpl : public StackObj {
    *
    * @return spraying movement path at specified index
    */
-  const coordinate& spraying_path(size_t idx);
+  const coordinate spraying_path(size_t idx);
   /**
    * Get tending position
    *
@@ -393,7 +393,7 @@ class ConfigImpl : public StackObj {
    *
    * @return tending edge movement path at specified index
    */
-  const coordinate& tending_path_edge(size_t idx);
+  const coordinate tending_path_edge(size_t idx);
   /**
    * Get tending zigzag movement path
    *
@@ -409,7 +409,7 @@ class ConfigImpl : public StackObj {
    *
    * @return tending movement path at specified index
    */
-  const coordinate& tending_path_zigzag(size_t idx);
+  const coordinate tending_path_zigzag(size_t idx);
   /**
    * Get mechanisms fault manual mode movement
    *
