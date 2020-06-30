@@ -215,34 +215,20 @@ static bool menu() {
   shift_register->write(device::id::spray(), device::digital::value::low);
 
   LOG_INFO("----MENU-----");
-  LOG_INFO("1. Spraying and Tending with trigger");
-  LOG_INFO("2. Cleaning with trigger");
-  LOG_INFO("3. Homing");
-  LOG_INFO("4. Just X");
-  LOG_INFO("5. Just Y");
-  LOG_INFO("6. Just Z");
-  LOG_INFO("7. Spraying and Tending trigger");
-  LOG_INFO("8. Move X with specified distance (in cm, can be negative)");
-  LOG_INFO("9. Move Y with specified distance (in cm, can be negative)");
-  LOG_INFO("0. Exit");
-  LOG_INFO("Tips <speed> <menu> <optional>");
-
-  std::string   speed_str;
-  config::speed speed_profile = config::speed::normal;
+  LOG_INFO("1.  Spraying and Tending with trigger");
+  LOG_INFO("2.  Cleaning with trigger");
+  LOG_INFO("3.  Homing");
+  LOG_INFO("4.  Just X");
+  LOG_INFO("5.  Just Y");
+  LOG_INFO("6.  Just Z");
+  LOG_INFO("7.  Spraying and Tending trigger");
+  LOG_INFO("8.  Move X with specified distance (in cm, can be negative)");
+  LOG_INFO("9.  Move Y with specified distance (in cm, can be negative)");
+  LOG_INFO("10. Set speed <fast/normal/slow>");
+  LOG_INFO("0.  Exit");
 
   unsigned int choice;
-  std::cin >> speed_str >> choice;
-
-  if (speed_str == "fast") {
-    speed_profile = config::speed::fast;
-    LOG_DEBUG("HERE");
-  } else if (speed_str == "normal") {
-    speed_profile = config::speed::normal;
-  } else if (speed_str == "slow") {
-    speed_profile = config::speed::slow;
-  }
-
-  state->speed_profile(speed_profile);
+  std::cin >> choice;
 
   if (choice == 1) {
     do_spraying();
@@ -308,7 +294,8 @@ static bool menu() {
 
     std::cin >> distance;
 
-    movement->motor_profile(config->fault_speed_profile(speed_profile));
+    movement->motor_profile(
+        config->fault_speed_profile(state->speed_profile()));
 
     if (choice == 8) {
       movement->move<mechanism::movement::unit::cm>(distance, 0.0, 0.0);
@@ -316,6 +303,22 @@ static bool menu() {
       movement->move<mechanism::movement::unit::cm>(0.0, distance, 0.0);
     }
     state->reset_coordinate();
+  } else if (choice == 10) {
+    std::string   speed_str;
+    config::speed speed_profile = config::speed::normal;
+
+    if (speed_str == "fast") {
+      speed_profile = config::speed::fast;
+    } else if (speed_str == "normal") {
+      speed_profile = config::speed::normal;
+    } else if (speed_str == "slow") {
+      speed_profile = config::speed::slow;
+    }
+
+    LOG_INFO("Set speed to {}", speed_str);
+
+    state->speed_profile(speed_profile);
+
   } else if (choice == 0) {
     return true;
   }

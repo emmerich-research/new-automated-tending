@@ -54,13 +54,13 @@ enum class direction { forward = 1, backward = -1 };
  * @var using steps = unsigned long
  * @brief Type definition for stepper steps
  */
-using step = long long;
+using step = long;
 
 /**
  * @var using pulses = unsigned long
  * @brief Type definition for stepper pulses
  */
-using pulse = long long;
+using pulse = long;
 }  // namespace stepper
 
 /** device::StepperDevice registry singleton class using

@@ -3,6 +3,8 @@
 
 #include "movement.hpp"
 
+#include <cmath>
+
 NAMESPACE_BEGIN
 
 namespace mechanism {
@@ -11,9 +13,9 @@ long Movement::convert_length_to_steps(
     double                       length,
     const device::stepper::step& steps_per_mm) {
   if (Unit == movement::unit::cm) {
-    return static_cast<long long>(length * steps_per_mm * 10.0);
+    return static_cast<long>(std::lround(length) * steps_per_mm * 10.0);
   } else {
-    return static_cast<long long>(length * steps_per_mm);
+    return static_cast<long>(std::lround(length) * steps_per_mm);
   }
 }
 
