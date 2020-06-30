@@ -89,8 +89,6 @@ struct TendingDef : public StackObj,
     struct spraying : state_machine<spraying> {
       using spraying_fsm = afsm::inner_state_machine<spraying, running_fsm>;
 
-      spraying();
-
       struct idle : state<idle> {
         template <typename Event, typename FSM>
         void on_enter(Event const&& event, FSM& fsm) const;
@@ -121,14 +119,6 @@ struct TendingDef : public StackObj,
              completed,
              action::spraying::complete,
              guard::spraying::completed>>;
-
-      bool initialized;
-      void initialize();
-
-      std::shared_ptr<device::DigitalOutputDevice> spraying_ready;
-      std::shared_ptr<device::DigitalOutputDevice> spraying_running;
-      std::shared_ptr<device::DigitalOutputDevice> spraying_complete;
-      std::shared_ptr<device::DigitalOutputDevice> spray;
     };
 
     /**
@@ -141,8 +131,6 @@ struct TendingDef : public StackObj,
      */
     struct tending : state_machine<tending> {
       using tending_fsm = afsm::inner_state_machine<tending, running_fsm>;
-
-      tending();
 
       struct idle : state<idle> {
         template <typename Event, typename FSM>
@@ -168,14 +156,6 @@ struct TendingDef : public StackObj,
              completed,
              action::tending::complete,
              guard::tending::completed>>;
-
-      bool initialized;
-      void initialize();
-
-      // std::shared_ptr<device::DigitalOutputDevice> tending_ready;
-      // std::shared_ptr<device::DigitalOutputDevice> tending_running;
-      // std::shared_ptr<device::DigitalOutputDevice> tending_complete;
-      // std::shared_ptr<device::PWMDevice>           finger;
     };
 
     using initial_state = no_task;

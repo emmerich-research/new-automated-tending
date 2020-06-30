@@ -153,14 +153,6 @@ void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
   }
 }
 
-template <typename Event,
-          typename FSM,
-          typename SourceState,
-          typename TargetState>
-void homing::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
-  act();
-}
-
 namespace spraying {
 template <typename Event,
           typename FSM,
@@ -219,12 +211,10 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
-  // fsm.spraying_running->write(device::digital::value::low);
   shift_register->write(device::id::comm::pi::spraying_running(),
                         device::digital::value::low);
   state->spraying_running(false);
 
-  // fsm.spraying_complete->write(device::digital::value::high);
   shift_register->write(device::id::comm::pi::spraying_complete(),
                         device::digital::value::high);
   state->spraying_complete(true);
@@ -234,7 +224,6 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
   sleep_for<time_units::millis>(3000);
   shift_register->write(device::id::comm::pi::spraying_complete(),
                         device::digital::value::low);
-  // fsm.spraying_complete->write(device::digital::value::low);
   state->spraying_complete(false);
 
   sleep_for<time_units::millis>(1000);
@@ -266,7 +255,6 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
   LOG_INFO("Tending begins...");
   shift_register->write(device::id::comm::pi::tending_running(),
                         device::digital::value::high);
-  // fsm.tending_running->write(device::digital::value::high);
   state->tending_running(true);
 
   LOG_INFO("Moving to tending position...");
@@ -321,10 +309,8 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   shift_register->write(device::id::comm::pi::tending_running(),
                         device::digital::value::low);
-  // fsm.tending_running->write(device::digital::value::low);
   state->tending_running(false);
 
-  // fsm.tending_complete->write(device::digital::value::high);
   shift_register->write(device::id::comm::pi::tending_complete(),
                         device::digital::value::high);
   state->tending_complete(true);
@@ -334,7 +320,6 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
   sleep_for<time_units::millis>(3000);
   shift_register->write(device::id::comm::pi::tending_complete(),
                         device::digital::value::low);
-  // fsm.tending_complete->write(device::digital::value::low);
   state->tending_complete(false);
 
   sleep_for<time_units::millis>(1000);

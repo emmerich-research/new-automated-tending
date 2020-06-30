@@ -16,11 +16,6 @@ bool machine_ready::operator()(FSM const& fsm, State const&) const {
 }
 
 template <typename FSM, typename State>
-bool homing::operator()(FSM const&, State const&) const {
-  return check();
-}
-
-template <typename FSM, typename State>
 bool e_stop::operator()(FSM const&, State const&) const {
   return check();
 }

@@ -16,13 +16,6 @@ struct machine_ready : public StackObj {
   bool operator()(FSM const& fsm, State const&) const;
 };
 
-struct homing : public guard_base {
-  template <typename FSM, typename State>
-  bool operator()(FSM const& fsm, State const&) const;
-
-  virtual bool check() const override;
-};
-
 struct e_stop : public guard_base {
   template <typename FSM, typename State>
   bool operator()(FSM const& fsm, State const&) const;

@@ -81,49 +81,10 @@ bool TendingDef::running::is_tending_completed() const {
 }
 
 // spraying
-TendingDef::running::spraying::spraying() : initialized{false} {}
-
-void TendingDef::running::spraying::initialize() {
-  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
-
-  if (!initialized) {
-    // auto* digital_output_registry =
-    // device::DigitalOutputDeviceRegistry::get();
-    // massert(digital_output_registry != nullptr, "sanity");
-    // spraying_ready = std::move(
-    //     digital_output_registry->get(device::id::comm::pi::spraying_ready()));
-    // spraying_running = std::move(
-    //     digital_output_registry->get(device::id::comm::pi::spraying_running()));
-    // spraying_complete = std::move(digital_output_registry->get(
-    //     device::id::comm::pi::spraying_complete()));
-    // spray = std::move(digital_output_registry->get(device::id::spray()));
-    initialized = true;
-  }
-}
+// TendingDef::running::spraying::spraying()} {}
 
 // tending
-TendingDef::running::tending::tending() : initialized{false} {}
-
-void TendingDef::running::tending::initialize() {
-  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
-  massert(device::PWMDeviceRegistry::get() != nullptr, "sanity");
-
-  if (!initialized) {
-    // auto* digital_output_registry =
-    // device::DigitalOutputDeviceRegistry::get(); auto* pwm_registry =
-    // device::PWMDeviceRegistry::get(); massert(digital_output_registry !=
-    // nullptr, "sanity"); massert(pwm_registry != nullptr, "sanity");
-    // tending_ready = std::move(
-    //     digital_output_registry->get(device::id::comm::pi::tending_ready()));
-    // tending_running = std::move(
-    //     digital_output_registry->get(device::id::comm::pi::tending_running()));
-    // tending_complete = std::move(
-    //     digital_output_registry->get(device::id::comm::pi::tending_complete()));
-    // finger = std::move(pwm_registry->get(device::id::finger()));
-    initialized = true;
-  }
-}
-
+// TendingDef::running::tending::tending() {}
 }  // namespace machine
 
 NAMESPACE_END

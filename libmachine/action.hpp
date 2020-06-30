@@ -40,16 +40,6 @@ struct restart : public StackObj {
   void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
 };
 
-struct homing : public StackObj {
-  template <typename Event,
-            typename FSM,
-            typename SourceState,
-            typename TargetState>
-  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
-
-  void act() const;
-};
-
 namespace spraying {
 struct job : public StackObj {
   template <typename Event,
