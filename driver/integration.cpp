@@ -186,6 +186,7 @@ static bool menu() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
+  auto*  config = Config::get();
   auto*  state = State::get();
   auto*  shift_register = device::ShiftRegister::get();
   auto*  stepper_registry = device::StepperRegistry::get();
@@ -221,12 +222,27 @@ static bool menu() {
   LOG_INFO("5. Just Y");
   LOG_INFO("6. Just Z");
   LOG_INFO("7. Spraying and Tending trigger");
-  LOG_INFO("8. Move X with specified distance (in mm, can be negative)");
-  LOG_INFO("9. Move Y with specified distance (in mm, can be negative)");
+  LOG_INFO("8. Move X with specified distance (in cm, can be negative)");
+  LOG_INFO("9. Move Y with specified distance (in cm, can be negative)");
   LOG_INFO("0. Exit");
+  LOG_INFO("Tips <speed> <menu> <optional>");
+
+  std::string   speed_str;
+  config::speed speed_profile = config::speed::normal;
 
   unsigned int choice;
-  std::cin >> choice;
+  std::cin >> speed_str >> choice;
+
+  if (speed_str == "fast") {
+    speed_profile = config::speed::fast;
+    LOG_DEBUG("HERE");
+  } else if (speed_str == "normal") {
+    speed_profile = config::speed::normal;
+  } else if (speed_str == "slow") {
+    speed_profile = config::speed::slow;
+  }
+
+  state->speed_profile(speed_profile);
 
   if (choice == 1) {
     do_spraying();
@@ -276,6 +292,10 @@ static bool menu() {
 
       if (spraying_tending_height_status) {
         do_spraying();
+
+        LOG_INFO("Wait for 3 seconds to tend");
+        sleep_for<time_units::seconds>(3);
+
         do_tending();
       } else if (cleaning_height_status) {
         // noop
@@ -285,7 +305,10 @@ static bool menu() {
     }
   } else if (choice == 8 || choice == 9) {
     double distance;
+
     std::cin >> distance;
+
+    movement->motor_profile(config->fault_speed_profile(speed_profile));
 
     if (choice == 8) {
       movement->move<mechanism::movement::unit::cm>(distance, 0.0, 0.0);

@@ -286,7 +286,9 @@ class MovementBuilderImpl : public StackObj {
 };
 }  // namespace impl
 
-static auto movement_mechanism = []() {
+/** Getter for movement_mechanism */
+auto movement_mechanism = []() {
+  massert(MovementBuilder::get() != nullptr, "sanity");
   return MovementBuilder::get()->movement();
 };
 
@@ -389,6 +391,12 @@ class Movement : public StackObj {
    * Homing finger
    */
   void homing_finger() const;
+  /**
+   * Set Motor Profile for steppers
+   *
+   * @param speed_profile speed profile configuration
+   **/
+  void motor_profile(const config::MechanismSpeed& speed_profile) const;
 
  private:
   /**
@@ -407,6 +415,9 @@ class Movement : public StackObj {
   ~Movement();
   /**
    * Convert steps_per_mm to specified length
+   *
+   * @param length       length to be converted to steps
+   * @param steps_per_mm steps per mm configuration
    *
    * @return steps
    */
@@ -595,6 +606,8 @@ class Movement : public StackObj {
   void tending_motor_params() const;
   /**
    * Reverting motor params
+   *
+   * Reverting to homing speed profile
    */
   void revert_motor_params() const;
 

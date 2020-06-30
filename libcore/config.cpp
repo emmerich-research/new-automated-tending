@@ -6,14 +6,14 @@
 
 namespace toml {
 template <>
-struct from<ns(SpeedConfig)> {
+struct from<ns(config::Speed)> {
   template <typename C,
             template <typename...>
             class M,
             template <typename...>
             class A>
-  static ns(SpeedConfig) from_toml(const basic_value<C, M, A>& v) {
-    ns(SpeedConfig) sc;
+  static ns(config::Speed) from_toml(const basic_value<C, M, A>& v) {
+    ns(config::Speed) sc;
     sc.rpm = find<double>(v, "rpm");
     sc.acceleration = find<double>(v, "acceleration");
     sc.deceleration = find<double>(v, "deceleration");
@@ -22,22 +22,22 @@ struct from<ns(SpeedConfig)> {
 };
 
 template <>
-struct from<ns(MechanismSpeedProfile)> {
+struct from<ns(config::MechanismSpeed)> {
   template <typename C,
             template <typename...>
             class M,
             template <typename...>
             class A>
-  static ns(MechanismSpeedProfile) from_toml(const basic_value<C, M, A>& v) {
-    ns(MechanismSpeedProfile) msp;
+  static ns(config::MechanismSpeed) from_toml(const basic_value<C, M, A>& v) {
+    ns(config::MechanismSpeed) msp;
     if (v.contains("x")) {
-      msp.x = find<ns(SpeedConfig)>(v, "x");
+      msp.x = find<ns(config::Speed)>(v, "x");
     }
     if (v.contains("y")) {
-      msp.y = find<ns(SpeedConfig)>(v, "y");
+      msp.y = find<ns(config::Speed)>(v, "y");
     }
     if (v.contains("z")) {
-      msp.z = find<ns(SpeedConfig)>(v, "z");
+      msp.z = find<ns(config::Speed)>(v, "z");
     }
     if (v.contains("duty-cycle")) {
       msp.duty_cycle = find<unsigned int>(v, "duty-cycle");
@@ -47,17 +47,17 @@ struct from<ns(MechanismSpeedProfile)> {
 };
 
 template <>
-struct from<ns(SpeedProfile)> {
+struct from<ns(config::SpeedProfile)> {
   template <typename C,
             template <typename...>
             class M,
             template <typename...>
             class A>
-  static ns(SpeedProfile) from_toml(const basic_value<C, M, A>& v) {
-    ns(SpeedProfile) sp;
-    sp.slow = find<ns(MechanismSpeedProfile)>(v, "speed", "slow");
-    sp.normal = find<ns(MechanismSpeedProfile)>(v, "speed", "normal");
-    sp.fast = find<ns(MechanismSpeedProfile)>(v, "speed", "fast");
+  static ns(config::SpeedProfile) from_toml(const basic_value<C, M, A>& v) {
+    ns(config::SpeedProfile) sp;
+    sp.slow = find<ns(config::MechanismSpeed)>(v, "speed", "slow");
+    sp.normal = find<ns(config::MechanismSpeed)>(v, "speed", "normal");
+    sp.fast = find<ns(config::MechanismSpeed)>(v, "speed", "fast");
     return sp;
   }
 };
@@ -67,22 +67,24 @@ NAMESPACE_BEGIN
 
 // impl::ConfigImpl* Config::instance_ = nullptr;
 
-SpeedConfig::SpeedConfig() {
+namespace config {
+
+Speed::Speed() {
   rpm = 0.0;
   acceleration = 0.0;
   deceleration = 0.0;
 }
 
-DEBUG_ONLY(void SpeedConfig::print(std::ostream& os) const {
+DEBUG_ONLY(void Speed::print(std::ostream& os) const {
   os << "[rpm: " << rpm << ", accel: " << acceleration
      << ", decel: " << deceleration << "]";
 })
 
-MechanismSpeedProfile::MechanismSpeedProfile() {
+MechanismSpeed::MechanismSpeed() {
   duty_cycle = 0;
 }
 
-DEBUG_ONLY(void MechanismSpeedProfile::print(std::ostream& os) const {
+DEBUG_ONLY(void MechanismSpeed::print(std::ostream& os) const {
   os << "[x: " << x << ", y: " << y << ", z: " << z
      << ", duty_cycle: " << duty_cycle << "]";
 })
@@ -94,6 +96,7 @@ DEBUG_ONLY(void SpeedProfile::print(std::ostream& os) const {
   os << ", normal: " << normal;
   os << ", fast: " << fast << "]";
 })
+}  // namespace config
 
 namespace impl {
 ConfigImpl::ConfigImpl(const std::string& config_path)
@@ -179,29 +182,87 @@ const ConfigImpl::coordinate ConfigImpl::tending_path_zigzag(size_t idx) {
 
 void ConfigImpl::load_speed_profiles() {
   // Fault speed profile
-  fault_speed_profile_ = find<SpeedProfile>("mechanisms", "fault", "manual");
+  fault_speed_profile_ =
+      find<config::SpeedProfile>("mechanisms", "fault", "manual");
   DEBUG_ONLY(std::cout << "Fault Speed Profile " << fault_speed_profile_
                        << std::endl);
 
   // Homing speed profile
-  homing_speed_profile_ = find<SpeedProfile>("mechanisms", "homing");
+  homing_speed_profile_ = find<config::SpeedProfile>("mechanisms", "homing");
   DEBUG_ONLY(std::cout << "Homing Speed Profile " << homing_speed_profile_
                        << std::endl);
 
   // Spraying speed profile
-  spraying_speed_profile_ = find<SpeedProfile>("mechanisms", "spraying");
+  spraying_speed_profile_ =
+      find<config::SpeedProfile>("mechanisms", "spraying");
   DEBUG_ONLY(std::cout << "Spraying Speed Profile " << spraying_speed_profile_
                        << std::endl);
 
   // Tending speed profile
-  tending_speed_profile_ = find<SpeedProfile>("mechanisms", "tending");
+  tending_speed_profile_ = find<config::SpeedProfile>("mechanisms", "tending");
   DEBUG_ONLY(std::cout << "Tending Speed Profile " << tending_speed_profile_
                        << std::endl);
 
   // Cleaning speed profile
-  cleaning_speed_profile_ = find<SpeedProfile>("mechanisms", "cleaning");
+  cleaning_speed_profile_ =
+      find<config::SpeedProfile>("mechanisms", "cleaning");
   DEBUG_ONLY(std::cout << "Cleaning Speed Profile " << cleaning_speed_profile_
                        << std::endl);
+}
+
+const config::MechanismSpeed& ConfigImpl::fault_speed_profile(
+    const config::speed& speed_profile) const {
+  if (speed_profile == config::speed::slow) {
+    return fault_speed_profile_.slow;
+  } else if (speed_profile == config::speed::normal) {
+    return fault_speed_profile_.normal;
+  } else {
+    return fault_speed_profile_.fast;
+  }
+}
+
+const config::MechanismSpeed& ConfigImpl::homing_speed_profile(
+    const config::speed& speed_profile) const {
+  if (speed_profile == config::speed::slow) {
+    return homing_speed_profile_.slow;
+  } else if (speed_profile == config::speed::normal) {
+    return homing_speed_profile_.normal;
+  } else {
+    return homing_speed_profile_.fast;
+  }
+}
+
+const config::MechanismSpeed& ConfigImpl::spraying_speed_profile(
+    const config::speed& speed_profile) const {
+  if (speed_profile == config::speed::slow) {
+    return spraying_speed_profile_.slow;
+  } else if (speed_profile == config::speed::normal) {
+    return spraying_speed_profile_.normal;
+  } else {
+    return spraying_speed_profile_.fast;
+  }
+}
+
+const config::MechanismSpeed& ConfigImpl::tending_speed_profile(
+    const config::speed& speed_profile) const {
+  if (speed_profile == config::speed::slow) {
+    return tending_speed_profile_.slow;
+  } else if (speed_profile == config::speed::normal) {
+    return tending_speed_profile_.normal;
+  } else {
+    return tending_speed_profile_.fast;
+  }
+}
+
+const config::MechanismSpeed& ConfigImpl::cleaning_speed_profile(
+    const config::speed& speed) const {
+  if (speed == config::speed::slow) {
+    return cleaning_speed_profile_.slow;
+  } else if (speed == config::speed::normal) {
+    return cleaning_speed_profile_.normal;
+  } else {
+    return cleaning_speed_profile_.fast;
+  }
 }
 }  // namespace impl
 

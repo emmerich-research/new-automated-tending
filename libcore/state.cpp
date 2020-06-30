@@ -7,7 +7,8 @@ NAMESPACE_BEGIN
 
 namespace impl {
 StateImpl::StateImpl()
-    : path_id_{0},
+    : speed_profile_{config::speed::normal},
+      path_id_{0},
       coordinate_{0.0, 0.0, 0.0},
       tending_{},
       spraying_{},
@@ -209,12 +210,12 @@ bool StateImpl::manual_mode() {
   return manual_mode_;
 }
 
-void StateImpl::speed_profile(const Speed& speed_profile) {
+void StateImpl::speed_profile(const config::speed& speed_profile) {
   const StateImpl::StateLock lock(mutex());
   speed_profile_ = speed_profile;
 }
 
-const Speed& StateImpl::speed_profile() {
+const config::speed& StateImpl::speed_profile() {
   const StateImpl::StateLock lock(mutex());
   return speed_profile_;
 }

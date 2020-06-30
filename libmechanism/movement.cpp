@@ -448,9 +448,6 @@ time_unit Movement::next() {
 
   ready_ = (next_move_interval() == 0);
 
-  LOG_DEBUG("RPM X {} Y {} Z {}", stepper_x()->current_rpm(),
-            stepper_y()->current_rpm(), stepper_z()->current_rpm());
-
   return next_move_interval();
 }
 
@@ -485,7 +482,13 @@ void Movement::spraying_motor_params() const {
 }
 
 void Movement::follow_spraying_paths() {
-  spraying_motor_params();
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
+
+  auto* config = Config::get();
+  auto* state = State::get();
+
+  motor_profile(config->spraying_speed_profile(state->speed_profile()));
 
   LOG_INFO("Following spraying paths...");
   for (const auto& iter : Config::get()->spraying_path()) {
@@ -511,9 +514,15 @@ void Movement::tending_motor_params() const {
 }
 
 void Movement::follow_tending_paths_edge() {
-  LOG_INFO("Following tending paths...");
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
 
-  tending_motor_params();
+  auto* config = Config::get();
+  auto* state = State::get();
+
+  motor_profile(config->tending_speed_profile(state->speed_profile()));
+
+  LOG_INFO("Following tending paths edge...");
 
   for (const auto& iter : Config::get()->tending_path_edge()) {
     LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
@@ -524,9 +533,15 @@ void Movement::follow_tending_paths_edge() {
 }
 
 void Movement::follow_tending_paths_zigzag() {
-  LOG_INFO("Following tending paths...");
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
 
-  tending_motor_params();
+  auto* config = Config::get();
+  auto* state = State::get();
+
+  motor_profile(config->tending_speed_profile(state->speed_profile()));
+
+  LOG_INFO("Following tending paths zigzag...");
 
   for (const auto& iter : Config::get()->tending_path_zigzag()) {
     LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
@@ -536,21 +551,33 @@ void Movement::follow_tending_paths_zigzag() {
   revert_motor_params();
 }
 
+void Movement::motor_profile(
+    const config::MechanismSpeed& speed_profile) const {
+  LOG_INFO("Changing motors' parameters...");
+
+  stepper_x()->rpm(speed_profile.x.rpm);
+  stepper_x()->acceleration(speed_profile.x.acceleration);
+  stepper_x()->deceleration(speed_profile.x.deceleration);
+
+  stepper_y()->rpm(speed_profile.y.rpm);
+  stepper_y()->acceleration(speed_profile.y.acceleration);
+  stepper_y()->deceleration(speed_profile.y.deceleration);
+
+  stepper_z()->rpm(speed_profile.z.rpm);
+  stepper_z()->acceleration(speed_profile.z.acceleration);
+  stepper_z()->deceleration(speed_profile.z.deceleration);
+}
+
 void Movement::revert_motor_params() const {
-  [[maybe_unused]] auto* config = Config::get();
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
 
-  LOG_INFO("Reverting to default motors' parameters...");
-  // stepper_x()->rpm(config->stepper_x<double>("rpm"));
-  // stepper_x()->acceleration(config->stepper_x<double>("acceleration"));
-  // stepper_x()->deceleration(config->stepper_x<double>("deceleration"));
+  auto* config = Config::get();
+  auto* state = State::get();
 
-  // stepper_y()->rpm(config->stepper_y<double>("rpm"));
-  // stepper_y()->acceleration(config->stepper_y<double>("acceleration"));
-  // stepper_y()->deceleration(config->stepper_y<double>("deceleration"));
+  LOG_INFO("Reverting to default motors' parameters (homing)...");
 
-  // stepper_z()->rpm(config->stepper_z<double>("rpm"));
-  // stepper_z()->acceleration(config->stepper_z<double>("acceleration"));
-  // stepper_z()->deceleration(config->stepper_z<double>("deceleration"));
+  motor_profile(config->homing_speed_profile(state->speed_profile()));
 }
 
 void Movement::move_finger_up() {
@@ -558,7 +585,6 @@ void Movement::move_finger_up() {
 
   LOG_INFO("Lifting finger...");
 
-  // enabling motor
   enable_motors();
 
   bool z_completed =
@@ -585,7 +611,6 @@ void Movement::move_finger_up() {
     }
   }
 
-  // disabling motor
   disable_motors();
 
   State::get()->z(0.0);
@@ -594,7 +619,6 @@ void Movement::move_finger_up() {
 void Movement::move_finger_down() {
   LOG_INFO("Lowering finger...");
 
-  // enabling motor
   enable_motors();
 
   bool z_completed =
@@ -622,7 +646,6 @@ void Movement::move_finger_down() {
     }
   }
 
-  // disable motor
   disable_motors();
 
   State::get()->z(52.0);
