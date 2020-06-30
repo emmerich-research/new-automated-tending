@@ -307,6 +307,8 @@ static bool menu() {
     std::string   speed_str;
     config::speed speed_profile = config::speed::normal;
 
+    std::cin >> speed_str;
+
     if (speed_str == "fast") {
       speed_profile = config::speed::fast;
     } else if (speed_str == "normal") {
@@ -318,7 +320,6 @@ static bool menu() {
     LOG_INFO("Set speed to {}", speed_str);
 
     state->speed_profile(speed_profile);
-
   } else if (choice == 0) {
     return true;
   }
