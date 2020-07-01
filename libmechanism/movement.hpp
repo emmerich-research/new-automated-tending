@@ -597,14 +597,6 @@ class Movement : public StackObj {
    */
   void update_position() const;
   /**
-   * Change motor params to spraying params
-   */
-  void spraying_motor_params() const;
-  /**
-   * Change motor params to tending params
-   */
-  void tending_motor_params() const;
-  /**
    * Reverting motor params
    *
    * Reverting to homing speed profile

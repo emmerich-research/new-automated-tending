@@ -115,7 +115,7 @@ std::shared_ptr<Movement>& MovementBuilderImpl::build() {
 Movement::Movement(const impl::MovementBuilderImpl* builder)
     : builder_{builder},
       // steps_per_mm_{builder->steps_per_mm()},
-      thread_pool_{4} {
+      thread_pool_{1} {
   active_ = true;
   ready_ = true;
   next_move_interval_ = 0;
@@ -351,58 +351,58 @@ time_unit Movement::next() {
     // not yet running
   }
 
-  bool next_x = false;
-  bool next_y = false;
-  bool next_z = false;
+  // bool next_x = false;
+  // bool next_y = false;
+  // bool next_z = false;
 
-  std::future<time_unit> timer_x;
-  std::future<time_unit> timer_y;
-  std::future<time_unit> timer_z;
+  // std::future<time_unit> timer_x;
+  // std::future<time_unit> timer_y;
+  // std::future<time_unit> timer_z;
 
   if (event_timer_x() <= next_move_interval()) {
     // with thread version
-    next_x = true;
-    timer_x = thread_pool().enqueue([this] { return stepper_x()->next(); });
+    // next_x = true;
+    // timer_x = thread_pool().enqueue([this] { return stepper_x()->next(); });
 
     // without thread version
-    // event_timer_x_ = stepper_x()->next();
+    event_timer_x_ = stepper_x()->next();
   } else {
     event_timer_x_ -= next_move_interval();
   }
 
   if (event_timer_y() <= next_move_interval()) {
     // with thread version
-    next_y = true;
-    timer_y = thread_pool().enqueue([this] { return stepper_y()->next(); });
+    // next_y = true;
+    // timer_y = thread_pool().enqueue([this] { return stepper_y()->next(); });
 
     // without thread version
-    // event_timer_y_ = stepper_y()->next();
+    event_timer_y_ = stepper_y()->next();
   } else {
     event_timer_y_ -= next_move_interval();
   }
 
   if (event_timer_z() <= next_move_interval()) {
     // with thread version
-    next_z = true;
-    timer_z = thread_pool().enqueue([this] { return stepper_z()->next(); });
+    // next_z = true;
+    // timer_z = thread_pool().enqueue([this] { return stepper_z()->next(); });
 
     // without thread version
-    // event_timer_z_ = stepper_z()->next();
+    event_timer_z_ = stepper_z()->next();
   } else {
     event_timer_z_ -= next_move_interval();
   }
 
-  if (next_x) {
-    event_timer_x_ = timer_x.get();
-  }
+  // if (next_x) {
+  //   event_timer_x_ = timer_x.get();
+  // }
 
-  if (next_y) {
-    event_timer_y_ = timer_y.get();
-  }
+  // if (next_y) {
+  //   event_timer_y_ = timer_y.get();
+  // }
 
-  if (next_z) {
-    event_timer_z_ = timer_z.get();
-  }
+  // if (next_z) {
+  //   event_timer_z_ = timer_z.get();
+  // }
 
   // update_position();
   // auto x = State::get()->x();
@@ -432,9 +432,6 @@ time_unit Movement::next() {
 
   ready_ = (next_move_interval() == 0);
 
-  LOG_DEBUG("RPM X {} Y {} Z {}", stepper_x()->current_rpm(),
-            stepper_y()->current_rpm(), stepper_z()->current_rpm());
-
   return next_move_interval();
 }
 
@@ -454,20 +451,6 @@ void Movement::move_to_tending_position() {
   State::get()->coordinate({0.0, 0.0, 0.0});
 }
 
-void Movement::spraying_motor_params() const {
-  massert(Config::get() != nullptr, "sanity");
-  [[maybe_unused]] auto* config = Config::get();
-
-  LOG_INFO("Configuring motors' parameters to spraying...");
-  // stepper_x()->rpm(config->spraying_stepper_x<double>("rpm"));
-  // stepper_x()->acceleration(config->spraying_stepper_x<double>("acceleration"));
-  // stepper_x()->deceleration(config->spraying_stepper_x<double>("deceleration"));
-
-  // stepper_y()->rpm(config->spraying_stepper_y<double>("rpm"));
-  // stepper_y()->acceleration(config->spraying_stepper_y<double>("acceleration"));
-  // stepper_y()->deceleration(config->spraying_stepper_y<double>("deceleration"));
-}
-
 void Movement::follow_spraying_paths() {
   massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
@@ -484,20 +467,6 @@ void Movement::follow_spraying_paths() {
   }
 
   revert_motor_params();
-}
-
-void Movement::tending_motor_params() const {
-  [[maybe_unused]] auto* config = Config::get();
-
-  LOG_INFO("Configuring motors' parameters to tending...");
-
-  // stepper_x()->rpm(config->tending_stepper_x<double>("rpm"));
-  // stepper_x()->acceleration(config->tending_stepper_x<double>("acceleration"));
-  // stepper_x()->deceleration(config->tending_stepper_x<double>("deceleration"));
-
-  // stepper_y()->rpm(config->tending_stepper_y<double>("rpm"));
-  // stepper_y()->acceleration(config->tending_stepper_y<double>("acceleration"));
-  // stepper_y()->deceleration(config->tending_stepper_y<double>("deceleration"));
 }
 
 void Movement::follow_tending_paths_edge() {
