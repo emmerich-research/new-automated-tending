@@ -41,7 +41,7 @@ void ShiftRegisterDeviceImpl::reset_bits() {
 
 ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
                                           const digital::value& level) {
-  if (pin >= cascade_num) {
+  if (pin > cascade_num * shift_bits) {
     return ATM_ERR;
   }
 
@@ -71,7 +71,7 @@ ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
 }
 
 void ShiftRegisterDeviceImpl::shift_out(const byte& value) const {
-  for (unsigned int i = 0; i < 8; i++) {
+  for (unsigned int i = 0; i < shift_bits; i++) {
     if (order() == shift_register::bit_order::lsb) {
       data_device()->write(!!(value & (1 << i)) ? digital::value::high
                                                 : digital::value::low);

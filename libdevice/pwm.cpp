@@ -5,7 +5,7 @@
 NAMESPACE_BEGIN
 
 namespace device {
-PWMDevice::PWMDevice(unsigned char pin, const bool& active_state)
+PWMDevice::PWMDevice(PI_PIN pin, const bool& active_state)
     : DigitalOutputDevice{pin, active_state} {
   DEBUG_ONLY(obj_name_ = fmt::format("PWMDevice pin {}", pin));
 

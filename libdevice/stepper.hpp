@@ -54,13 +54,13 @@ enum class direction { forward = 1, backward = -1 };
  * @var using steps = unsigned long
  * @brief Type definition for stepper steps
  */
-using step = unsigned long;
+using step = long;
 
 /**
  * @var using pulses = unsigned long
  * @brief Type definition for stepper pulses
  */
-using pulse = time_unit;
+using pulse = long;
 }  // namespace stepper
 
 /** device::StepperDevice registry singleton class using
@@ -108,7 +108,7 @@ class StepperDevice : public StackObj {
    * @param steps steps to take
    * @param time  finish time
    */
-  virtual void start_move(long steps, time_unit time = 0) = 0;
+  virtual void start_move(long steps, long time = 0) = 0;
   /**
    * Yield move for each step
    *
@@ -255,6 +255,12 @@ class StepperDevice : public StackObj {
    * @param active_state  true means HIGH as HIGH, false means LOW as HIGH
    */
   void dir_active_state(const bool& active_state);
+  /**
+   * Get current rpm from calculation
+   *
+   * @return current rpm from calculation
+   */
+  inline virtual double current_rpm() const { return 0.0; }
 
  protected:
   /**
@@ -454,7 +460,7 @@ class StepperDeviceImpl : public StepperDevice {
    * @param steps steps to take
    * @param time  finish time
    */
-  virtual void start_move(long steps, time_unit time = 0) override;
+  virtual void start_move(long steps, long time = 0) override;
   /**
    * Yield move for each step
    *
@@ -481,6 +487,12 @@ class StepperDeviceImpl : public StepperDevice {
    * @return remaining steps
    */
   virtual stepper::step stop(void) override;
+  /**
+   * Get current rpm from calculation
+   *
+   * @return current rpm from calculation
+   */
+  virtual double current_rpm() const override;
 
  protected:
   /**

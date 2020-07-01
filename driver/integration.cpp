@@ -186,6 +186,7 @@ static bool menu() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
+  auto*  config = Config::get();
   auto*  state = State::get();
   auto*  shift_register = device::ShiftRegister::get();
   auto*  stepper_registry = device::StepperRegistry::get();
@@ -214,16 +215,17 @@ static bool menu() {
   shift_register->write(device::id::spray(), device::digital::value::low);
 
   LOG_INFO("----MENU-----");
-  LOG_INFO("1. Spraying and Tending with trigger");
-  LOG_INFO("2. Cleaning with trigger");
-  LOG_INFO("3. Homing");
-  LOG_INFO("4. Just X");
-  LOG_INFO("5. Just Y");
-  LOG_INFO("6. Just Z");
-  LOG_INFO("7. Spraying and Tending trigger");
-  LOG_INFO("8. Move X with specified distance (in mm, can be negative)");
-  LOG_INFO("9. Move Y with specified distance (in mm, can be negative)");
-  LOG_INFO("0. Exit");
+  LOG_INFO("1.  Spraying and Tending with trigger");
+  LOG_INFO("2.  Cleaning with trigger");
+  LOG_INFO("3.  Homing");
+  LOG_INFO("4.  Just X");
+  LOG_INFO("5.  Just Y");
+  LOG_INFO("6.  Just Z");
+  LOG_INFO("7.  Spraying and Tending trigger");
+  LOG_INFO("8.  Move X with specified distance (in cm, can be negative)");
+  LOG_INFO("9.  Move Y with specified distance (in cm, can be negative)");
+  LOG_INFO("10. Set speed <fast/normal/slow>");
+  LOG_INFO("0.  Exit");
 
   unsigned int choice;
   std::cin >> choice;
@@ -276,6 +278,10 @@ static bool menu() {
 
       if (spraying_tending_height_status) {
         do_spraying();
+
+        LOG_INFO("Wait for 3 seconds to tend");
+        sleep_for<time_units::seconds>(3);
+
         do_tending();
       } else if (cleaning_height_status) {
         // noop
@@ -285,7 +291,11 @@ static bool menu() {
     }
   } else if (choice == 8 || choice == 9) {
     double distance;
+
     std::cin >> distance;
+
+    movement->motor_profile(
+        config->fault_speed_profile(state->speed_profile()));
 
     if (choice == 8) {
       movement->move<mechanism::movement::unit::cm>(distance, 0.0, 0.0);
@@ -293,6 +303,23 @@ static bool menu() {
       movement->move<mechanism::movement::unit::cm>(0.0, distance, 0.0);
     }
     state->reset_coordinate();
+  } else if (choice == 10) {
+    std::string   speed_str;
+    config::speed speed_profile = config::speed::normal;
+
+    std::cin >> speed_str;
+
+    if (speed_str == "fast") {
+      speed_profile = config::speed::fast;
+    } else if (speed_str == "normal") {
+      speed_profile = config::speed::normal;
+    } else if (speed_str == "slow") {
+      speed_profile = config::speed::slow;
+    }
+
+    LOG_INFO("Set speed to {}", speed_str);
+
+    state->speed_profile(speed_profile);
   } else if (choice == 0) {
     return true;
   }

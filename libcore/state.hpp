@@ -22,7 +22,9 @@ NAMESPACE_BEGIN
 // forward declaration
 struct Coordinate;
 struct TaskState;
-enum class Speed;
+namespace config {
+enum class speed;
+}
 namespace impl {
 class StateImpl;
 }
@@ -297,13 +299,13 @@ class StateImpl : public StackObj {
   /**
    * Set profile speed
    */
-  void speed_profile(const Speed& speed_profile);
+  void speed_profile(const config::speed& speed_profile);
   /**
    * Get profile speed
    *
    * @return profile speed
    */
-  const Speed& speed_profile();
+  const config::speed& speed_profile();
 
  private:
   /**
@@ -329,7 +331,10 @@ class StateImpl : public StackObj {
   StateMutex& mutex();
 
  private:
-  Speed speed_profile_;
+  /**
+   * Speed profile
+   */
+  config::speed speed_profile_;
   /**
    * Latest path id
    */
