@@ -86,21 +86,14 @@ microsteps                   = 8
 # End of Stepper Configuration
 # ----------------------------------------------------------
 
-[devices.spray]
-# notes that this needs to be pulled up via Raspberry PI PIN
-# and the logic needs to be flipped (active-state = false)
-key                          = "SPRAY"
-pin                          = 21
-active-state                 = false
-
 [devices.finger]
 # default range 0 - 255
 key                          = "FINGER"
 pin                          = 18
-active-state                 = false
-duty-cycle                   = 200
-homing-duty-cycle            = 50
-homing-offset                = 30 # in degree
+active-state                 = true
+# duty-cycle                   = 160
+# homing-duty-cycle            = 50
+# homing-offset                = 30 # in degree
 
 [devices.anomaly]
 key                          = "ANOMALY"
@@ -259,7 +252,7 @@ active-state                 = false
 
 [devices.shift-register.spray]
 key                          = "SPRAY"
-address                      = 15
+address                      = 14
 active-state                 = false
 # ----------------------------------------------------------
 # End of RasPi to PLC
@@ -339,17 +332,17 @@ deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.fault.manual.speed.fast]
 [mechanisms.fault.manual.speed.fast.x]
-rpm                          = 500.0
+rpm                          = 300.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.fault.manual.speed.fast.y]
-rpm                          = 500.0
+rpm                          = 300.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.fault.manual.speed.fast.z]
-rpm                          = 500.0
+rpm                          = 300.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
@@ -404,17 +397,17 @@ deceleration                 = 1000.0 # steps / s^2
 duty-cycle                   = 50
 
 [mechanisms.homing.speed.fast.x]
-rpm                          = 500.0
+rpm                          = 300.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.homing.speed.fast.y]
-rpm                          = 500.0
+rpm                          = 300.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.homing.speed.fast.z]
-rpm                          = 500.0
+rpm                          = 300.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
@@ -441,22 +434,20 @@ path                         = [
   # x   y  (in mm, need to be in floating point)
 
   # zigzag
-  [20.0,  50.0],
-  [780.0, 50.0],
-  [780.0, 120.0],
-  [20.0,  120.0],
-  [20.0,  190.0],
-  [780.0, 190.0],
-  [780.0, 260.0],
-  [20.0,  260.0],
-  [20.0,  330.0],
-  [780.0, 330.0],
-  [780.0, 400.0],
-  [20.0,  400.0],
-  [20.0,  470.0],
-  [780.0, 470.0],
-  [780.0, 505.0],
-  [20.0,  505.0],
+  [0.0,  0.0],
+  [810.0, 0.0],
+  [810.0, 85.0],
+  [0.0,  85.0],
+  [0.0,  170.0],
+  [810.0, 170.0],
+  [810.0, 255.0],
+  [0.0,  255.0],
+  [0.0,  340.0],
+  [810.0, 340.0],
+  [810.0, 425.0],
+  [0.0,  425.0],
+  [0.0,  550.0],
+  [810.0, 550.0],
 ]
 
 [mechanisms.spraying.speed.slow]
@@ -493,19 +484,19 @@ deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.spraying.speed.fast]
 [mechanisms.spraying.speed.fast.x]
-rpm                          = 500.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 2000.0 # steps / s^2
+deceleration                 = 1500.0 # steps / s^2
 
 [mechanisms.spraying.speed.fast.y]
-rpm                          = 500.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 2000.0 # steps / s^2
+deceleration                 = 1500.0 # steps / s^2
 
 [mechanisms.spraying.speed.fast.z]
-rpm                          = 500.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 1500.0 # steps / s^2
+deceleration                 = 1500.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Spraying Mechanism
 # ----------------------------------------------------------
@@ -526,7 +517,7 @@ deceleration                 = 1000.0 # steps / s^2
 # ----------------------------------------------------------
 [mechanisms.tending]
 # initial position according to limit switch homing
-position                     = [120.0, 105.0]
+position                     = [115.0, 135.0]
 
 [mechanisms.tending.path]
 # coordinates after changing `imaginary homing` to
@@ -537,43 +528,59 @@ position                     = [120.0, 105.0]
 edge                         = [
   # x    y  (in mm, need to be in floating point)
   [0.0,   0.0],
-  [0.0,   560.0],
-  [800.0, 560.0],
-  [800.0, 0.0],
-  [0.0,  0.0],
-  [20.0, 50.0],
+ # [0.0,   560.0],
+ # [803.0, 560.0],
+ # [803.0, 0.0],
+ # [0.0,  0.0],
+ # [15.0, 50.0],
 ]
 
 zigzag                       = [
   # x    y  (in mm, need to be in floating point)
-  [20.0,  50.0],
-  [780.0, 50.0],
-  [780.0, 85.0],
-  [20.0,  85.0],
-  [20.0,  120.0],
-  [780.0, 120.0],
-  [780.0, 155.0],
-  [20.0,  155.0],
-  [20.0,  190.0],
-  [780.0, 190.0],
-  [780.0, 225.0],
-  [20.0,  225.0],
-  [20.0,  260.0],
-  [780.0, 260.0],
-  [780.0, 295.0],
-  [20.0,  295.0],
-  [20.0,  330.0],
-  [780.0, 330.0],
-  [780.0, 365.0],
-  [20.0,  365.0],
-  [20.0,  400.0],
-  [780.0, 400.0],
-  [780.0, 435.0],
-  [20.0,  435.0],
-  [20.0,  470.0],
-  [780.0, 470.0],
-  [780.0, 505.0],
-  [20.0,  505.0],
+  [0.0,  0.0],
+  [805.0, 0.0],
+  [805.0, 65.0],
+  [0.0,  65.0],
+  [0.0,  130.0],
+  [805.0, 130.0],
+  [805.0, 195.0],
+  [0.0,  195.0],
+  [0.0,  260.0],
+  [805.0, 260.0],
+  [805.0, 325.0],
+  [0.0,  325.0],
+  [0.0,  390.0],
+  [805.0, 390.0],
+  [805.0, 455.0],
+  [0.0,  455.0],
+  [0.0,  500.0],
+  [805.0, 500.0],
+  [805.0,  0.0],
+  [735.0, 0.0],
+  [735.0, 500.0],
+  [665.0,  500.0],
+  [665.0,  0.0],
+  [595.0, 0.0],
+  [595.0, 500.0],
+  [525.0,  500.0],
+  [525.0,  0.0],
+  [455.0, 0.0],
+  [455.0, 500.0],
+  [385.0,  500.0],
+  [385.0,  0.0],
+  [315.0, 0.0],
+  [315.0, 500.0],
+  [245.0,  500.0],
+  [245.0,  0.0],
+  [175.0, 0.0],
+  [175.0, 500.0],
+  [105.0,  500.0],
+  [105.0,  0.0],
+  [50.0, 0.0],
+  [50.0, 500.0],
+  [0.0,  500.0],
+  [0.0,  0.0],
+  [30.0, 0.0],
 ]
 
 [mechanisms.tending.speed.slow]
@@ -613,22 +620,22 @@ acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.tending.speed.fast]
-duty-cycle                   = 50
+duty-cycle                   = 160
 
 [mechanisms.tending.speed.fast.x]
-rpm                          = 500.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 250.0
+acceleration                 = 1500.0 # steps / s^2
+deceleration                 = 1200.0 # steps / s^2
 
 [mechanisms.tending.speed.fast.y]
-rpm                          = 500.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 250.0
+acceleration                 = 1500.0 # steps / s^2
+deceleration                 = 1200.0 # steps / s^2
 
 [mechanisms.tending.speed.fast.z]
-rpm                          = 500.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 300.0
+acceleration                 = 300.0 # steps / s^2
+deceleration                 = 300.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Tending Mechanism
 # ----------------------------------------------------------

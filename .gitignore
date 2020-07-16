@@ -50,3 +50,5 @@ Makefile
 *.ccls
 .ccls-*
 *.emacs.*
+
+*.bak

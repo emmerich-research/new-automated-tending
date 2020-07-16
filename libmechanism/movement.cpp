@@ -607,6 +607,18 @@ void Movement::move_finger_down() {
   State::get()->z(52.0);
 }
 
+void Movement::rotate_finger() const {
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
+
+  const auto& speed_profile =
+      Config::get()->tending_speed_profile(State::get()->speed_profile());
+  LOG_INFO("Rotating finger...");
+  if (finger()->duty_cycle(speed_profile.duty_cycle) == ATM_ERR) {
+    LOG_INFO("Cannot set finger duty cycle...");
+  }
+}
+
 void Movement::homing_finger() const {
   massert(Config::get() != nullptr, "sanity");
   massert(device::PCF8591Device::get() != nullptr, "sanity");
@@ -614,17 +626,20 @@ void Movement::homing_finger() const {
   auto* config = Config::get();
   auto* analog_device = device::PCF8591Device::get();
 
-  auto offset = config->finger<unsigned int>("homing-offset");
+  const auto& homing_speed_profile = Config::get()->homing_speed_profile();
+  const auto& speed_profile =
+      Config::get()->homing_speed_profile(State::get()->speed_profile());
+  const auto& offset = homing_speed_profile.finger_threshold;
 
   LOG_INFO("Setting to homing duty cycle");
-  finger()->duty_cycle(config->finger<unsigned int>("homing-duty-cycle"));
+  finger()->duty_cycle(speed_profile.duty_cycle);
   while (true) {
     auto degree = analog_device->read(builder()->rotary_encoder_pin());
     if (degree <= offset) {
       finger()->write(device::digital::value::low);
       break;
     }
-    sleep_for<time_units::micros>(500);
+    // sleep_for<time_units::micros>(500);
   }
 }
 

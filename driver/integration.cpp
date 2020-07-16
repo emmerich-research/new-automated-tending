@@ -121,7 +121,7 @@ static void do_tending() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto*  config = Config::get();
+  // auto*  config = Config::get();
   auto*  shift_register = device::ShiftRegister::get();
   auto*  pwm_registry = device::PWMDeviceRegistry::get();
   auto&& movement = mechanism::movement_mechanism();
@@ -154,18 +154,20 @@ static void do_tending() {
   sleep_for<time_units::millis>(1000);
   movement->follow_tending_paths_edge();
   sleep_for<time_units::millis>(1000);
-  if (finger->duty_cycle(config->finger<unsigned int>("duty-cycle")) ==
-      ATM_ERR) {
-    LOG_INFO("Cannot set finger duty cycle...");
-  }
+
+  movement->rotate_finger();
+
+  // if (finger->duty_cycle(config->finger<unsigned int>("duty-cycle")) ==
+  //     ATM_ERR) {
+  //   LOG_INFO("Cannot set finger duty cycle...");
+  // }
 
   sleep_for<time_units::millis>(1000);
   movement->follow_tending_paths_zigzag();
   sleep_for<time_units::millis>(1000);
 
-  if (finger->write(device::digital::value::low) == ATM_ERR) {
-    LOG_INFO("Cannot set finger duty cycle...");
-  }
+  movement->homing_finger();
+
   movement->homing();
 
   shift_register->write(device::id::comm::pi::tending_ready(),
