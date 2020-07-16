@@ -634,10 +634,12 @@ void Movement::homing_finger() const {
   LOG_INFO("Setting to homing duty cycle");
   finger()->duty_cycle(speed_profile.duty_cycle);
   while (true) {
-    auto degree = analog_device->read(builder()->rotary_encoder_pin());
-    if (degree <= offset) {
-      finger()->write(device::digital::value::low);
-      break;
+    if (auto degree = analog_device->read(builder()->rotary_encoder_pin())) {
+      LOG_DEBUG("Degree {} Offset {}", *degree, offset);
+      if (*degree <= offset) {
+        finger()->write(device::digital::value::low);
+        break;
+      }
     }
     // sleep_for<time_units::micros>(500);
   }

@@ -125,7 +125,7 @@ static void do_tending() {
   auto*  shift_register = device::ShiftRegister::get();
   auto*  pwm_registry = device::PWMDeviceRegistry::get();
   auto&& movement = mechanism::movement_mechanism();
-  auto&& finger = pwm_registry->get(device::id::finger());
+  // auto&& finger = pwm_registry->get(device::id::finger());
 
   shift_register->write(device::id::comm::pi::tending_ready(),
                         device::digital::value::low);
