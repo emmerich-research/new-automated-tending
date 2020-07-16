@@ -105,7 +105,7 @@ time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
 
     time_unit m = micros();
     // save value because calcStepPulse() will overwrite it
-    stepper::pulse pulse = step_pulse();
+    unsigned long pulse = static_cast<unsigned long>(step_pulse());
     calc_step_pulse();
 
     // We should pull HIGH for at least 1-2us (step_high_min)
@@ -141,6 +141,15 @@ stepper::step StepperDeviceImpl<Speed>::stop() {
   stepper::step retval = remaining_steps();
   remaining_steps_ = 0;
   return retval;
+}
+
+template <stepper::speed Speed>
+double StepperDeviceImpl<Speed>::current_rpm() const {
+  if (step_pulse() == 0) {
+    return 0.0;
+  }
+  return static_cast<double>(60.0 * 1000000L / step_pulse() / microsteps() /
+                             motor_steps());
 }
 }  // namespace impl
 }  // namespace device

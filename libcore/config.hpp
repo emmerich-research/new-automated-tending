@@ -23,19 +23,31 @@
 
 NAMESPACE_BEGIN
 
-struct SpeedConfig;
-struct MechanismSpeedProfile;
+// forward declarations
+namespace config {
+struct Speed;
+struct MechanismSpeed;
 struct SpeedProfile;
+}  // namespace config
 
 namespace impl {
 class ConfigImpl;
-}
+}  // namespace impl
 
 /** impl::ConfigImpl singleton class using StaticObj */
 using Config = StaticObj<impl::ConfigImpl>;
 
-struct SpeedConfig {
-  SpeedConfig();
+namespace config {
+/**
+ * @brief Speed implementation.
+ *
+ * Struct for speed profile for motor configuration
+ *
+ * @author Ray Andrew
+ * @date   June 2020
+ */
+struct Speed {
+  Speed();
   DEBUG_ONLY(void print(std::ostream& os) const);
 
   double rpm;
@@ -43,32 +55,49 @@ struct SpeedConfig {
   double deceleration;
 };
 
-struct MechanismSpeedProfile {
-  MechanismSpeedProfile();
+/**
+ * @brief MechanismSpeedProfile implementation.
+ *
+ * Struct for speed profile for mechanism configuration
+ *
+ * @author Ray Andrew
+ * @date   June 2020
+ */
+struct MechanismSpeed {
+  MechanismSpeed();
   DEBUG_ONLY(void print(std::ostream& os) const);
 
-  SpeedConfig  x;
-  SpeedConfig  y;
-  SpeedConfig  z;
+  Speed        x;
+  Speed        y;
+  Speed        z;
   unsigned int duty_cycle;
 };
 
+/**
+ * @brief SpeedProfile implementation.
+ *
+ * Struct for multiple speed profile configuration
+ *
+ * @author Ray Andrew
+ * @date   June 2020
+ */
 struct SpeedProfile {
   SpeedProfile();
   DEBUG_ONLY(void print(std::ostream& os) const);
 
-  MechanismSpeedProfile slow;
-  MechanismSpeedProfile normal;
-  MechanismSpeedProfile fast;
+  MechanismSpeed slow;
+  MechanismSpeed normal;
+  MechanismSpeed fast;
 };
+
+enum class speed { slow, normal, fast };
+}  // namespace config
 
 template <class T>
 auto operator<<(std::ostream& os, T const& t) -> decltype(t.print(os), os) {
   t.print(os);
   return os;
 }
-
-enum class Speed { slow, normal, fast };
 
 namespace impl {
 /**
@@ -108,88 +137,48 @@ class ConfigImpl : public StackObj {
   /**
    * Get speed Profile of Fault mechanism
    *
-   * @tparam speed type of speed
+   * @param speed_profile type of speed
    *
    * @return fault speed profile
    */
-  template <Speed speed = Speed::normal>
-  inline const MechanismSpeedProfile& fault_speed_profile() const {
-    if (speed == Speed::slow) {
-      return fault_speed_profile_.slow;
-    } else if (speed == Speed::normal) {
-      return fault_speed_profile_.normal;
-    } else {
-      return fault_speed_profile_.fast;
-    }
-  }
+  const config::MechanismSpeed& fault_speed_profile(
+      const config::speed& speed_profile) const;
   /**
    * Get speed Profile of Homing mechanism
    *
-   * @tparam speed type of speed
+   * @param speed_profile type of speed
    *
    * @return homing speed profile
    */
-  template <Speed speed = Speed::normal>
-  inline const MechanismSpeedProfile& homing_speed_profile() const {
-    if (speed == Speed::slow) {
-      return homing_speed_profile_.slow;
-    } else if (speed == Speed::normal) {
-      return homing_speed_profile_.normal;
-    } else {
-      return homing_speed_profile_.fast;
-    }
-  }
+  const config::MechanismSpeed& homing_speed_profile(
+      const config::speed& speed_profile) const;
   /**
    * Get speed Profile of Spraying mechanism
    *
-   * @tparam speed type of speed
+   * @param speed_profile type of speed
    *
    * @return spraying speed profile
    */
-  template <Speed speed = Speed::normal>
-  inline const MechanismSpeedProfile& spraying_speed_profile() const {
-    if (speed == Speed::slow) {
-      return spraying_speed_profile_.slow;
-    } else if (speed == Speed::normal) {
-      return spraying_speed_profile_.normal;
-    } else {
-      return spraying_speed_profile_.fast;
-    }
-  }
+  const config::MechanismSpeed& spraying_speed_profile(
+      const config::speed& speed_profile) const;
   /**
    * Get speed Profile of Tending mechanism
    *
-   * @tparam speed type of speed
+   * @param speed_profile type of speed
    *
    * @return spraying speed profile
    */
-  template <Speed speed = Speed::normal>
-  inline const MechanismSpeedProfile& tending_speed_profile() const {
-    if (speed == Speed::slow) {
-      return tending_speed_profile_.slow;
-    } else if (speed == Speed::normal) {
-      return tending_speed_profile_.normal;
-    } else {
-      return tending_speed_profile_.fast;
-    }
-  }
+  const config::MechanismSpeed& tending_speed_profile(
+      const config::speed& speed_profile) const;
   /**
    * Get speed Profile of Cleaning mechanism
    *
-   * @tparam speed type of speed
+   * @param speed_profile type of speed
    *
    * @return cleaning speed profile
    */
-  template <Speed speed = Speed::normal>
-  inline const MechanismSpeedProfile& cleaning_speed_profile() const {
-    if (speed == Speed::slow) {
-      return cleaning_speed_profile_.slow;
-    } else if (speed == Speed::normal) {
-      return cleaning_speed_profile_.normal;
-    } else {
-      return cleaning_speed_profile_.fast;
-    }
-  }
+  const config::MechanismSpeed& cleaning_speed_profile(
+      const config::speed& speed_profile) const;
   /**
    * Get stepper x-axis device info
    *
@@ -539,23 +528,23 @@ class ConfigImpl : public StackObj {
   /**
    * Fault speed profile
    */
-  SpeedProfile fault_speed_profile_;
+  config::SpeedProfile fault_speed_profile_;
   /**
    * Homing speed profile
    */
-  SpeedProfile homing_speed_profile_;
+  config::SpeedProfile homing_speed_profile_;
   /**
    * Tending speed profile
    */
-  SpeedProfile tending_speed_profile_;
+  config::SpeedProfile tending_speed_profile_;
   /**
    * Spraying speed profile
    */
-  SpeedProfile spraying_speed_profile_;
+  config::SpeedProfile spraying_speed_profile_;
   /**
    * Cleaning speed profile
    */
-  SpeedProfile cleaning_speed_profile_;
+  config::SpeedProfile cleaning_speed_profile_;
 };
 }  // namespace impl
 

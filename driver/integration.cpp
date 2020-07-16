@@ -186,6 +186,7 @@ static bool menu() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
+  auto*  config = Config::get();
   auto*  state = State::get();
   auto*  shift_register = device::ShiftRegister::get();
   auto*  stepper_registry = device::StepperRegistry::get();
@@ -213,17 +214,20 @@ static bool menu() {
 
   shift_register->write(device::id::spray(), device::digital::value::low);
 
-  LOG_INFO("----MENU-----");
-  LOG_INFO("1. Spraying and Tending with trigger");
-  LOG_INFO("2. Cleaning with trigger");
-  LOG_INFO("3. Homing");
-  LOG_INFO("4. Just X");
-  LOG_INFO("5. Just Y");
-  LOG_INFO("6. Just Z");
-  LOG_INFO("7. Spraying and Tending trigger");
-  LOG_INFO("8. Move X with specified distance (in mm, can be negative)");
-  LOG_INFO("9. Move Y with specified distance (in mm, can be negative)");
-  LOG_INFO("0. Exit");
+  LOG_INFO("----MENU----");
+  LOG_INFO("1.   Spraying and Tending");
+  LOG_INFO("2.   Spraying");
+  LOG_INFO("3.   Tending");
+  LOG_INFO("4.   Cleaning");
+  LOG_INFO("5.   Homing");
+  LOG_INFO("6.   Just X");
+  LOG_INFO("7.   Just Y");
+  LOG_INFO("8.   Just Z");
+  LOG_INFO("9.   Spraying and Tending trigger");
+  LOG_INFO("10.  Move X with specified distance (in cm, can be negative)");
+  LOG_INFO("11.  Move Y with specified distance (in cm, can be negative)");
+  LOG_INFO("12.  Set speed <fast/normal/slow>");
+  LOG_INFO("0.   Exit");
 
   unsigned int choice;
   std::cin >> choice;
@@ -231,14 +235,15 @@ static bool menu() {
   if (choice == 1) {
     do_spraying();
     do_tending();
-    return false;
   } else if (choice == 2) {
-    // do_tending();
-    return false;
+    do_spraying();
   } else if (choice == 3) {
-    movement->homing();
-    return false;
+    do_tending();
   } else if (choice == 4) {
+    // TODO: implementing cleaning
+  } else if (choice == 5) {
+    movement->homing();
+  } else if (choice == 6) {
     auto&& stepper_x = stepper_registry->get(device::id::stepper::x());
     stepper_x->enable();
     for (size_t i = 0; i < 2; ++i) {
@@ -247,7 +252,7 @@ static bool menu() {
       stepper_x->move(-10000);
     }
     stepper_x->disable();
-  } else if (choice == 5) {
+  } else if (choice == 7) {
     auto&& stepper_y = stepper_registry->get(device::id::stepper::y());
     stepper_y->enable();
     for (size_t i = 0; i < 2; ++i) {
@@ -256,7 +261,7 @@ static bool menu() {
       stepper_y->move(-10000);
     }
     stepper_y->disable();
-  } else if (choice == 6) {
+  } else if (choice == 8) {
     auto&& stepper_z = stepper_registry->get(device::id::stepper::z());
     stepper_z->enable();
     for (size_t i = 0; i < 2; ++i) {
@@ -265,7 +270,7 @@ static bool menu() {
       stepper_z->move(-500);
     }
     stepper_z->disable();
-  } else if (choice == 7) {
+  } else if (choice == 9) {
     while (true) {
       auto spraying_tending_height_status =
           spraying_tending_height->read_bool();
@@ -276,6 +281,10 @@ static bool menu() {
 
       if (spraying_tending_height_status) {
         do_spraying();
+
+        LOG_INFO("Wait for 3 seconds to tend");
+        sleep_for<time_units::seconds>(3);
+
         do_tending();
       } else if (cleaning_height_status) {
         // noop
@@ -283,16 +292,37 @@ static bool menu() {
 
       sleep_for<time_units::millis>(500);
     }
-  } else if (choice == 8 || choice == 9) {
+  } else if (choice == 10 || choice == 11) {
     double distance;
+
     std::cin >> distance;
 
-    if (choice == 8) {
+    movement->motor_profile(
+        config->fault_speed_profile(state->speed_profile()));
+
+    if (choice == 10) {
       movement->move<mechanism::movement::unit::cm>(distance, 0.0, 0.0);
-    } else if (choice == 9) {
+    } else if (choice == 11) {
       movement->move<mechanism::movement::unit::cm>(0.0, distance, 0.0);
     }
     state->reset_coordinate();
+  } else if (choice == 12) {
+    std::string   speed_str;
+    config::speed speed_profile = config::speed::normal;
+
+    std::cin >> speed_str;
+
+    if (speed_str == "fast") {
+      speed_profile = config::speed::fast;
+    } else if (speed_str == "normal") {
+      speed_profile = config::speed::normal;
+    } else if (speed_str == "slow") {
+      speed_profile = config::speed::slow;
+    }
+
+    LOG_INFO("Set speed to {}", speed_str);
+
+    state->speed_profile(speed_profile);
   } else if (choice == 0) {
     return true;
   }

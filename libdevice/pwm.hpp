@@ -110,7 +110,7 @@ class PWMDevice : public DigitalOutputDevice {
    * @param  pin gpio pin, see Raspberry GPIO pinout for details
    * @param  active_state whether the active state is reversed or not
    */
-  PWMDevice(unsigned char pin, const bool& active_state = true);
+  PWMDevice(PI_PIN pin, const bool& active_state = true);
   /**
    * PWMDevice Constructor
    *

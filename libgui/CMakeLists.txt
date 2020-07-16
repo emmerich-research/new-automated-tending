@@ -84,8 +84,12 @@ target_set_warnings(gui
   DISABLE Annoying)
 
 set_target_properties(gui PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO)
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED YES
+  CXX_EXTENSIONS NO)
+
+target_compile_options(gui PRIVATE
+  -Wno-extra-semi-stmt
+  -Wno-alloca)
 
 target_enable_lto(gui optimized)
