@@ -127,33 +127,33 @@ static void do_tending() {
   auto&& movement = mechanism::movement_mechanism();
   // auto&& finger = pwm_registry->get(device::id::finger());
 
-  // shift_register->write(device::id::comm::pi::tending_ready(),
-  //                       device::digital::value::low);
-  // shift_register->write(device::id::comm::pi::tending_running(),
-  //                       device::digital::value::low);
-  // shift_register->write(device::id::comm::pi::tending_complete(),
-  //                       device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_ready(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::low);
 
-  // movement->homing();
+  movement->homing();
 
-  // shift_register->write(device::id::comm::pi::tending_ready(),
-  //                       device::digital::value::high);
-  // shift_register->write(device::id::comm::pi::tending_running(),
-  //                       device::digital::value::low);
-  // shift_register->write(device::id::comm::pi::tending_complete(),
-  //                       device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_ready(),
+                        device::digital::value::high);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::low);
 
-  // sleep_for<time_units::millis>(3000);
+  sleep_for<time_units::millis>(3000);
 
-  // shift_register->write(device::id::comm::pi::tending_running(),
-  //                       device::digital::value::high);
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::high);
 
-  // movement->move_to_tending_position();
-  // sleep_for<time_units::millis>(3000);
-  // movement->move_finger_down();
-  // sleep_for<time_units::millis>(1000);
-  // movement->follow_tending_paths_edge();
-  // sleep_for<time_units::millis>(1000);
+  movement->move_to_tending_position();
+  sleep_for<time_units::millis>(3000);
+  movement->move_finger_down();
+  sleep_for<time_units::millis>(1000);
+  movement->follow_tending_paths_edge();
+  sleep_for<time_units::millis>(1000);
 
   movement->rotate_finger();
 
@@ -162,9 +162,9 @@ static void do_tending() {
   //   LOG_INFO("Cannot set finger duty cycle...");
   // }
 
-  // sleep_for<time_units::millis>(1000);
-  // movement->follow_tending_paths_zigzag();
-  // sleep_for<time_units::millis>(1000);
+  sleep_for<time_units::millis>(1000);
+  movement->follow_tending_paths_zigzag();
+  sleep_for<time_units::millis>(1000);
 
   movement->homing_finger();
 
