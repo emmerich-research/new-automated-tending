@@ -91,9 +91,7 @@ microsteps                   = 8
 key                          = "FINGER"
 pin                          = 18
 active-state                 = true
-# duty-cycle                   = 160
-# homing-duty-cycle            = 50
-# homing-offset                = 30 # in degree
+zero-degree                  = 127
 
 [devices.anomaly]
 key                          = "ANOMALY"

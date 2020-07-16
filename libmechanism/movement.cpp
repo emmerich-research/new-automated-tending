@@ -626,17 +626,22 @@ void Movement::homing_finger() const {
   auto* config = Config::get();
   auto* analog_device = device::PCF8591Device::get();
 
-  const auto& homing_speed_profile = Config::get()->homing_speed_profile();
+  const auto& homing_speed_profile = config->homing_speed_profile();
   const auto& speed_profile =
-      Config::get()->homing_speed_profile(State::get()->speed_profile());
+      config->homing_speed_profile(State::get()->speed_profile());
   const auto& offset = homing_speed_profile.finger_threshold;
+
+  unsigned int zero_deg = config->finger<unsigned int>("zero-degree");
+  unsigned int upper_bound = zero_deg - offset;
+  unsigned int lower_bound = zero_deg + offset;
 
   LOG_INFO("Setting to homing duty cycle");
   finger()->duty_cycle(speed_profile.duty_cycle);
   while (true) {
     if (auto degree = analog_device->read(builder()->rotary_encoder_pin())) {
-      LOG_DEBUG("Degree {} Offset {}", *degree, offset);
-      if (*degree <= offset) {
+      DEBUG_ONLY(LOG_DEBUG("Degree {}, Lower Bound {}, Upper Bound {}", *degree,
+                           lower_bound, upper_bound));
+      if ((lower_bound <= *degree) && (*degree <= upper_bound)) {
         finger()->write(device::digital::value::low);
         break;
       }
