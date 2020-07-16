@@ -537,7 +537,14 @@ void Movement::revert_motor_params() const {
 }
 
 void Movement::move_finger_up() {
+  massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
+
+  auto* config = Config::get();
+  auto* state = State::get();
+
+  // set speed profile
+  motor_profile(config->homing_speed_profile(state->speed_profile()));
 
   LOG_INFO("Lifting finger...");
 
@@ -573,6 +580,15 @@ void Movement::move_finger_up() {
 }
 
 void Movement::move_finger_down() {
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
+
+  auto* config = Config::get();
+  auto* state = State::get();
+
+  // set speed profile
+  motor_profile(config->homing_speed_profile(state->speed_profile()));
+
   LOG_INFO("Lowering finger...");
 
   enable_motors();
@@ -611,8 +627,11 @@ void Movement::rotate_finger() const {
   massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
 
+  auto* config = Config::get();
+  auto* state = State::get();
+
   const auto& speed_profile =
-      Config::get()->tending_speed_profile(State::get()->speed_profile());
+      config->tending_speed_profile(state->speed_profile());
   LOG_INFO("Rotating finger...");
   if (finger()->duty_cycle(speed_profile.duty_cycle) == ATM_ERR) {
     LOG_INFO("Cannot set finger duty cycle...");
@@ -635,6 +654,8 @@ void Movement::homing_finger() const {
       static_cast<double>(config->finger<unsigned int>("zero-degree"));
   double lower_bound = zero_deg - static_cast<double>(offset);
   double upper_bound = zero_deg + static_cast<double>(offset);
+
+  // TODO: experiment, initialize to zero_deg or zero
   double average = zero_deg;
 
   LOG_INFO("Setting to homing duty cycle");
@@ -654,16 +675,27 @@ void Movement::homing_finger() const {
 }
 
 void Movement::homing() {
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
+
+  auto* config = Config::get();
+  auto* state = State::get();
+
   LOG_INFO("Homing is started...");
+
+  // set speed profile
+  motor_profile(config->homing_speed_profile(state->speed_profile()));
 
   // homing z
   move_finger_up();
+
+  homing_finger();
 
   // enabling motor
   enable_motors();
 
   // homing x and y
-  auto result = thread_pool().enqueue([this] {
+  auto result = thread_pool().enqueue([this, state] {
     bool is_x_completed =
         limit_switch_x()->read().value_or(device::digital::value::low) ==
         device::digital::value::high;
@@ -721,8 +753,6 @@ void Movement::homing() {
     while (!ready()) {
       next();
     }
-
-    auto* state = State::get();
 
     // set state to 0,0,0
     state->reset_coordinate();
