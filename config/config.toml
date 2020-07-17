@@ -353,10 +353,10 @@ deceleration                 = 1000.0 # steps / s^2
 [mechanisms.homing]
 
 [mechanisms.homing.finger]
-threshold                    = 10 # in degree
+threshold                    = 1.0
 
 [mechanisms.homing.speed.slow]
-duty-cycle                   = 50
+duty-cycle                   = 150
 
 [mechanisms.homing.speed.slow.x]
 rpm                          = 100.0
@@ -374,7 +374,7 @@ acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.homing.speed.normal]
-duty-cycle                   = 50
+duty-cycle                   = 150
 
 [mechanisms.homing.speed.normal.x]
 rpm                          = 300.0
@@ -387,9 +387,9 @@ acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.homing.speed.normal.z]
-rpm                          = 300.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 100.0
+acceleration                 = 100.0 # steps / s^2
+deceleration                 = 100.0 # steps / s^2
 
 [mechanisms.homing.speed.fast]
 duty-cycle                   = 50

@@ -560,7 +560,7 @@ void Movement::move_finger_up() {
     if (z_completed) {
       stepper_z()->stop();
     } else {
-      start_move(0, 0, -1);
+      start_move(0, 0, -1200);
       while (!ready()) {
         if (limit_switch_z_top()->read().value_or(
                 device::digital::value::low) == device::digital::value::high) {
@@ -604,7 +604,7 @@ void Movement::move_finger_down() {
     if (z_completed) {
       stepper_z()->stop();
     } else {
-      start_move(0, 0, 4);
+      start_move(0, 0, 1200);
       while (!ready()) {
         if (limit_switch_z_bottom()->read().value_or(
                 device::digital::value::low) == device::digital::value::high) {
@@ -652,19 +652,19 @@ void Movement::homing_finger() const {
 
   double zero_deg =
       static_cast<double>(config->finger<unsigned int>("zero-degree"));
-  double lower_bound = zero_deg - static_cast<double>(offset);
-  double upper_bound = zero_deg + static_cast<double>(offset);
+  double lower_bound = zero_deg - offset;
+  double upper_bound = zero_deg + offset;
 
-  // TODO: experiment, initialize to zero_deg or zero
-  double average = zero_deg;
+  double average = 0;
 
   LOG_INFO("Setting to homing duty cycle");
   finger()->duty_cycle(speed_profile.duty_cycle);
   while (true) {
     if (auto degree = analog_device->read(builder()->rotary_encoder_pin())) {
-      util::math::moving_average<20>(average, *degree);
-      DEBUG_ONLY(LOG_DEBUG("Average {}, Lower Bound {}, Upper Bound {}",
-                           average, lower_bound, upper_bound));
+      util::math::moving_average<5>(average, *degree);
+      DEBUG_ONLY(
+          LOG_DEBUG("Average {}, Degree {}, Lower Bound {}, Upper Bound {}",
+                    average, *degree, lower_bound, upper_bound));
       if ((lower_bound <= average) && (average <= upper_bound)) {
         finger()->write(device::digital::value::low);
         break;

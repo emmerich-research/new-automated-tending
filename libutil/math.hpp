@@ -23,7 +23,7 @@ void moving_average(U& avg, const T& input) {
   static constexpr U mult = 1.0 - alpha;
   static_assert(alpha > 0.0 && alpha < 1.0,
                 "1 / N must be more than 0 and less than 1");
-  avg = (alpha * input) + (1.0 - mult) * avg;
+  avg = alpha * input + mult * avg;
 }
 }  // namespace math
 }  // namespace util

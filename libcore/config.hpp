@@ -85,7 +85,7 @@ struct SpeedProfile {
   SpeedProfile();
   DEBUG_ONLY(void print(std::ostream& os) const);
 
-  unsigned int   finger_threshold;
+  double         finger_threshold;
   MechanismSpeed slow;
   MechanismSpeed normal;
   MechanismSpeed fast;

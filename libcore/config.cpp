@@ -57,7 +57,7 @@ struct from<ns(config::SpeedProfile)> {
     ns(config::SpeedProfile) sp;
     sp.finger_threshold = 10;
     if (v.contains("finger") && v.at("finger").contains("threshold")) {
-      sp.finger_threshold = find<unsigned int>(v, "finger", "threshold");
+      sp.finger_threshold = find<double>(v, "finger", "threshold");
     }
     sp.slow = find<ns(config::MechanismSpeed)>(v, "speed", "slow");
     sp.slow = find<ns(config::MechanismSpeed)>(v, "speed", "slow");
