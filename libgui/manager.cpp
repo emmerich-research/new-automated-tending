@@ -115,13 +115,16 @@ void Manager::init(const char* name, int width, int height) {
 }
 
 void Manager::exit() {
-  if (active()) {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+#if defined(OPENGL3_EXIST)
+  ImGui_ImplOpenGL3_Shutdown();
+#elif defined(OPENGL2_EXIST)
+  ImGui_ImplOpenGL2_Shutdown();
+#endif
+  ImGui::DestroyContext();
+  if (window() != nullptr) {
     glfwDestroyWindow(window());
-    glfwTerminate();
   }
+  glfwTerminate();
   exited_ = true;
 }
 
