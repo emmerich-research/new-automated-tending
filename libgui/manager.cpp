@@ -80,10 +80,12 @@ void Manager::init(const char* name, int width, int height) {
   glfwMakeContextCurrent(window());
   glfwSwapInterval(1);  // Enable vsync
 
+#if defined(OPENGL3_EXIST)
   if (gladLoadGL() == 0) {
     active_ = false;
     return;
   }
+#endif
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
@@ -99,7 +101,11 @@ void Manager::init(const char* name, int width, int height) {
   // Setup Platform/Renderer bindings
   ImGui_ImplGlfw_InitForOpenGL(window(), true);
 
+#if defined(OPENGL3_EXIST)
   ImGui_ImplOpenGL3_Init(glsl_version);
+#elif defined(OPENGL2_EXIST)
+  ImGui_ImplOpenGL2_Init();
+#endif
 
   ImFontConfig font_config;
   font_config.SizePixels = 25.0f;
