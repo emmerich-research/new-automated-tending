@@ -20,7 +20,7 @@ add_library("${PROJECT_NAMESPACE}::machine" ALIAS machine)
 target_include_directories(machine PUBLIC
   "$<BUILD_INTERFACE:${AFSM_INCLUDE_DIRS}>")
 
-target_link_libraries(machine PRIVATE
+target_link_libraries(machine PUBLIC
   "${PROJECT_NAMESPACE}::util"
   "${PROJECT_NAMESPACE}::core"
   "${PROJECT_NAMESPACE}::device"

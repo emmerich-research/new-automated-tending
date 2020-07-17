@@ -1,7 +1,7 @@
-#ifndef LIB_GUI_GUI_HPP_
-#define LIB_GUI_GUI_HPP_
+#ifndef APP_PRECOMPILED_HPP_
+#define APP_PRECOMPILED_HPP_
 
-/** @file gui.hpp
+/** @file precompiled.hpp
  *  @brief Precompiled header for faster project compilation
  *
  * Every source file must include this file whether precompiled feature is
@@ -10,18 +10,17 @@
 
 #pragma GCC system_header
 
-#if defined(X_H)
-#undef None
-#endif
-
-// 1. STL
-#include <exception>
-#include <functional>
+// 1. STD
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
-#include <tuple>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <utility>
 
-// 2. Vendor
-
+// 2. Vendors
 // 2.1. ImGui
 #include <external/imgui/imgui.h>
 
@@ -40,28 +39,20 @@
 #elif defined(OPENGL2_EXIST)
 #include <external/imgui/examples/imgui_impl_opengl2.h>
 
+// 2.3. GL
 #include <GL/gl.h>
 #endif
 
-// 2.3. GLFW
+// 2.4. GLFW
 #include <GLFW/glfw3.h>
 
-// 3. Inside projects
+// 3. Internal projects
+#include <libcore/core.hpp>
 #include <libutil/util.hpp>
 
-#include <libcore/core.hpp>
-
-#include <libalgo/algo.hpp>
-
-#include <libdevice/device.hpp>
-
-#include <libmechanism/mechanism.hpp>
-
 // 4. Local
-#include "init.hpp"
+#include "manager.hpp"
 
-#include "util.hpp"
-#include "widget.hpp"
 #include "window.hpp"
 
-#endif  // LIB_GUI_GUI_HPP_
+#endif  // APP_PRECOMPILED_HPP_

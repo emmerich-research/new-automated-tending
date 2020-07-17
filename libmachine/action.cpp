@@ -16,7 +16,7 @@ void shutdown_hook() {
     movement->disable_motors();
   }
   destroy_device();
-  destroy_gui();
+  // destroy_gui();
   destroy_core();
   std::cout << "Shutting down is completed!" << std::endl;
 }

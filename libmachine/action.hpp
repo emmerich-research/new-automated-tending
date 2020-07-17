@@ -1,5 +1,5 @@
-#ifndef APP_ACTION_HPP_
-#define APP_ACTION_HPP_
+#ifndef LIB_MACHINE_ACTION_HPP_
+#define LIB_MACHINE_ACTION_HPP_
 
 #include <libcore/core.hpp>
 
@@ -79,4 +79,4 @@ struct complete : public StackObj {
 
 NAMESPACE_END
 
-#endif  // APP_ACTION_HPP_
+#endif  // LIB_MACHINE_ACTION_HPP_

@@ -1,5 +1,5 @@
-#ifndef APP_MACHINE_INLINE_HPP_
-#define APP_MACHINE_INLINE_HPP_
+#ifndef LIB_MACHINE_STATE_INLINE_HPP_
+#define LIB_MACHINE_STATE_INLINE_HPP_
 
 #include "state.hpp"
 
@@ -217,4 +217,4 @@ void TendingDef::fault::manual::on_exit(Event const&&, FSM& fsm) const {
 
 NAMESPACE_END
 
-#endif  // APP_MACHINE_INLINE_HPP_
+#endif  // LIB_MACHINE_STATE_INLINE_HPP_

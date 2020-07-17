@@ -1,5 +1,5 @@
-#ifndef APP_EVENT_HPP_
-#define APP_EVENT_HPP_
+#ifndef LIB_MACHINE_EVENT_HPP_
+#define LIB_MACHINE_EVENT_HPP_
 
 #include <libcore/core.hpp>
 
@@ -30,4 +30,4 @@ struct run {};
 
 NAMESPACE_END
 
-#endif  // APP_EVENT_HPP_
+#endif  // LIB_MACHINE_EVENT_HPP_

@@ -1,5 +1,5 @@
-#ifndef APP_MACHINE_HPP_
-#define APP_MACHINE_HPP_
+#ifndef LIB_MACHINE_STATE_HPP_
+#define LIB_MACHINE_STATE_HPP_
 
 #include <iostream>
 #include <stdexcept>
@@ -302,4 +302,4 @@ using tending = afsm::state_machine<TendingDef>;
 
 NAMESPACE_END
 
-#endif  // APP_MACHINE_HPP_
+#endif  // LIB_MACHINE_STATE_HPP_

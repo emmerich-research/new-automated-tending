@@ -1,5 +1,5 @@
-#ifndef APP_GUARD_HPP_
-#define APP_GUARD_HPP_
+#ifndef LIB_MACHINE_GUARD_HPP_
+#define LIB_MACHINE_GUARD_HPP_
 
 #include <libcore/core.hpp>
 
@@ -71,4 +71,4 @@ struct completed : public StackObj {
 
 NAMESPACE_END
 
-#endif  // APP_GUARD_HPP_
+#endif  // LIB_MACHINE_GUARD_HPP_

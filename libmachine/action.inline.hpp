@@ -34,11 +34,11 @@ void start::operator()(Event const&,
         "Failed to initialize `core` functionality, something is wrong");
   }
 
-  status = initialize_gui();
-  if (status == ATM_ERR) {
-    throw std::runtime_error(
-        "Failed to initialize `gui` functionality, something is wrong");
-  }
+  // status = initialize_gui();
+  // if (status == ATM_ERR) {
+  //   throw std::runtime_error(
+  //       "Failed to initialize `gui` functionality, something is wrong");
+  // }
 
   // initialize `GPIO-based` devices such as analog, digital, and PWM
   status = initialize_device();

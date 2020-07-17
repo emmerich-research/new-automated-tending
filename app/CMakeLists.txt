@@ -2,6 +2,7 @@ project(app)
 
 ucm_add_files(
   "main.cpp"
+
   TO SOURCES)
   
 ucm_add_target(
