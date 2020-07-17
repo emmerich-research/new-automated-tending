@@ -3,13 +3,16 @@
 #include "manager.hpp"
 
 #include <external/imgui/imconfig.h>
-// #include <external/imgui/imstb_rectpack.h>
-// #include <external/imgui/imstb_truetype.h>
 
 #include <external/imgui/examples/imgui_impl_glfw.h>
-#include <external/imgui/examples/imgui_impl_opengl3.h>
 
+#if defined(OPENGL3_EXIST)
+#include <external/imgui/examples/imgui_impl_opengl3.h>
 #include <glad/glad.h>
+#elif defined(OPENGL2_EXIST)
+#include <external/imgui/examples/imgui_impl_opengl2.h>
+#include <GL/gl.h>
+#endif
 
 #include <GLFW/glfw3.h>
 
