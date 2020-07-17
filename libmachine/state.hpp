@@ -199,6 +199,7 @@ struct TendingDef : public StackObj,
       tr<initial, event::start, running, action::start>,
       tr<running, event::fault::trigger, fault, action::fault>,
       tr<fault, event::fault::restart, running, action::restart>,
+      tr<fault, event::stop, terminated, action::stop>,
       tr<running, event::stop, terminated, action::stop>>;
 
   /**

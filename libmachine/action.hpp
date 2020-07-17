@@ -75,6 +75,24 @@ struct complete : public StackObj {
   void operator()(Event const&, FSM&, SourceState&, TargetState&);
 };
 }  // namespace tending
+
+namespace cleaning {
+struct job : public StackObj {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
+};
+
+struct complete : public StackObj {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&);
+};
+}  // namespace cleaning
 }  // namespace action
 
 NAMESPACE_END

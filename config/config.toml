@@ -193,7 +193,7 @@ address                      = 0
 active-state                 = false
 
 [devices.shift-register.water-out]
-key                          = "SR-fWATER-OUT"
+key                          = "SR-WATER-OUT"
 address                      = 1
 active-state                 = false
 

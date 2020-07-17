@@ -140,15 +140,15 @@ bool StateImpl::spraying_complete() {
   return spraying_.complete;
 }
 
-void StateImpl::spraying_fault(bool fault) {
-  const StateImpl::StateLock lock(mutex());
-  spraying_.fault = fault;
-}
+// void StateImpl::spraying_fault(bool fault) {
+//   const StateImpl::StateLock lock(mutex());
+//   spraying_.fault = fault;
+// }
 
-bool StateImpl::spraying_fault() {
-  const StateImpl::StateLock lock(mutex());
-  return spraying_.fault;
-}
+// bool StateImpl::spraying_fault() {
+//   const StateImpl::StateLock lock(mutex());
+//   return spraying_.fault;
+// }
 
 const Task& StateImpl ::tending() {
   const StateImpl::StateLock lock(mutex());
@@ -185,19 +185,70 @@ bool StateImpl::tending_complete() {
   return tending_.complete;
 }
 
-void StateImpl::tending_fault(bool fault) {
+// void StateImpl::tending_fault(bool fault) {
+//   const StateImpl::StateLock lock(mutex());
+//   tending_.fault = fault;
+// }
+
+// bool StateImpl::tending_fault() {
+//   const StateImpl::StateLock lock(mutex());
+//   return tending_.fault;
+// }
+
+const Task& StateImpl ::cleaning() {
   const StateImpl::StateLock lock(mutex());
-  tending_.fault = fault;
+  return cleaning_;
 }
 
-bool StateImpl::tending_fault() {
+void StateImpl::cleaning_ready(bool ready) {
   const StateImpl::StateLock lock(mutex());
-  return tending_.fault;
+  cleaning_.ready = ready;
+}
+
+bool StateImpl::cleaning_ready() {
+  const StateImpl::StateLock lock(mutex());
+  return cleaning_.ready;
+}
+
+void StateImpl::cleaning_running(bool running) {
+  const StateImpl::StateLock lock(mutex());
+  cleaning_.running = running;
+}
+
+bool StateImpl::cleaning_running() {
+  const StateImpl::StateLock lock(mutex());
+  return cleaning_.running;
+}
+
+void StateImpl::cleaning_complete(bool complete) {
+  const StateImpl::StateLock lock(mutex());
+  cleaning_.complete = complete;
+}
+
+bool StateImpl::cleaning_complete() {
+  const StateImpl::StateLock lock(mutex());
+  return cleaning_.complete;
+}
+
+// void StateImpl::cleaning_fault(bool fault) {
+//   const StateImpl::StateLock lock(mutex());
+//   cleaning_.fault = fault;
+// }
+
+// bool StateImpl::cleaning_fault() {
+//   const StateImpl::StateLock lock(mutex());
+//   return cleaning_.fault;
+// }
+
+void StateImpl::fault(bool fault) {
+  const StateImpl::StateLock lock(mutex());
+  fault_ = fault;
 }
 
 bool StateImpl::fault() {
   const StateImpl::StateLock lock(mutex());
-  return tending_.fault || spraying_.fault;
+  // return tending_.fault || spraying_.fault || cleaning_.fault;
+  return fault_;
 }
 
 void StateImpl::manual_mode(bool manual) {

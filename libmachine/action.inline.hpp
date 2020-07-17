@@ -1,5 +1,5 @@
-#ifndef APP_ACTION_INLINE_HPP_
-#define APP_ACTION_INLINE_HPP_
+#ifndef LIB_MACHINE_ACTION_INLINE_HPP_
+#define LIB_MACHINE_ACTION_INLINE_HPP_
 
 #include <libcore/core.hpp>
 #include <libdevice/device.hpp>
@@ -8,6 +8,8 @@
 #include <libutil/util.hpp>
 
 #include "action.hpp"
+
+#include "util.hpp"
 
 NAMESPACE_BEGIN
 
@@ -20,7 +22,7 @@ void start::operator()(Event const&,
                        FSM& fsm,
                        SourceState&,
                        TargetState&) const {
-  std::cout << "Starting machine ..." << std::endl;
+  // std::cout << "Starting machine ..." << std::endl;
 
   // preparing shutdown hook
   // std::atexit(shutdown_hook);
@@ -55,60 +57,37 @@ void start::operator()(Event const&,
   }
 
   // setting all communication to low
-  auto* output_registry = device::DigitalOutputDeviceRegistry::get();
-  massert(output_registry != nullptr, "sanity");
-
   auto* shift_register = device::ShiftRegister::get();
   massert(shift_register != nullptr, "sanity");
 
-  // auto&& spraying_ready =
-  //     output_registry->get(device::id::comm::pi::spraying_ready());
-  // auto&& spraying_running =
-  //     output_registry->get(device::id::comm::pi::spraying_running());
-  // auto&& spraying_complete =
-  //     output_registry->get(device::id::comm::pi::spraying_complete());
+  // shift_register->write(device::id::comm::pi::spraying_ready(),
+  //                       device::digital::value::low);
+  // shift_register->write(device::id::comm::pi::spraying_running(),
+  //                       device::digital::value::low);
+  // shift_register->write(device::id::comm::pi::spraying_complete(),
+  //                       device::digital::value::low);
 
-  // auto&& tending_ready =
-  //     output_registry->get(device::id::comm::pi::tending_ready());
-  // auto&& tending_running =
-  //     output_registry->get(device::id::comm::pi::tending_running());
-  // auto&& tending_complete =
-  //     output_registry->get(device::id::comm::pi::tending_complete());
-
-  // spraying_ready->write(device::digital::value::low);
-  // spraying_running->write(device::digital::value::low);
-  // spraying_complete->write(device::digital::value::low);
-
-  // tending_ready->write(device::digital::value::low);
-  // tending_running->write(device::digital::value::low);
-  // tending_complete->write(device::digital::value::low);
-
-  shift_register->write(device::id::comm::pi::spraying_ready(),
-                        device::digital::value::low);
-  shift_register->write(device::id::comm::pi::spraying_running(),
-                        device::digital::value::low);
-  shift_register->write(device::id::comm::pi::spraying_complete(),
-                        device::digital::value::low);
-
-  shift_register->write(device::id::comm::pi::tending_ready(),
-                        device::digital::value::low);
-  shift_register->write(device::id::comm::pi::tending_running(),
-                        device::digital::value::low);
-  shift_register->write(device::id::comm::pi::tending_complete(),
-                        device::digital::value::low);
+  // shift_register->write(device::id::comm::pi::tending_ready(),
+  //                       device::digital::value::low);
+  // shift_register->write(device::id::comm::pi::tending_running(),
+  //                       device::digital::value::low);
+  // shift_register->write(device::id::comm::pi::tending_complete(),
+  //                       device::digital::value::low);
 
   // setting global state
-  auto* state = State::get();
-  massert(state != nullptr, "sanity");
-  state->spraying_ready(false);
-  state->spraying_running(false);
-  state->spraying_complete(false);
-  state->spraying_fault(false);
+  // auto* state = State::get();
+  // massert(state != nullptr, "sanity");
+  // state->spraying_ready(false);
+  // state->spraying_running(false);
+  // state->spraying_complete(false);
+  // // state->spraying_fault(false);
 
-  state->tending_ready(false);
-  state->tending_running(false);
-  state->tending_complete(false);
-  state->tending_fault(false);
+  // state->tending_ready(false);
+  // state->tending_running(false);
+  // state->tending_complete(false);
+  // state->tending_fault(false);
+
+  machine::util::reset_task_state();
 
   fsm.machine_ready_ = true;
 }
@@ -130,11 +109,13 @@ void fault::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
 
   auto* state = State::get();
 
-  if (state->spraying_running()) {
-    state->spraying_fault(true);
-  } else if (state->tending_running()) {
-    state->tending_fault(true);
-  }
+  // if (state->spraying_running()) {
+  //   state->spraying_fault(true);
+  // } else if (state->tending_running()) {
+  //   state->tending_fault(true);
+  // }
+
+  state->fault(true);
 }
 
 template <typename Event,
@@ -146,11 +127,13 @@ void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
 
   auto* state = State::get();
 
-  if (state->spraying_running()) {
-    state->spraying_fault(false);
-  } else if (state->tending_running()) {
-    state->tending_fault(false);
-  }
+  state->fault(false);
+
+  // if (state->spraying_running()) {
+  //   state->spraying_fault(false);
+  // } else if (state->tending_running()) {
+  //   state->tending_fault(false);
+  // }
 }
 
 namespace spraying {
@@ -326,8 +309,22 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
   root_machine(fsm).task_completed();
 }
 }  // namespace tending
-}  // namespace action
+
+namespace cleaning {
+template <typename Event,
+          typename FSM,
+          typename SourceState,
+          typename TargetState>
+void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
+}
+
+template <typename Event,
+          typename FSM,
+          typename SourceState,
+          typename TargetState>
+void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {}
+}  // namespace cleaning
 
 NAMESPACE_END
 
-#endif  // APP_ACTION_INLINE_HPP_
+#endif  // LIB_MACHINE_ACTION_INLINE_HPP_

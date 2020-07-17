@@ -7,6 +7,8 @@
 #include <libmechanism/mechanism.hpp>
 #include <libutil/util.hpp>
 
+#include "util.hpp"
+
 NAMESPACE_BEGIN
 
 namespace machine {
@@ -25,8 +27,9 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
     auto*  shift_register = device::ShiftRegister::get();
     auto&& movement = mechanism::movement_mechanism();
 
-    state->spraying_fault(false);
-    state->tending_fault(false);
+    // state->spraying_fault(false);
+    // state->tending_fault(false);
+    state->fault(false);
     state->manual_mode(false);
 
     shift_register->write(device::id::comm::pi::spraying_ready(),
@@ -191,7 +194,14 @@ void TendingDef::running::tending::preparation::on_exit(Event&&,
  */
 template <typename Event, typename FSM>
 void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
+  massert(State::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+  auto* shift_register = device::ShiftRegister::get();
+
   LOG_INFO("Entering fault mode");
+  machine::util::reset_task_state();
 }
 
 template <typename Event, typename FSM>

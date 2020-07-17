@@ -35,15 +35,26 @@ void Movement::move(Point x, Point y, Point z) {
     LOG_INFO("Current Y {}, Next Y {}", current_y, y);
     LOG_INFO("Current Z {}, Next Z {}", current_z, z);
 
-    const long steps_x = convert_length_to_steps<Unit>(
-        x - current_x, builder()->steps_per_mm_x());
-    const long steps_y = convert_length_to_steps<Unit>(
-        y - current_y, builder()->steps_per_mm_y());
-    const long steps_z = convert_length_to_steps<Unit>(
-        z - current_z, builder()->steps_per_mm_z());
+    long steps_x;
+    long steps_y;
+    long steps_z;
+
+    if (state->manual_mode()) {
+      steps_x = convert_length_to_steps<Unit>(x, builder()->steps_per_mm_x());
+      steps_y = convert_length_to_steps<Unit>(y, builder()->steps_per_mm_y());
+      steps_z = convert_length_to_steps<Unit>(z, builder()->steps_per_mm_z());
+
+    } else {
+      steps_x = convert_length_to_steps<Unit>(x - current_x,
+                                              builder()->steps_per_mm_x());
+      steps_y = convert_length_to_steps<Unit>(y - current_y,
+                                              builder()->steps_per_mm_y());
+      steps_z = convert_length_to_steps<Unit>(z - current_z,
+                                              builder()->steps_per_mm_z());
+    }
 
     auto result =
-        thread_pool().enqueue([this, state, steps_x, steps_y, steps_z] {
+        thread_pool().enqueue([this, state, &steps_x, &steps_y, &steps_z] {
           LOG_INFO("Starting to move steps_x={}, steps_y={}, steps_z={}...",
                    steps_x, steps_y, steps_z);
           start_move(steps_x, steps_y, steps_z);  // will trigger ready to false
@@ -64,7 +75,9 @@ void Movement::move(Point x, Point y, Point z) {
     // if this line is deleted, then the move will be in race condition
     [[maybe_unused]] bool finished = result.get();
 
-    State::get()->coordinate({x, y, z});
+    if (!state->manual_mode()) {
+      state->coordinate({x, y, z});
+    }
 
     // disabling motor
     disable_motors();

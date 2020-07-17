@@ -33,4 +33,6 @@
 #include "guard.hpp"
 #include "guard.inline.hpp"
 
+#include "util.hpp"
+
 #endif  // LIB_MACHINE_PRECOMPILED_HPP_

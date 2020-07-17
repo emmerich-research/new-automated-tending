@@ -11,9 +11,11 @@
 #pragma GCC system_header
 
 // 1. STD
+#include <chrono>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -51,8 +53,16 @@
 #include <libutil/util.hpp>
 
 // 4. Local
+#include "util.hpp"
+
 #include "manager.hpp"
 
 #include "window.hpp"
+
+#include "cleaning-control-window.hpp"
+#include "cleaning-window.hpp"
+#include "fault-window.hpp"
+#include "movement-window.hpp"
+#include "status-window.hpp"
 
 #endif  // APP_PRECOMPILED_HPP_

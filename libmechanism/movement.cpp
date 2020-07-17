@@ -662,15 +662,15 @@ void Movement::homing_finger() const {
   while (true) {
     if (auto degree = analog_device->read(builder()->rotary_encoder_pin())) {
       util::math::moving_average<5>(average, *degree);
-      DEBUG_ONLY(
-          LOG_DEBUG("Average {}, Degree {}, Lower Bound {}, Upper Bound {}",
-                    average, *degree, lower_bound, upper_bound));
+      // DEBUG_ONLY(
+      //     LOG_DEBUG("Average {}, Degree {}, Lower Bound {}, Upper Bound {}",
+      //               average, *degree, lower_bound, upper_bound));
       if ((lower_bound <= average) && (average <= upper_bound)) {
         finger()->write(device::digital::value::low);
         break;
       }
     }
-    // sleep_for<time_units::micros>(500);
+    sleep_for<time_units::micros>(100);
   }
 }
 
@@ -688,8 +688,6 @@ void Movement::homing() {
 
   // homing z
   move_finger_up();
-
-  homing_finger();
 
   // enabling motor
   enable_motors();

@@ -5,6 +5,7 @@ ucm_add_files(
   "event.cpp"
   "guard.cpp"
   "state.cpp"
+  "util.cpp"
 
   TO SOURCES)
   

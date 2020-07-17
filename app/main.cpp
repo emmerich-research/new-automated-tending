@@ -50,6 +50,12 @@ int main() {
     LOG_ERROR("Glfw Error {}: {}", error, description);
   });
 
+  ui_manager.add_window<gui::FaultWindow>(&tsm);
+  ui_manager.add_window<gui::MovementWindow>(&tsm);
+  ui_manager.add_window<gui::StatusWindow>();
+  ui_manager.add_window<gui::CleaningWindow>();
+  ui_manager.add_window<gui::CleaningControlWindow>();
+
   while (ui_manager.handle_events()) {
     ui_manager.render();
   }
