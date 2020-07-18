@@ -17,6 +17,9 @@
 #include <external/imgui/imgui.h>
 
 #include <libcore/core.hpp>
+#include <libutil/util.hpp>
+
+#include "window.hpp"
 
 class GLFWwindow;
 
@@ -25,7 +28,7 @@ NAMESPACE_BEGIN
 namespace gui {
 // forward declarations
 class Manager;
-class Window;
+// class Window;
 
 class Manager : public StackObj {
  public:
@@ -35,10 +38,9 @@ class Manager : public StackObj {
   /**
    * Manager constructor
    *
-   * @param num_window    number of window (default: 5)
+   * @param clear_color   background color of main window
    */
-  Manager(ImVec4      clear_color = ImVec4{0.45f, 0.55f, 0.60f, 1.00f},
-          std::size_t num_window = 5);
+  Manager(ImVec4 clear_color = ImVec4{0.0f, 0.0f, 0.0f, 1.00f});
   /**
    * Manager destructor
    */
@@ -58,7 +60,10 @@ class Manager : public StackObj {
             typename... Args,
             typename = std::enable_if_t<std::is_base_of_v<Window, T>>>
   inline void add_window(Args&&... args) {
-    windows().push_back(new T(std::forward<Args>(args)...));
+    massert(active(), "sanity");
+    T* window_ptr = new T(std::forward<Args>(args)...);
+    windows().push_back(window_ptr);
+    // window_ptr->render(this);
   }
   /**
    * Init GLFW, OpenGL, and other initializations
@@ -89,7 +94,13 @@ class Manager : public StackObj {
    */
   inline bool active() const { return active_; }
   /**
-   * Exit status
+   * GLFW Window exit status
+   *
+   * @return exit status
+   */
+  inline bool terminated() const { return terminated_; }
+  /**
+   * Exit status helper for deallocation
    *
    * @return exit status
    */
@@ -114,10 +125,6 @@ class Manager : public StackObj {
   void key_callback(const KeyCallback&& error_cb);
 
  protected:
-  /**
-   * Num of windows
-   */
-  inline const std::size_t& num_window() const { return num_window_; }
   /**
    * Get windows container
    *
@@ -155,13 +162,13 @@ class Manager : public StackObj {
    */
   bool active_;
   /**
+   * GLFW Window termination status
+   */
+  bool terminated_;
+  /**
    * Exit status
    */
   bool exited_;
-  /**
-   * Num of window
-   */
-  std::size_t num_window_;
   /**
    * Clear color
    */

@@ -76,7 +76,7 @@ void Movement::move(Point x, Point y, Point z) {
     [[maybe_unused]] bool finished = result.get();
 
     if (state->manual_mode()) {
-      state->coordinate({x + current_z, y + current_y, z + current_z});
+      state->coordinate({x + current_x, y + current_y, z + current_z});
     } else {
       state->coordinate({x, y, z});
     }

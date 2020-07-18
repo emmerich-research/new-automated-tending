@@ -33,7 +33,7 @@ class MovementWindow : public Window {
    *
    * @param manager ui manager
    */
-  virtual void show(const Manager* manager) override;
+  virtual void show(Manager* manager) override;
 };
 }  // namespace gui
 

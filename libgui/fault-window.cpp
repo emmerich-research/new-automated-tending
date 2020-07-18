@@ -16,7 +16,7 @@ FaultWindow::FaultWindow(machine::tending*       tsm,
 
 FaultWindow::~FaultWindow() {}
 
-void FaultWindow::show([[maybe_unused]] const Manager* manager) {
+void FaultWindow::show([[maybe_unused]] Manager* manager) {
   massert(State::get() != nullptr, "sanity");
 
   auto* state = State::get();
@@ -25,7 +25,7 @@ void FaultWindow::show([[maybe_unused]] const Manager* manager) {
   const bool manual_mode = state->manual_mode();
 
   const ImVec2 size = util::size::h_wide(50.0f);
-  const ImVec2 popup_size = util::size::h_wide(100.0f);
+  const ImVec2 popup_size = util::size::h_wide(125.0f);
   unsigned int id = 0;
 
   {
@@ -56,7 +56,6 @@ void FaultWindow::show([[maybe_unused]] const Manager* manager) {
         ImGui::CloseCurrentPopup();
       }
       ImGui::SetItemDefaultFocus();
-      // ImGui::SameLine();
       if (util::button("CANCEL", id++, false, popup_size)) {
         ImGui::CloseCurrentPopup();
       }
@@ -81,7 +80,7 @@ void FaultWindow::show([[maybe_unused]] const Manager* manager) {
   }
 
   {
-    if (manual_mode) {
+    if (!fault || manual_mode) {
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
       ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.8f);
     }
@@ -90,7 +89,7 @@ void FaultWindow::show([[maybe_unused]] const Manager* manager) {
       tsm()->fault_manual();
     }
 
-    if (manual_mode) {
+    if (!fault || manual_mode) {
       ImGui::PopStyleVar();
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     }

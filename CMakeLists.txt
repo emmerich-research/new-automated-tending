@@ -98,7 +98,7 @@ else()
   add_definitions(-DMOCK_GPIO)
   set(GLAD_API "" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest" FORCE)
   include(Glad)
-  set(OPENGL3 OFF)
+  set(OPENGL2 OFF)
   set(OPENGL3 ON)
 endif()
 

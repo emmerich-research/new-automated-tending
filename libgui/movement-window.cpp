@@ -14,15 +14,14 @@ MovementWindow::MovementWindow(float                   width,
 
 MovementWindow::~MovementWindow() {}
 
-void MovementWindow::show([[maybe_unused]] const Manager* manager) {
+void MovementWindow::show([[maybe_unused]] Manager* manager) {
   massert(State::get() != nullptr, "sanity");
   massert(Config::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto*       state = State::get();
-  const auto* config = Config::get();
-  auto&&      movement = mechanism::movement_mechanism();
+  auto*  state = State::get();
+  auto&& movement = mechanism::movement_mechanism();
 
   ImGui::Columns(3, NULL, /* v_borders */ true);
   {

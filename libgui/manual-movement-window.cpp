@@ -16,7 +16,7 @@ ManualMovementWindow::ManualMovementWindow(machine::tending*       tsm,
 
 ManualMovementWindow::~ManualMovementWindow() {}
 
-void ManualMovementWindow::show([[maybe_unused]] const Manager* manager) {
+void ManualMovementWindow::show([[maybe_unused]] Manager* manager) {
   massert(State::get() != nullptr, "sanity");
   massert(Config::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");

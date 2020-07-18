@@ -12,7 +12,7 @@ CleaningControlWindow::CleaningControlWindow(float                   width,
 
 CleaningControlWindow::~CleaningControlWindow() {}
 
-void CleaningControlWindow::show([[maybe_unused]] const Manager* manager) {
+void CleaningControlWindow::show([[maybe_unused]] Manager* manager) {
   const ImVec2 size = util::size::h_wide(50.0f);
   unsigned int status_id = 0;
 

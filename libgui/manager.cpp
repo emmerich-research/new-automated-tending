@@ -21,15 +21,13 @@
 
 #include <GLFW/glfw3.h>
 
-#include "window.hpp"
-
 NAMESPACE_BEGIN
 
 namespace gui {
-Manager::Manager(ImVec4 clear_color, std::size_t num_window)
+Manager::Manager(ImVec4 clear_color)
     : active_{true},
+      terminated_{false},
       exited_{false},
-      num_window_{num_window},
       clear_color_{clear_color} {}
 
 Manager::~Manager() {
@@ -134,22 +132,22 @@ void Manager::exit() {
 }
 
 bool Manager::handle_events() {
-  bool should_not_close = !glfwWindowShouldClose(window());
+  bool terminate = glfwWindowShouldClose(window());
 
-  if (should_not_close) {
-    glfwPollEvents();
-  }
+  terminated_ = terminate;
 
-  should_not_close = !glfwWindowShouldClose(window());
-
-  return should_not_close;
+  return !terminate;
 }
 
 void Manager::add_window(Window* window) {
+  massert(active(), "sanity");
   windows().push_back(window);
+  // window->render(this);
 }
 
 void Manager::render() {
+  glfwPollEvents();
+
 #if defined(OPENGL3_EXIST)
   ImGui_ImplOpenGL3_NewFrame();
 #elif defined(OPENGL2_EXIST)
@@ -176,7 +174,7 @@ void Manager::render() {
 
   // render windows
   for (auto* s_window : windows())
-    s_window->render(reinterpret_cast<const Manager*>(this));
+    s_window->render(this);
 
   ImGui::Render();
   int display_w, display_h;
@@ -196,7 +194,7 @@ void Manager::render() {
 
   // after render windows
   for (auto* s_window : windows())
-    s_window->after_render(reinterpret_cast<const Manager*>(this));
+    s_window->after_render(this);
 }
 }  // namespace gui
 

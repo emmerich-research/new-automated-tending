@@ -14,7 +14,7 @@ StatusWindow::StatusWindow(float                   width,
 
 StatusWindow::~StatusWindow() {}
 
-void StatusWindow::show([[maybe_unused]] const Manager* manager) {
+void StatusWindow::show([[maybe_unused]] Manager* manager) {
   massert(State::get() != nullptr, "sanity");
 
   auto* state = State::get();

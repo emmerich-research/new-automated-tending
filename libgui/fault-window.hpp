@@ -34,7 +34,7 @@ class FaultWindow : public Window {
    *
    * @param manager ui manager
    */
-  virtual void show(const Manager* manager) override;
+  virtual void show(Manager* manager) override;
 
  private:
   inline machine::tending* tsm() { return tsm_; }

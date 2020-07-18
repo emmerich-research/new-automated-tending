@@ -15,7 +15,7 @@ CleaningWindow::CleaningWindow(float                   width,
 
 CleaningWindow::~CleaningWindow() {}
 
-void CleaningWindow::show([[maybe_unused]] const Manager* manager) {
+void CleaningWindow::show([[maybe_unused]] Manager* manager) {
   unsigned int status_id = 0;
 
   const ImVec2 size = util::size::h_wide(50.0f);

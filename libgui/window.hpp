@@ -1,6 +1,8 @@
 #ifndef LIB_GUI_WINDOW_HPP_
 #define LIB_GUI_WINDOW_HPP_
 
+#include <thread>
+
 #include <external/imgui/imgui.h>
 
 #include <libcore/core.hpp>
@@ -34,19 +36,19 @@ class Window {
    *
    * @param manager ui manager
    */
-  void render(const Manager* manager);
+  void render(Manager* manager);
   /**
    * Show content of window
    *
    * @param manager ui manager
    */
-  virtual void show(const Manager* manager) = 0;
+  virtual void show(Manager* manager) = 0;
   /**
    * Show content of window
    *
    * @param manager ui manager
    */
-  virtual void after_render(const Manager* manager);
+  virtual void after_render(Manager* manager);
 
  protected:
   /**

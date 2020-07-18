@@ -369,8 +369,8 @@ float Movement::progress() const {
        f(step_remain_z, step_count_z)) /
       3;
 
-  LOG_DEBUG("x {}, y {}, z {}", f(step_remain_x, step_count_x),
-            f(step_remain_y, step_count_y), f(step_remain_z, step_count_z));
+  // LOG_DEBUG("x {}, y {}, z {}", f(step_remain_x, step_count_x),
+  //           f(step_remain_y, step_count_y), f(step_remain_z, step_count_z));
 
   if (percentage >= +1.1f) {
     percentage = +1.1f;
