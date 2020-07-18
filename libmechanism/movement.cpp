@@ -346,6 +346,42 @@ void Movement::update_position() const {
   update_z();
 }
 
+float Movement::progress() const {
+  const auto& step_remain_x = stepper_x()->remaining_steps();
+  const auto& step_remain_y = stepper_y()->remaining_steps();
+  const auto& step_remain_z = stepper_z()->remaining_steps();
+
+  const auto& step_count_x = stepper_x()->step_count();
+  const auto& step_count_y = stepper_y()->step_count();
+  const auto& step_count_z = stepper_z()->step_count();
+
+  const auto f = [](const device::stepper::step& remain,
+                    const device::stepper::step& count) {
+    return static_cast<float>(count) / static_cast<float>(remain + count);
+  };
+
+  // LOG_DEBUG("x {} {}, y {} {}, z {} {}", step_remain_x, step_count_x,
+  //           step_remain_y, step_count_y, step_remain_z, step_count_z);
+
+  // TODO: fix this!
+  float percentage =
+      (f(step_remain_x, step_count_x) + f(step_remain_y, step_count_y) +
+       f(step_remain_z, step_count_z)) /
+      3;
+
+  LOG_DEBUG("x {}, y {}, z {}", f(step_remain_x, step_count_x),
+            f(step_remain_y, step_count_y), f(step_remain_z, step_count_z));
+
+  if (percentage >= +1.1f) {
+    percentage = +1.1f;
+  }
+  if (percentage <= -0.1f) {
+    percentage = -0.1f;
+  }
+
+  return percentage;
+}
+
 time_unit Movement::next() {
   while ((micros() - last_move_end()) < next_move_interval()) {
     // not yet running
@@ -404,7 +440,7 @@ time_unit Movement::next() {
   //   event_timer_z_ = timer_z.get();
   // }
 
-  // update_position();
+  update_position();
   // auto x = State::get()->x();
   // auto y = State::get()->y();
   // auto z = State::get()->z();
@@ -638,6 +674,11 @@ void Movement::rotate_finger() const {
   }
 }
 
+void Movement::stop_finger() const {
+  LOG_INFO("Stopping finger...");
+  finger()->write(device::digital::value::low);
+}
+
 void Movement::homing_finger() const {
   massert(Config::get() != nullptr, "sanity");
   massert(device::PCF8591Device::get() != nullptr, "sanity");
@@ -666,10 +707,11 @@ void Movement::homing_finger() const {
       //     LOG_DEBUG("Average {}, Degree {}, Lower Bound {}, Upper Bound {}",
       //               average, *degree, lower_bound, upper_bound));
       if ((lower_bound <= average) && (average <= upper_bound)) {
-        finger()->write(device::digital::value::low);
+        stop_finger();
         break;
       }
     }
+    // add delay
     sleep_for<time_units::micros>(100);
   }
 }

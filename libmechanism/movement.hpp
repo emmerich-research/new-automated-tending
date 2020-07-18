@@ -314,6 +314,12 @@ class Movement : public StackObj {
   template <movement::unit Unit>
   void move(Point x, Point y, Point z);
   /**
+   * Movement progress in percentage
+   *
+   * @return percentage of progress
+   */
+  float progress() const;
+  /**
    * Stop only stepper x
    *
    * @return remaining steps of stepper x
@@ -359,6 +365,10 @@ class Movement : public StackObj {
    * Rotate finger
    */
   void rotate_finger() const;
+  /**
+   * Stop finger
+   */
+  void stop_finger() const;
   /**
    * Move finger down
    */

@@ -160,7 +160,7 @@ void Manager::render() {
   ImGui::NewFrame();
 
   {
-    ImGui::Begin("Panel");
+    ImGui::Begin("System Info");
 
     std::time_t end_time =
         std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());

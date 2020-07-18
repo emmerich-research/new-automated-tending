@@ -62,6 +62,7 @@
 #include "cleaning-control-window.hpp"
 #include "cleaning-window.hpp"
 #include "fault-window.hpp"
+#include "manual-movement-window.hpp"
 #include "movement-window.hpp"
 #include "status-window.hpp"
 

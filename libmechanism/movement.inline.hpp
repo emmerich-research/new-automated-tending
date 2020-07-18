@@ -75,7 +75,9 @@ void Movement::move(Point x, Point y, Point z) {
     // if this line is deleted, then the move will be in race condition
     [[maybe_unused]] bool finished = result.get();
 
-    if (!state->manual_mode()) {
+    if (state->manual_mode()) {
+      state->coordinate({x + current_z, y + current_y, z + current_z});
+    } else {
       state->coordinate({x, y, z});
     }
 

@@ -51,7 +51,8 @@ int main() {
   });
 
   ui_manager.add_window<gui::FaultWindow>(&tsm);
-  ui_manager.add_window<gui::MovementWindow>(&tsm);
+  ui_manager.add_window<gui::MovementWindow>();
+  ui_manager.add_window<gui::ManualMovementWindow>(&tsm);
   ui_manager.add_window<gui::StatusWindow>();
   ui_manager.add_window<gui::CleaningWindow>();
   ui_manager.add_window<gui::CleaningControlWindow>();

@@ -165,7 +165,6 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
   LOG_INFO("Turning on the spray...");
   shift_register->write(device::id::spray(), device::digital::value::high);
-  // fsm.spray->write(device::digital::value::high);
 
   sleep_for<time_units::millis>(3000);
 
@@ -174,13 +173,12 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
   LOG_INFO("Turning off the spray...");
   shift_register->write(device::id::spray(), device::digital::value::low);
-  // fsm.spray->write(device::digital::value::low);
 
   LOG_INFO("Homing...");
   movement->homing();
 
   // this needed for transition
-  fsm.enclosing_fsm().is_spraying_completed_ = true;
+  // fsm.enclosing_fsm().is_spraying_completed_ = true;
 }
 
 template <typename Event,
@@ -256,11 +254,7 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
   sleep_for<time_units::millis>(1000);
 
   LOG_INFO("Turning on the motor...");
-
-  if (finger->duty_cycle(config->finger<unsigned int>("duty-cycle")) ==
-      ATM_ERR) {
-    LOG_INFO("Cannot set finger duty cycle...");
-  }
+  movement->rotate_finger();
 
   sleep_for<time_units::millis>(1000);
 
@@ -269,14 +263,14 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
   sleep_for<time_units::millis>(1000);
 
-  LOG_INFO("Homing finger...");
-  movement->homing_finger();
+  LOG_INFO("Stop finger...");
+  movement->stop_finger();
 
   LOG_INFO("Homing...");
   movement->homing();
 
   // this needed for transition
-  fsm.enclosing_fsm().is_tending_completed_ = true;
+  // fsm.enclosing_fsm().is_tending_completed_ = true;
 }
 
 template <typename Event,
@@ -324,6 +318,7 @@ template <typename Event,
           typename TargetState>
 void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {}
 }  // namespace cleaning
+}  // namespace action
 
 NAMESPACE_END
 

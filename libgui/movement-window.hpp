@@ -3,8 +3,6 @@
 
 #include <libcore/core.hpp>
 
-#include <libmachine/machine.hpp>
-
 #include "window.hpp"
 
 NAMESPACE_BEGIN
@@ -23,8 +21,7 @@ class MovementWindow : public Window {
    * @param height window height
    * @param flags  window flags
    */
-  MovementWindow(machine::tending*       tsm,
-                 float                   width = 500,
+  MovementWindow(float                   width = 500,
                  float                   height = 100,
                  const ImGuiWindowFlags& flags = 0);
   /**
@@ -37,18 +34,6 @@ class MovementWindow : public Window {
    * @param manager ui manager
    */
   virtual void show(const Manager* manager) override;
-  /**
-   * After render contents
-   *
-   * @param manager ui manager
-   */
-  virtual void after_render(const Manager* manager) override;
-
- private:
-  inline machine::tending* tsm() { return tsm_; }
-
- private:
-  machine::tending* tsm_;
 };
 }  // namespace gui
 

@@ -158,7 +158,9 @@ static void do_tending() {
   movement->follow_tending_paths_zigzag();
   sleep_for<time_units::millis>(1000);
 
-  movement->homing_finger();
+  movement->stop_finger();
+
+  // movement->homing_finger();
 
   movement->homing();
 
@@ -220,7 +222,8 @@ static bool menu() {
   LOG_INFO("9.   Spraying and Tending trigger");
   LOG_INFO("10.  Move X with specified distance (in cm, can be negative)");
   LOG_INFO("11.  Move Y with specified distance (in cm, can be negative)");
-  LOG_INFO("12.  Set speed <fast/normal/slow>");
+  LOG_INFO("12.  Homing finger");
+  LOG_INFO("13.  Set speed <fast/normal/slow>");
   LOG_INFO("0.   Exit");
 
   unsigned int choice;
@@ -301,6 +304,8 @@ static bool menu() {
     }
     state->reset_coordinate();
   } else if (choice == 12) {
+    movement->homing_finger();
+  } else if (choice == 13) {
     std::string   speed_str;
     config::speed speed_profile = config::speed::normal;
 

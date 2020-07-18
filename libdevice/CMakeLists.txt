@@ -53,4 +53,7 @@ set_target_properties(device PROPERTIES
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO)
 
+target_compile_options(device PRIVATE
+  -Wno-implicit-int-float-conversion)
+
 target_enable_lto(device optimized)

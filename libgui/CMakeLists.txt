@@ -23,6 +23,7 @@ ucm_add_files(
 
   "fault-window.cpp"
   "movement-window.cpp"
+  "manual-movement-window.cpp"
   "status-window.cpp"
   "cleaning-window.cpp"
   "cleaning-control-window.cpp"
