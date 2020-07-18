@@ -6,67 +6,70 @@
 NAMESPACE_BEGIN
 
 namespace guard {
-struct guard_base : public StackObj {
+struct base : public StackObj {
   virtual bool check() const = 0;
-  virtual ~guard_base() = default;
+  virtual ~base() = default;
 };
 
 struct machine_ready : public StackObj {
   template <typename FSM, typename State>
-  bool operator()(FSM const& fsm, State const&) const;
+  bool operator()(FSM const&, State const&) const;
 };
 
-struct e_stop : public guard_base {
+struct e_stop : public base {
   template <typename FSM, typename State>
-  bool operator()(FSM const& fsm, State const&) const;
+  bool operator()(FSM const&, State const&) const;
 
   virtual bool check() const override;
 };
 
-struct reset : public guard_base {
+struct reset : public base {
   template <typename FSM, typename State>
-  bool operator()(FSM const& fsm, State const&) const;
+  bool operator()(FSM const&, State const&) const;
+
+  virtual bool check() const override;
+};
+
+struct fault : public base {
+  template <typename FSM, typename State>
+  bool operator()(FSM const&, State const&) const;
 
   virtual bool check() const override;
 };
 
 namespace spraying {
-struct height : public guard_base {
+struct completed : public base {
   template <typename FSM, typename State>
-  bool operator()(FSM const& fsm, State const&) const;
+  bool operator()(FSM const&, State const&) const;
 
   virtual bool check() const override;
-};
-
-struct completed : public StackObj {
-  template <typename FSM, typename State>
-  auto operator()(FSM const& fsm, State const&) const
-      -> decltype(fsm.is_spraying_completed(), bool());
-
-  template <typename FSM, typename State>
-  auto operator()(FSM const& fsm, State const&) const
-      -> decltype(fsm.enclosing_fsm().is_spraying_completed(), bool());
 };
 }  // namespace spraying
 
 namespace tending {
-struct height : public guard_base {
+struct completed : public base {
   template <typename FSM, typename State>
-  bool operator()(FSM const& fsm, State const&) const;
+  bool operator()(FSM const&, State const&) const;
+
+  virtual bool check() const override;
+};
+}  // namespace tending
+
+namespace height {
+struct spraying_tending : public base {
+  template <typename FSM, typename State>
+  bool operator()(FSM const&, State const&) const;
 
   virtual bool check() const override;
 };
 
-struct completed : public StackObj {
+struct cleaning : public base {
   template <typename FSM, typename State>
-  auto operator()(FSM const& fsm, State const&) const
-      -> decltype(fsm.is_tending_completed(), bool());
+  bool operator()(FSM const&, State const&) const;
 
-  template <typename FSM, typename State>
-  auto operator()(FSM const& fsm, State const&) const
-      -> decltype(fsm.enclosing_fsm().is_tending_completed(), bool());
+  virtual bool check() const override;
 };
-}  // namespace tending
+}  // namespace height
 }  // namespace guard
 
 NAMESPACE_END

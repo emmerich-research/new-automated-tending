@@ -39,6 +39,8 @@ void reset_task_state() {
                         device::digital::value::low);
   state->tending_complete(false);
 
+  shift_register->write(device::id::spray(), device::digital::value::low);
+
   // state->spraying_fault(false);
   // state->tending_fault(false);
 }

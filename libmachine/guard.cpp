@@ -20,23 +20,42 @@ bool reset::check() const {
   return reset->read_bool();
 }
 
+bool fault::check() const {
+  massert(State::get() != nullptr, "sanity");
+  return State::get()->fault();
+}
+
 namespace spraying {
-bool height::check() const {
-  auto*  input_registry = device::DigitalInputDeviceRegistry::get();
-  auto&& spraying_height =
-      input_registry->get(device::id::comm::plc::spraying_height());
-  return spraying_height->read_bool();
+bool completed::check() const {
+  massert(State::get() != nullptr, "sanity");
+  return State::get()->spraying_complete();
 }
 }  // namespace spraying
 
 namespace tending {
-bool height::check() const {
-  auto*  input_registry = device::DigitalInputDeviceRegistry::get();
-  auto&& tending_height =
-      input_registry->get(device::id::comm::plc::tending_height());
-  return tending_height->read_bool();
+bool completed::check() const {
+  massert(State::get() != nullptr, "sanity");
+  return State::get()->tending_complete();
 }
 }  // namespace tending
+
+namespace height {
+bool spraying_tending::check() const {
+  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
+  auto*  input_registry = device::DigitalInputDeviceRegistry::get();
+  auto&& spraying_tending_height =
+      input_registry->get(device::id::comm::plc::spraying_tending_height());
+  return spraying_tending_height->read_bool();
+}
+
+bool cleaning::check() const {
+  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
+  auto*  input_registry = device::DigitalInputDeviceRegistry::get();
+  auto&& cleaning_height =
+      input_registry->get(device::id::comm::plc::cleaning_height());
+  return cleaning_height->read_bool();
+}
+}  // namespace height
 }  // namespace guard
 
 NAMESPACE_END

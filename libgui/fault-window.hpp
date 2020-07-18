@@ -37,9 +37,17 @@ class FaultWindow : public Window {
   virtual void show(Manager* manager) override;
 
  private:
+  /**
+   * Get state machine
+   *
+   * @return state machine
+   */
   inline machine::tending* tsm() { return tsm_; }
 
  private:
+  /**
+   * State machine
+   */
   machine::tending* tsm_;
 };
 }  // namespace gui

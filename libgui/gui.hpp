@@ -49,7 +49,10 @@
 #include <GLFW/glfw3.h>
 
 // 3. Internal projects
+#include <libalgo/algo.hpp>
 #include <libcore/core.hpp>
+#include <libdevice/device.hpp>
+#include <libmechanism/mechanism.hpp>
 #include <libutil/util.hpp>
 
 // 4. Local
@@ -64,6 +67,7 @@
 #include "fault-window.hpp"
 #include "manual-movement-window.hpp"
 #include "movement-window.hpp"
+#include "plc-trigger-window.hpp"
 #include "status-window.hpp"
 
 #endif  // APP_PRECOMPILED_HPP_

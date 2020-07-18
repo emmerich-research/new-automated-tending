@@ -22,7 +22,7 @@ void CleaningControlWindow::show([[maybe_unused]] Manager* manager) {
   {
     ImGui::BeginChild("water_cleaning_control");
     ImGui::Separator();
-    ImGui::Text("Water Cleaning Control");
+    ImGui::Text("Water");
     ImGui::Separator();
     ImGui::Text("Automatic Mode");
     if (util::button("1 Day", status_id++, active, size)) {
@@ -42,7 +42,7 @@ void CleaningControlWindow::show([[maybe_unused]] Manager* manager) {
   {
     ImGui::BeginChild("disinfectant_cleaning_control");
     ImGui::Separator();
-    ImGui::Text("Disinfectant Cleaning Control");
+    ImGui::Text("Disinfectant");
     ImGui::Separator();
     ImGui::Text("Automatic Mode");
     if (util::button("1 Day", status_id++, active, size)) {

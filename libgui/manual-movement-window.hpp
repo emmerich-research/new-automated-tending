@@ -5,6 +5,8 @@
 
 #include <libmachine/machine.hpp>
 
+#include <libalgo/algo.hpp>
+
 #include "window.hpp"
 
 NAMESPACE_BEGIN
@@ -39,10 +41,29 @@ class ManualMovementWindow : public Window {
   virtual void show(Manager* manager) override;
 
  private:
+  /**
+   * Get state machine
+   *
+   * @return state machine
+   */
   inline machine::tending* tsm() { return tsm_; }
 
+  /**
+   * Get thread pool
+   *
+   * @return thread pool
+   */
+  inline algo::ThreadPool& thread_pool() { return thread_pool_; }
+
  private:
+  /**
+   * State machine
+   */
   machine::tending* tsm_;
+  /**
+   * Movement thread pool
+   */
+  algo::ThreadPool thread_pool_;
 };
 }  // namespace gui
 

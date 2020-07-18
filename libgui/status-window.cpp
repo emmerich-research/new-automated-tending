@@ -59,12 +59,12 @@ void StatusWindow::show([[maybe_unused]] Manager* manager) {
   {
     // Cleaning Status
     ImGui::Text("Cleaning Status");
-    util::status_button("Cleaning Ready", status_id++, state->tending_ready(),
+    util::status_button("Cleaning Ready", status_id++, state->cleaning_ready(),
                         size);
     util::status_button("Cleaning Running", status_id++,
-                        state->tending_running(), size);
+                        state->cleaning_running(), size);
     util::status_button("Cleaning Complete", status_id++,
-                        state->tending_complete(), size);
+                        state->cleaning_complete(), size);
     // util::status_button("Cleaning Fault", status_id++,
     // state->tending_fault(),
     //                     size);

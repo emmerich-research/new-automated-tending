@@ -113,9 +113,7 @@ std::shared_ptr<Movement>& MovementBuilderImpl::build() {
 }  // namespace impl
 
 Movement::Movement(const impl::MovementBuilderImpl* builder)
-    : builder_{builder},
-      // steps_per_mm_{builder->steps_per_mm()},
-      thread_pool_{1} {
+    : builder_{builder} {
   active_ = true;
   ready_ = true;
   next_move_interval_ = 0;
@@ -242,6 +240,14 @@ void Movement::stop(void) {
 }
 
 void Movement::start_move(const long& x, const long& y, const long& z) {
+  massert(State::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+
+  if (state->fault() && !state->manual_mode()) {
+    return;
+  }
+
 #if defined(SYNC_DRIVER)
   const time_unit time_x = stepper_x()->time_for_move(x);
   const time_unit time_y = stepper_y()->time_for_move(y);
@@ -309,7 +315,13 @@ void Movement::start_move(const long& x, const long& y, const long& z) {
 
 void Movement::update_x() const {
   auto steps = stepper_x()->step_count();
-  if ((steps > 0) && (steps % builder()->steps_per_mm_x()) == 0) {
+  auto remaining_steps = stepper_x()->remaining_steps();
+
+  if (remaining_steps == 0) {
+    return;
+  }
+
+  if ((steps % builder()->steps_per_mm_x()) == 0) {
     if (stepper_x()->direction() == device::stepper::direction::forward) {
       State::get()->inc_x();
     } else {
@@ -320,7 +332,13 @@ void Movement::update_x() const {
 
 void Movement::update_y() const {
   auto steps = stepper_y()->step_count();
-  if ((steps > 0) && (steps % builder()->steps_per_mm_y()) == 0) {
+  auto remaining_steps = stepper_y()->remaining_steps();
+
+  if (remaining_steps == 0) {
+    return;
+  }
+
+  if ((steps % builder()->steps_per_mm_y()) == 0) {
     if (stepper_y()->direction() == device::stepper::direction::forward) {
       State::get()->inc_y();
     } else {
@@ -331,7 +349,13 @@ void Movement::update_y() const {
 
 void Movement::update_z() const {
   auto steps = stepper_z()->step_count();
-  if ((steps > 0) && (steps % builder()->steps_per_mm_z()) == 0) {
+  auto remaining_steps = stepper_z()->remaining_steps();
+
+  if (remaining_steps == 0) {
+    return;
+  }
+
+  if ((steps % builder()->steps_per_mm_z()) == 0) {
     if (stepper_z()->direction() == device::stepper::direction::forward) {
       State::get()->inc_z();
     } else {
@@ -360,23 +384,32 @@ float Movement::progress() const {
     return static_cast<float>(count) / static_cast<float>(remain + count);
   };
 
-  // LOG_DEBUG("x {} {}, y {} {}, z {} {}", step_remain_x, step_count_x,
-  //           step_remain_y, step_count_y, step_remain_z, step_count_z);
+  float remainder = 0.0f;
+  float percentage = 0.0f;
 
-  // TODO: fix this!
-  float percentage =
-      (f(step_remain_x, step_count_x) + f(step_remain_y, step_count_y) +
-       f(step_remain_z, step_count_z)) /
-      3;
+  float percentage_x = f(step_remain_x, step_count_x);
+  float percentage_y = f(step_remain_y, step_count_y);
+  float percentage_z = f(step_remain_z, step_count_z);
 
-  // LOG_DEBUG("x {}, y {}, z {}", f(step_remain_x, step_count_x),
-  //           f(step_remain_y, step_count_y), f(step_remain_z, step_count_z));
-
-  if (percentage >= +1.1f) {
-    percentage = +1.1f;
+  if (percentage_x < 1.0f) {
+    remainder += 1.0f;
+    percentage += percentage_x;
   }
-  if (percentage <= -0.1f) {
-    percentage = -0.1f;
+
+  if (percentage_y < 1.0f) {
+    remainder += 1.0f;
+    percentage += percentage_y;
+  }
+
+  if (percentage_z < 1.0f) {
+    remainder += 1.0f;
+    percentage += percentage_z;
+  }
+
+  if (percentage == 0.0f) {
+    percentage = 1.0f;
+  } else {
+    percentage /= remainder;
   }
 
   return percentage;
@@ -498,6 +531,8 @@ void Movement::follow_spraying_paths() {
 
   LOG_INFO("Following spraying paths...");
   for (const auto& iter : Config::get()->spraying_path()) {
+    if (state->fault())
+      return;
     LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
     move<movement::unit::mm>(iter.first, iter.second, 0.0);
   }
@@ -516,9 +551,11 @@ void Movement::follow_tending_paths_edge() {
 
   LOG_INFO("Following tending paths edge...");
 
-  for (const auto& iter : Config::get()->tending_path_edge()) {
+  for (const auto& iter : config->tending_path_edge()) {
+    if (state->fault())
+      return;
     LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
-    move<movement::unit::mm>(iter.first, iter.second, State::get()->z());
+    move<movement::unit::mm>(iter.first, iter.second, state->z());
   }
 
   revert_motor_params();
@@ -535,9 +572,11 @@ void Movement::follow_tending_paths_zigzag() {
 
   LOG_INFO("Following tending paths zigzag...");
 
-  for (const auto& iter : Config::get()->tending_path_zigzag()) {
+  for (const auto& iter : config->tending_path_zigzag()) {
+    if (state->fault())
+      return;
     LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
-    move<movement::unit::mm>(iter.first, iter.second, State::get()->z());
+    move<movement::unit::mm>(iter.first, iter.second, state->z());
   }
 
   revert_motor_params();
@@ -735,72 +774,67 @@ void Movement::homing() {
   enable_motors();
 
   // homing x and y
-  auto result = thread_pool().enqueue([this, state] {
-    bool is_x_completed =
-        limit_switch_x()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high;
-    bool is_y_completed =
-        limit_switch_y()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high;
+  bool is_x_completed =
+      limit_switch_x()->read().value_or(device::digital::value::low) ==
+      device::digital::value::high;
+  bool is_y_completed =
+      limit_switch_y()->read().value_or(device::digital::value::low) ==
+      device::digital::value::high;
 
-    while (!is_x_completed || !is_y_completed) {
-      long steps_x = 0;
-      long steps_y = 0;
+  while (!is_x_completed || !is_y_completed) {
+    long steps_x = 0;
+    long steps_y = 0;
 
-      if (limit_switch_x()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high) {
+    if (limit_switch_x()->read().value_or(device::digital::value::low) ==
+        device::digital::value::high) {
+      is_x_completed = true;
+      stepper_x()->stop();
+    } else {
+      steps_x = convert_length_to_steps<movement::unit::mm>(
+          -1500.0, builder()->steps_per_mm_x());
+    }
+
+    if (limit_switch_y()->read().value_or(device::digital::value::low) ==
+        device::digital::value::high) {
+      is_y_completed = true;
+      stepper_y()->stop();
+    } else {
+      steps_y = convert_length_to_steps<movement::unit::mm>(
+          -1200.0, builder()->steps_per_mm_y());
+    }
+
+    start_move(steps_x, steps_y, 0);
+    while (!ready()) {
+      bool x_complete =
+          limit_switch_x()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high;
+      bool y_complete =
+          limit_switch_y()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high;
+      if (x_complete) {
         is_x_completed = true;
         stepper_x()->stop();
-      } else {
-        steps_x = convert_length_to_steps<movement::unit::mm>(
-            -1500.0, builder()->steps_per_mm_x());
       }
-
-      if (limit_switch_y()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high) {
+      if (y_complete) {
         is_y_completed = true;
         stepper_y()->stop();
+      }
+      if (x_complete && y_complete) {
+        ready_ = true;
       } else {
-        steps_y = convert_length_to_steps<movement::unit::mm>(
-            -1200.0, builder()->steps_per_mm_y());
-      }
-
-      start_move(steps_x, steps_y, 0);
-      while (!ready()) {
-        bool x_complete =
-            limit_switch_x()->read().value_or(device::digital::value::low) ==
-            device::digital::value::high;
-        bool y_complete =
-            limit_switch_y()->read().value_or(device::digital::value::low) ==
-            device::digital::value::high;
-        if (x_complete) {
-          is_x_completed = true;
-          stepper_x()->stop();
-        }
-        if (y_complete) {
-          is_y_completed = true;
-          stepper_y()->stop();
-        }
-        if (x_complete && y_complete) {
-          ready_ = true;
-        } else {
-          next();
-        }
+        next();
       }
     }
+  }
 
-    start_move(5, 5, 5);
-    while (!ready()) {
-      next();
-    }
+  // move a bit
+  start_move(5, 5, 5);
+  while (!ready()) {
+    next();
+  }
 
-    // set state to 0,0,0
-    state->reset_coordinate();
-
-    return is_x_completed && is_y_completed;
-  });
-
-  [[maybe_unused]] bool finished = result.get();
+  // set state to 0,0,0
+  state->reset_coordinate();
 
   // disabling motor
   disable_motors();
