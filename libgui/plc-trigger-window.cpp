@@ -29,8 +29,6 @@ void PLCTriggerWindow::show([[maybe_unused]] Manager* manager) {
   const ImVec2 size{288.5f, 50.0f};
   unsigned int status_id = 0;
 
-  ImGui::Text("Height");
-  ImGui::Separator();
   util::status_button("Spraying/Tending", status_id++,
                       spraying_tending_height->read_bool(), size);
   ImGui::SameLine();

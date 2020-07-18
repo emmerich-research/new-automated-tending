@@ -68,6 +68,7 @@
 #include "manual-movement-window.hpp"
 #include "movement-window.hpp"
 #include "plc-trigger-window.hpp"
+#include "speed-profile-window.hpp"
 #include "status-window.hpp"
 
 #endif  // APP_PRECOMPILED_HPP_

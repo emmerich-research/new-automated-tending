@@ -26,15 +26,14 @@ void CleaningWindow::show([[maybe_unused]] Manager* manager) {
     util::status_button("Water Full", status_id++, active, size);
     util::status_button("Water Normal", status_id++, active, size);
     util::status_button("Water Low", status_id++, active, size);
-    ImGui::NextColumn();
   }
-
+  ImGui::NextColumn();
   {
     util::status_button("Disinfectant Full", status_id++, active, size);
     util::status_button("Disinfectant Normal", status_id++, active, size);
     util::status_button("Disinfectant Low", status_id++, active, size);
-    ImGui::NextColumn();
   }
+  ImGui::NextColumn();
 }
 }  // namespace gui
 

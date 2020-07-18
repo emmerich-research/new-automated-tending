@@ -201,11 +201,18 @@ void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
 
 template <typename Event, typename FSM>
 void TendingDef::fault::manual::on_enter(Event const&&, FSM& fsm) const {
+  massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
   LOG_INFO("Entering fault manual mode");
 
-  auto* state = State::get();
+  auto*  config = Config::get();
+  auto*  state = State::get();
+  auto&& movement = mechanism::movement_mechanism();
 
+  movement->motor_profile(config->fault_speed_profile(state->speed_profile()));
   state->manual_mode(true);
 }
 

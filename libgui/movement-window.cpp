@@ -50,7 +50,17 @@ void MovementWindow::show([[maybe_unused]] Manager* manager) {
   // ImVec2(0.0f,0.0f) uses ItemWidth.
   ImGui::Text("Move Progress");
   ImGui::Separator();
+
+  ImGui::PushID(0);
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogram,
+                        (ImVec4)ImColor::HSV(2 / 7.0f, 0.6f, 0.6f));
+  // ImGui::PushStyleColor(ImGuiCol_FrameRounding,
+  //                       (ImVec4)ImColor::HSV(2 / 7.0f, 0.7f, 0.7f));
+  // ImGui::PushStyleColor(ImGuiCol_FrameBgActive,
+  //                       (ImVec4)ImColor::HSV(2 / 7.0f, 0.8f, 0.8f));
   ImGui::ProgressBar(movement->progress(), ImVec2(-FLT_MIN, 0.0f));
+  ImGui::PopStyleColor(1);
+  ImGui::PopID();
   // ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 }
 }  // namespace gui

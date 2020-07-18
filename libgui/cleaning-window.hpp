@@ -33,8 +33,6 @@ class CleaningWindow : public Window {
    * @param manager ui manager
    */
   virtual void show(Manager* manager) override;
-
- private:
 };
 }  // namespace gui
 
