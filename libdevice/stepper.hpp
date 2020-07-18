@@ -519,24 +519,34 @@ class StepperDeviceImpl : public StepperDevice {
   virtual ~StepperDeviceImpl() override = default;
   /**
    * Get step pulse
+   *
+   * @return step pulse
    */
   inline const stepper::pulse& step_pulse() const { return step_pulse_; }
   /**
    * Get rest steps
+   *
+   * @return rest steps
    */
   inline const stepper::step& rest_steps() const { return rest_steps_; }
   /**
    * Get steps to cruise
+   *
+   * @return steps to cruise
    */
   inline const stepper::step& steps_to_cruise() const {
     return steps_to_cruise_;
   }
   /**
    * Get steps to brake
+   *
+   * @return steps to brake
    */
   inline const stepper::step& steps_to_brake() const { return steps_to_brake_; }
   /**
-   * Get remaining steps
+   * Get cruise step pulse
+   *
+   * @return cruise step pulse
    */
   inline const stepper::pulse& cruise_step_pulse() const {
     return cruise_step_pulse_;

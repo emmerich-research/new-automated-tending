@@ -16,10 +16,17 @@ ucm_add_files(
   "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp"
   "${IMGUI_INCLUDE_DIR}/examples/imgui_impl_glfw.cpp"
 
-  "init.cpp"
   "util.cpp"
-  "widget.cpp"
+
+  "manager.cpp"
   "window.cpp"
+
+  "fault-window.cpp"
+  "movement-window.cpp"
+  "manual-movement-window.cpp"
+  "status-window.cpp"
+  "cleaning-window.cpp"
+  "cleaning-control-window.cpp"
 
   TO SOURCES)
 
@@ -57,6 +64,9 @@ target_include_directories(gui PUBLIC
 target_compile_definitions(gui PUBLIC
   GLFW_INCLUDE_NONE)
 
+target_compile_definitions(gui PUBLIC
+  GLFW_INCLUDE_NONE)
+
 if (OPENGL3)
   target_compile_definitions(gui PUBLIC
     OPENGL3_EXIST
@@ -74,13 +84,11 @@ target_link_libraries(gui PUBLIC
   ${GLAD_LIBRARIES}
   "${PROJECT_NAMESPACE}::util"
   "${PROJECT_NAMESPACE}::core"
-  "${PROJECT_NAMESPACE}::algo"
-  "${PROJECT_NAMESPACE}::device"
-  "${PROJECT_NAMESPACE}::mechanism")
+  "${PROJECT_NAMESPACE}::mechanism"
+  "${PROJECT_NAMESPACE}::machine")
 
 target_set_warnings(gui
   ENABLE ALL
-  # AS_ERROR ALL
   DISABLE Annoying)
 
 set_target_properties(gui PROPERTIES

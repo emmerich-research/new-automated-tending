@@ -1,5 +1,5 @@
-#ifndef APP_ACTION_HPP_
-#define APP_ACTION_HPP_
+#ifndef LIB_MACHINE_ACTION_HPP_
+#define LIB_MACHINE_ACTION_HPP_
 
 #include <libcore/core.hpp>
 
@@ -40,16 +40,6 @@ struct restart : public StackObj {
   void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
 };
 
-struct homing : public StackObj {
-  template <typename Event,
-            typename FSM,
-            typename SourceState,
-            typename TargetState>
-  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
-
-  void act() const;
-};
-
 namespace spraying {
 struct job : public StackObj {
   template <typename Event,
@@ -85,8 +75,26 @@ struct complete : public StackObj {
   void operator()(Event const&, FSM&, SourceState&, TargetState&);
 };
 }  // namespace tending
+
+namespace cleaning {
+struct job : public StackObj {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&) const;
+};
+
+struct complete : public StackObj {
+  template <typename Event,
+            typename FSM,
+            typename SourceState,
+            typename TargetState>
+  void operator()(Event const&, FSM&, SourceState&, TargetState&);
+};
+}  // namespace cleaning
 }  // namespace action
 
 NAMESPACE_END
 
-#endif  // APP_ACTION_HPP_
+#endif  // LIB_MACHINE_ACTION_HPP_

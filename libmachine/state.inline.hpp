@@ -1,12 +1,13 @@
-#ifndef APP_MACHINE_INLINE_HPP_
-#define APP_MACHINE_INLINE_HPP_
+#ifndef LIB_MACHINE_STATE_INLINE_HPP_
+#define LIB_MACHINE_STATE_INLINE_HPP_
 
-#include "machine.hpp"
+#include "state.hpp"
 
 #include <libdevice/device.hpp>
-#include <libgui/gui.hpp>
 #include <libmechanism/mechanism.hpp>
 #include <libutil/util.hpp>
+
+#include "util.hpp"
 
 NAMESPACE_BEGIN
 
@@ -26,13 +27,9 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
     auto*  shift_register = device::ShiftRegister::get();
     auto&& movement = mechanism::movement_mechanism();
 
-    // auto&& spraying_ready =
-    //     digital_output_registry->get(device::id::comm::pi::spraying_ready());
-    // auto&& tending_ready =
-    //     digital_output_registry->get(device::id::comm::pi::tending_ready());
-
-    state->spraying_fault(false);
-    state->tending_fault(false);
+    // state->spraying_fault(false);
+    // state->tending_fault(false);
+    state->fault(false);
     state->manual_mode(false);
 
     shift_register->write(device::id::comm::pi::spraying_ready(),
@@ -43,20 +40,15 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
                           device::digital::value::low);
     state->tending_ready(false);
 
-    // spraying_ready->write(device::digital::value::low);
-    // tending_ready->write(device::digital::value::low);
-
     LOG_INFO("Homing...");
     movement->homing();
 
     shift_register->write(device::id::comm::pi::spraying_ready(),
                           device::digital::value::high);
-    // spraying_ready->write(device::digital::value::high);
     state->spraying_ready(true);
 
     shift_register->write(device::id::comm::pi::tending_ready(),
                           device::digital::value::high);
-    // tending_ready->write(device::digital::value::high);
     state->tending_ready(true);
 
     guard::spraying::height spraying_height;
@@ -82,7 +74,6 @@ template <typename Event, typename FSM>
 void TendingDef::running::spraying::idle::on_enter(Event const&&,
                                                    FSM& fsm) const {
   LOG_INFO("Entering spraying mode, waiting for signal for spraying height");
-  fsm.initialize();
 }
 
 template <typename Event, typename FSM>
@@ -100,12 +91,10 @@ void TendingDef::running::spraying::preparation::on_enter(Event&&, FSM& fsm) {
 
   shift_register->write(device::id::comm::pi::spraying_running(),
                         device::digital::value::low);
-  // fsm.spraying_running->write(device::digital::value::low);
   state->spraying_running(false);
 
   shift_register->write(device::id::comm::pi::spraying_complete(),
                         device::digital::value::low);
-  // fsm.spraying_complete->write(device::digital::value::low);
   state->spraying_complete(false);
 
   LOG_INFO("Homing to make sure ready to spray...");
@@ -125,33 +114,15 @@ void TendingDef::running::spraying::preparation::on_exit(Event&&,
 
   shift_register->write(device::id::comm::pi::tending_running(),
                         device::digital::value::low);
-  // fsm.spraying_running->write(device::digital::value::low);
   state->spraying_running(false);
 
   shift_register->write(device::id::comm::pi::tending_complete(),
                         device::digital::value::low);
-  // fsm.spraying_complete->write(device::digital::value::low);
   state->spraying_complete(false);
 
   LOG_INFO("Spraying is ready, waiting for 3 seconds...");
   sleep_for<time_units::millis>(3000);
 }
-
-// template <typename FSM>
-// void TendingDef::running::spraying::ongoing::on_enter(
-//     event::spraying::run const&& event,
-//     FSM&                         fsm) const {
-//   LOG_INFO("Spraying...");
-//   sleep_for<time_units::millis>(3000);
-//   fsm.enclosing_fsm().is_spraying_completed_ = true;
-// }
-
-// template <typename Event, typename FSM>
-// void TendingDef::running::spraying::ongoing::on_exit(Event const&& event,
-//                                                      FSM const&    fsm) const
-//                                                      {
-//   LOG_INFO("Done spraying...");
-// }
 /**
  * End of spraying
  */
@@ -163,7 +134,6 @@ template <typename Event, typename FSM>
 void TendingDef::running::tending::idle::on_enter(Event const&&,
                                                   FSM& fsm) const {
   LOG_INFO("Entering tending mode, waiting for signal for tending height");
-  fsm.initialize();
 }
 
 template <typename Event, typename FSM>
@@ -179,12 +149,10 @@ void TendingDef::running::tending::preparation::on_enter(Event&&, FSM& fsm) {
 
   LOG_INFO("Tending preparation...");
 
-  // fsm.tending_running->write(device::digital::value::low);
   shift_register->write(device::id::comm::pi::tending_running(),
                         device::digital::value::low);
   state->tending_running(false);
 
-  // fsm.tending_complete->write(device::digital::value::low);
   shift_register->write(device::id::comm::pi::tending_complete(),
                         device::digital::value::low);
   state->tending_complete(false);
@@ -206,12 +174,10 @@ void TendingDef::running::tending::preparation::on_exit(Event&&,
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
-  // fsm.tending_running->write(device::digital::value::low);
   shift_register->write(device::id::comm::pi::tending_running(),
                         device::digital::value::low);
   state->tending_running(false);
 
-  // fsm.tending_complete->write(device::digital::value::low);
   shift_register->write(device::id::comm::pi::tending_complete(),
                         device::digital::value::low);
   state->tending_complete(false);
@@ -228,7 +194,14 @@ void TendingDef::running::tending::preparation::on_exit(Event&&,
  */
 template <typename Event, typename FSM>
 void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
+  massert(State::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+  auto* shift_register = device::ShiftRegister::get();
+
   LOG_INFO("Entering fault mode");
+  machine::util::reset_task_state();
 }
 
 template <typename Event, typename FSM>
@@ -254,4 +227,4 @@ void TendingDef::fault::manual::on_exit(Event const&&, FSM& fsm) const {
 
 NAMESPACE_END
 
-#endif  // APP_MACHINE_INLINE_HPP_
+#endif  // LIB_MACHINE_STATE_INLINE_HPP_

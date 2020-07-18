@@ -346,6 +346,42 @@ void Movement::update_position() const {
   update_z();
 }
 
+float Movement::progress() const {
+  const auto& step_remain_x = stepper_x()->remaining_steps();
+  const auto& step_remain_y = stepper_y()->remaining_steps();
+  const auto& step_remain_z = stepper_z()->remaining_steps();
+
+  const auto& step_count_x = stepper_x()->step_count();
+  const auto& step_count_y = stepper_y()->step_count();
+  const auto& step_count_z = stepper_z()->step_count();
+
+  const auto f = [](const device::stepper::step& remain,
+                    const device::stepper::step& count) {
+    return static_cast<float>(count) / static_cast<float>(remain + count);
+  };
+
+  // LOG_DEBUG("x {} {}, y {} {}, z {} {}", step_remain_x, step_count_x,
+  //           step_remain_y, step_count_y, step_remain_z, step_count_z);
+
+  // TODO: fix this!
+  float percentage =
+      (f(step_remain_x, step_count_x) + f(step_remain_y, step_count_y) +
+       f(step_remain_z, step_count_z)) /
+      3;
+
+  // LOG_DEBUG("x {}, y {}, z {}", f(step_remain_x, step_count_x),
+  //           f(step_remain_y, step_count_y), f(step_remain_z, step_count_z));
+
+  if (percentage >= +1.1f) {
+    percentage = +1.1f;
+  }
+  if (percentage <= -0.1f) {
+    percentage = -0.1f;
+  }
+
+  return percentage;
+}
+
 time_unit Movement::next() {
   while ((micros() - last_move_end()) < next_move_interval()) {
     // not yet running
@@ -404,7 +440,7 @@ time_unit Movement::next() {
   //   event_timer_z_ = timer_z.get();
   // }
 
-  // update_position();
+  update_position();
   // auto x = State::get()->x();
   // auto y = State::get()->y();
   // auto z = State::get()->z();
@@ -537,7 +573,14 @@ void Movement::revert_motor_params() const {
 }
 
 void Movement::move_finger_up() {
+  massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
+
+  auto* config = Config::get();
+  auto* state = State::get();
+
+  // set speed profile
+  motor_profile(config->homing_speed_profile(state->speed_profile()));
 
   LOG_INFO("Lifting finger...");
 
@@ -553,7 +596,7 @@ void Movement::move_finger_up() {
     if (z_completed) {
       stepper_z()->stop();
     } else {
-      start_move(0, 0, -1);
+      start_move(0, 0, -1200);
       while (!ready()) {
         if (limit_switch_z_top()->read().value_or(
                 device::digital::value::low) == device::digital::value::high) {
@@ -573,6 +616,15 @@ void Movement::move_finger_up() {
 }
 
 void Movement::move_finger_down() {
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
+
+  auto* config = Config::get();
+  auto* state = State::get();
+
+  // set speed profile
+  motor_profile(config->homing_speed_profile(state->speed_profile()));
+
   LOG_INFO("Lowering finger...");
 
   enable_motors();
@@ -588,7 +640,7 @@ void Movement::move_finger_down() {
     if (z_completed) {
       stepper_z()->stop();
     } else {
-      start_move(0, 0, 4);
+      start_move(0, 0, 1200);
       while (!ready()) {
         if (limit_switch_z_bottom()->read().value_or(
                 device::digital::value::low) == device::digital::value::high) {
@@ -607,6 +659,26 @@ void Movement::move_finger_down() {
   State::get()->z(52.0);
 }
 
+void Movement::rotate_finger() const {
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
+
+  auto* config = Config::get();
+  auto* state = State::get();
+
+  const auto& speed_profile =
+      config->tending_speed_profile(state->speed_profile());
+  LOG_INFO("Rotating finger...");
+  if (finger()->duty_cycle(speed_profile.duty_cycle) == ATM_ERR) {
+    LOG_INFO("Cannot set finger duty cycle...");
+  }
+}
+
+void Movement::stop_finger() const {
+  LOG_INFO("Stopping finger...");
+  finger()->write(device::digital::value::low);
+}
+
 void Movement::homing_finger() const {
   massert(Config::get() != nullptr, "sanity");
   massert(device::PCF8591Device::get() != nullptr, "sanity");
@@ -614,22 +686,47 @@ void Movement::homing_finger() const {
   auto* config = Config::get();
   auto* analog_device = device::PCF8591Device::get();
 
-  auto offset = config->finger<unsigned int>("homing-offset");
+  const auto& homing_speed_profile = config->homing_speed_profile();
+  const auto& speed_profile =
+      config->homing_speed_profile(State::get()->speed_profile());
+  const auto& offset = homing_speed_profile.finger_threshold;
+
+  double zero_deg =
+      static_cast<double>(config->finger<unsigned int>("zero-degree"));
+  double lower_bound = zero_deg - offset;
+  double upper_bound = zero_deg + offset;
+
+  double average = 0;
 
   LOG_INFO("Setting to homing duty cycle");
-  finger()->duty_cycle(config->finger<unsigned int>("homing-duty-cycle"));
+  finger()->duty_cycle(speed_profile.duty_cycle);
   while (true) {
-    auto degree = analog_device->read(builder()->rotary_encoder_pin());
-    if (degree <= offset) {
-      finger()->write(device::digital::value::low);
-      break;
+    if (auto degree = analog_device->read(builder()->rotary_encoder_pin())) {
+      util::math::moving_average<5>(average, *degree);
+      // DEBUG_ONLY(
+      //     LOG_DEBUG("Average {}, Degree {}, Lower Bound {}, Upper Bound {}",
+      //               average, *degree, lower_bound, upper_bound));
+      if ((lower_bound <= average) && (average <= upper_bound)) {
+        stop_finger();
+        break;
+      }
     }
-    sleep_for<time_units::micros>(500);
+    // add delay
+    sleep_for<time_units::micros>(100);
   }
 }
 
 void Movement::homing() {
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
+
+  auto* config = Config::get();
+  auto* state = State::get();
+
   LOG_INFO("Homing is started...");
+
+  // set speed profile
+  motor_profile(config->homing_speed_profile(state->speed_profile()));
 
   // homing z
   move_finger_up();
@@ -638,7 +735,7 @@ void Movement::homing() {
   enable_motors();
 
   // homing x and y
-  auto result = thread_pool().enqueue([this] {
+  auto result = thread_pool().enqueue([this, state] {
     bool is_x_completed =
         limit_switch_x()->read().value_or(device::digital::value::low) ==
         device::digital::value::high;
@@ -696,8 +793,6 @@ void Movement::homing() {
     while (!ready()) {
       next();
     }
-
-    auto* state = State::get();
 
     // set state to 0,0,0
     state->reset_coordinate();

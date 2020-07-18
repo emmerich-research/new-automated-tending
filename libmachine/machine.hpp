@@ -1,11 +1,14 @@
-#ifndef APP_PRECOMPILED_HPP_
-#define APP_PRECOMPILED_HPP_
+#ifndef LIB_MACHINE_PRECOMPILED_HPP_
+#define LIB_MACHINE_PRECOMPILED_HPP_
 
 #pragma GCC system_header
 
 // 1. STD
 #include <cstdlib>
+#include <exception>
 #include <iostream>
+#include <stdexcept>
+#include <thread>
 
 // 2. vendor
 
@@ -16,10 +19,11 @@
 #include <libcore/core.hpp>
 #include <libdevice/device.hpp>
 #include <libmechanism/mechanism.hpp>
+#include <libutil/util.hpp>
 
 // 4. Local
-#include "machine.hpp"
-#include "machine.inline.hpp"
+#include "state.hpp"
+#include "state.inline.hpp"
 
 #include "event.hpp"
 
@@ -29,4 +33,6 @@
 #include "guard.hpp"
 #include "guard.inline.hpp"
 
-#endif  // APP_PRECOMPILED_HPP_
+#include "util.hpp"
+
+#endif  // LIB_MACHINE_PRECOMPILED_HPP_

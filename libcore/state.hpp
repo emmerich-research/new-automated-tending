@@ -61,7 +61,7 @@ struct Task {
   bool ready;
   bool running;
   bool complete;
-  bool fault;
+  // bool fault;
 };
 
 namespace impl {
@@ -219,13 +219,13 @@ class StateImpl : public StackObj {
    *
    * @param fault fault status (true or false)
    */
-  void spraying_fault(bool fault);
+  // void spraying_fault(bool fault);
   /**
    * Get spraying fault
    *
    * @return status of spraying fault
    */
-  bool spraying_fault();
+  // bool spraying_fault();
   /**
    * Get tending task
    *
@@ -273,13 +273,73 @@ class StateImpl : public StackObj {
    *
    * @param fault fault status (true or false)
    */
-  void tending_fault(bool fault);
+  // void tending_fault(bool fault);
   /**
    * Get tending fault
    *
    * @return status of tending fault
    */
-  bool tending_fault();
+  // bool tending_fault();
+  /**
+   * Get cleaning task
+   *
+   * @return cleaning task
+   */
+  const Task& cleaning();
+  /**
+   * Set cleaning ready
+   *
+   * @param ready ready status (true or false)
+   */
+  void cleaning_ready(bool ready);
+  /**
+   * Get cleaning fault
+   *
+   * @return status of cleaning fault
+   */
+  bool cleaning_ready();
+  /**
+   * Set cleaning running
+   *
+   * @param running running status (true or false)
+   */
+  void cleaning_running(bool running);
+  /**
+   * Get cleaning running
+   *
+   * @return status of cleaning running
+   */
+  bool cleaning_running();
+  /**
+   * Set cleaning complete
+   *
+   * @param complete complete status (true or false)
+   */
+  void cleaning_complete(bool complete);
+  /**
+   * Get cleaning complete
+   *
+   * @return status of cleaning complete
+   */
+  bool cleaning_complete();
+  /**
+   * Set cleaning fault
+   *
+   * @param fault fault status (true or false)
+   */
+  // void cleaning_fault(bool fault);
+  /**
+   * Get cleaning fault
+   *
+   * @return status of cleaning fault
+   */
+  // bool cleaning_fault();
+  /**
+   * Set fault status
+   *
+   * @param fault fault status (true or false)
+   */
+  void fault(bool fault);
   /**
    * Get fault status
    *
@@ -355,6 +415,14 @@ class StateImpl : public StackObj {
    * Spraying task
    */
   Task spraying_;
+  /**
+   * Cleaning task
+   */
+  Task cleaning_;
+  /**
+   * Fault status
+   */
+  bool fault_;
   /**
    * Manual mode
    */

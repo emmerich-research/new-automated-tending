@@ -132,7 +132,7 @@ void StepperDeviceImpl<Speed>::move(long steps, bool stop_condition) {
   start_move(steps);
   while (next(stop_condition) != 0) {
     // noop
-    LOG_DEBUG("MOVE {}", remaining_steps());
+    // LOG_DEBUG("MOVE {}", remaining_steps());
   }
 }
 

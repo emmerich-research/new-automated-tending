@@ -121,11 +121,8 @@ static void do_tending() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto*  config = Config::get();
   auto*  shift_register = device::ShiftRegister::get();
-  auto*  pwm_registry = device::PWMDeviceRegistry::get();
   auto&& movement = mechanism::movement_mechanism();
-  auto&& finger = pwm_registry->get(device::id::finger());
 
   shift_register->write(device::id::comm::pi::tending_ready(),
                         device::digital::value::low);
@@ -154,18 +151,17 @@ static void do_tending() {
   sleep_for<time_units::millis>(1000);
   movement->follow_tending_paths_edge();
   sleep_for<time_units::millis>(1000);
-  if (finger->duty_cycle(config->finger<unsigned int>("duty-cycle")) ==
-      ATM_ERR) {
-    LOG_INFO("Cannot set finger duty cycle...");
-  }
+
+  movement->rotate_finger();
 
   sleep_for<time_units::millis>(1000);
   movement->follow_tending_paths_zigzag();
   sleep_for<time_units::millis>(1000);
 
-  if (finger->write(device::digital::value::low) == ATM_ERR) {
-    LOG_INFO("Cannot set finger duty cycle...");
-  }
+  movement->stop_finger();
+
+  // movement->homing_finger();
+
   movement->homing();
 
   shift_register->write(device::id::comm::pi::tending_ready(),
@@ -226,7 +222,8 @@ static bool menu() {
   LOG_INFO("9.   Spraying and Tending trigger");
   LOG_INFO("10.  Move X with specified distance (in cm, can be negative)");
   LOG_INFO("11.  Move Y with specified distance (in cm, can be negative)");
-  LOG_INFO("12.  Set speed <fast/normal/slow>");
+  LOG_INFO("12.  Homing finger");
+  LOG_INFO("13.  Set speed <fast/normal/slow>");
   LOG_INFO("0.   Exit");
 
   unsigned int choice;
@@ -307,6 +304,8 @@ static bool menu() {
     }
     state->reset_coordinate();
   } else if (choice == 12) {
+    movement->homing_finger();
+  } else if (choice == 13) {
     std::string   speed_str;
     config::speed speed_profile = config::speed::normal;
 

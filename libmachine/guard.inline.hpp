@@ -1,5 +1,5 @@
-#ifndef APP_GUARD_INLINE_HPP_
-#define APP_GUARD_INLINE_HPP_
+#ifndef LIB_MACHINE_GUARD_INLINE_HPP_
+#define LIB_MACHINE_GUARD_INLINE_HPP_
 
 #include "guard.hpp"
 
@@ -13,11 +13,6 @@ namespace guard {
 template <typename FSM, typename State>
 bool machine_ready::operator()(FSM const& fsm, State const&) const {
   return fsm.is_ready();
-}
-
-template <typename FSM, typename State>
-bool homing::operator()(FSM const&, State const&) const {
-  return check();
 }
 
 template <typename FSM, typename State>
@@ -71,4 +66,4 @@ auto completed::operator()(FSM const& fsm, State const&) const
 
 NAMESPACE_END
 
-#endif  // APP_GUARD_INLINE_HPP_
+#endif  // LIB_MACHINE_GUARD_INLINE_HPP_

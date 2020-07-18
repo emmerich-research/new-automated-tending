@@ -85,6 +85,7 @@ struct SpeedProfile {
   SpeedProfile();
   DEBUG_ONLY(void print(std::ostream& os) const);
 
+  double         finger_threshold;
   MechanismSpeed slow;
   MechanismSpeed normal;
   MechanismSpeed fast;
@@ -143,6 +144,12 @@ class ConfigImpl : public StackObj {
    */
   const config::MechanismSpeed& fault_speed_profile(
       const config::speed& speed_profile) const;
+  /**
+   * Get speed Profile of Homing mechanism
+   *
+   * @return homing speed profile
+   */
+  const config::SpeedProfile& homing_speed_profile() const;
   /**
    * Get speed Profile of Homing mechanism
    *
@@ -278,20 +285,6 @@ class ConfigImpl : public StackObj {
   inline T limit_switch_z2(Keys&&... keys) const {
     return find<T>("devices", "limit-switch", "z2",
                    std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get spray device info
-   *
-   * It should be in key "devices.spray"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return spray device info with type T
-   */
-  template <typename T, typename... Keys>
-  inline T spray(Keys&&... keys) const {
-    return find<T>("devices", "spray", std::forward<Keys>(keys)...);
   }
   /**
    * Get anomaly device info

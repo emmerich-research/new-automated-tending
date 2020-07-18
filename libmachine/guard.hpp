@@ -1,5 +1,5 @@
-#ifndef APP_GUARD_HPP_
-#define APP_GUARD_HPP_
+#ifndef LIB_MACHINE_GUARD_HPP_
+#define LIB_MACHINE_GUARD_HPP_
 
 #include <libcore/core.hpp>
 
@@ -14,13 +14,6 @@ struct guard_base : public StackObj {
 struct machine_ready : public StackObj {
   template <typename FSM, typename State>
   bool operator()(FSM const& fsm, State const&) const;
-};
-
-struct homing : public guard_base {
-  template <typename FSM, typename State>
-  bool operator()(FSM const& fsm, State const&) const;
-
-  virtual bool check() const override;
 };
 
 struct e_stop : public guard_base {
@@ -78,4 +71,4 @@ struct completed : public StackObj {
 
 NAMESPACE_END
 
-#endif  // APP_GUARD_HPP_
+#endif  // LIB_MACHINE_GUARD_HPP_

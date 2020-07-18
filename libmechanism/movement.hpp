@@ -314,6 +314,12 @@ class Movement : public StackObj {
   template <movement::unit Unit>
   void move(Point x, Point y, Point z);
   /**
+   * Movement progress in percentage
+   *
+   * @return percentage of progress
+   */
+  float progress() const;
+  /**
    * Stop only stepper x
    *
    * @return remaining steps of stepper x
@@ -346,11 +352,23 @@ class Movement : public StackObj {
    */
   void homing();
   /**
+   * Homing finger
+   */
+  void homing_finger() const;
+  /**
    * Check is home or not
    *
    * @return is home or not
    */
   bool is_home() const;
+  /**
+   * Rotate finger
+   */
+  void rotate_finger() const;
+  /**
+   * Stop finger
+   */
+  void stop_finger() const;
   /**
    * Move finger down
    */
@@ -387,10 +405,6 @@ class Movement : public StackObj {
    * Disable all motors
    */
   void disable_motors() const;
-  /**
-   * Homing finger
-   */
-  void homing_finger() const;
   /**
    * Set Motor Profile for steppers
    *

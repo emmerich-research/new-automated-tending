@@ -8,7 +8,7 @@
  * enabled or not
  */
 
-#pragma GCC system_header
+#pragma GCC            system_header
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wweak-vtables"
 
@@ -26,6 +26,7 @@
 #include "boolean.hpp"
 #include "filesystem.hpp"
 #include "macros.hpp"
+#include "math.hpp"
 #include "pair.hpp"
 #include "timer.hpp"
 

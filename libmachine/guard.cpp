@@ -1,4 +1,4 @@
-#include "precompiled.hpp"
+#include "machine.hpp"
 
 #include "guard.hpp"
 
@@ -8,13 +8,6 @@
 NAMESPACE_BEGIN
 
 namespace guard {
-bool homing::check() const {
-  massert(mechanism::movement_mechanism() != nullptr, "sanity");
-  massert(mechanism::movement_mechanism()->active(), "sanity");
-
-  return mechanism::movement_mechanism()->is_home();
-}
-
 bool e_stop::check() const {
   auto*  input_registry = device::DigitalInputDeviceRegistry::get();
   auto&& e_stop = input_registry->get(device::id::comm::plc::e_stop());
