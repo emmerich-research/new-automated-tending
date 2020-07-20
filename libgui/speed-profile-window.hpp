@@ -2,6 +2,7 @@
 #define LIB_GUI_SPEED_PROFILE_WINDOW_HPP_
 
 #include <libcore/core.hpp>
+#include <libmachine/machine.hpp>
 
 #include "window.hpp"
 
@@ -16,11 +17,13 @@ class SpeedProfileWindow : public Window {
   /**
    * Speed Profile Window constructor
    *
+   * @param tsm    state machine
    * @param width  window width
    * @param height window height
    * @param flags  window flags
    */
-  SpeedProfileWindow(float                   width = 500,
+  SpeedProfileWindow(const machine::tending* tsm,
+                     float                   width = 500,
                      float                   height = 100,
                      const ImGuiWindowFlags& flags = 0);
   /**
@@ -33,6 +36,20 @@ class SpeedProfileWindow : public Window {
    * @param manager ui manager
    */
   virtual void show(Manager* manager) override;
+
+ private:
+  /**
+   * Get state machine
+   *
+   * @return state machine
+   */
+  inline const machine::tending* tsm() const { return tsm_; }
+
+ private:
+  /**
+   * State machine
+   */
+  const machine::tending* tsm_;
 };
 }  // namespace gui
 

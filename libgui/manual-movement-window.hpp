@@ -1,11 +1,9 @@
 #ifndef LIB_GUI_MANUAL_MOVEMENT_WINDOW_HPP_
 #define LIB_GUI_MANUAL_MOVEMENT_WINDOW_HPP_
 
-#include <libcore/core.hpp>
-
-#include <libmachine/machine.hpp>
-
 #include <libalgo/algo.hpp>
+#include <libcore/core.hpp>
+#include <libmachine/machine.hpp>
 
 #include "window.hpp"
 

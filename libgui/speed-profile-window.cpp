@@ -7,10 +7,11 @@
 NAMESPACE_BEGIN
 
 namespace gui {
-SpeedProfileWindow::SpeedProfileWindow(float                   width,
+SpeedProfileWindow::SpeedProfileWindow(const machine::tending* tsm,
+                                       float                   width,
                                        float                   height,
                                        const ImGuiWindowFlags& flags)
-    : Window{"Speed Profile", width, height, flags} {}
+    : Window{"Speed Profile", width, height, flags}, tsm_{tsm} {}
 
 SpeedProfileWindow::~SpeedProfileWindow() {}
 
@@ -21,6 +22,13 @@ void SpeedProfileWindow::show([[maybe_unused]] Manager* manager) {
   unsigned int status_id = 0;
   const ImVec2 size = util::size::h_wide(50.0f);
   const auto&  current_speed = state->speed_profile();
+
+  const bool disabled = !tsm()->is_no_task();
+
+  if (disabled) {
+    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+  }
 
   ImGui::Columns(3, NULL, /* v_borders */ true);
   {
@@ -71,6 +79,11 @@ void SpeedProfileWindow::show([[maybe_unused]] Manager* manager) {
     }
   }
   ImGui::NextColumn();
+
+  if (disabled) {
+    ImGui::PopItemFlag();
+    ImGui::PopStyleVar();
+  }
 }
 }  // namespace gui
 

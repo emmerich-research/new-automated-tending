@@ -1,6 +1,7 @@
 #ifndef LIB_GUI_FAULT_WINDOW_HPP_
 #define LIB_GUI_FAULT_WINDOW_HPP_
 
+#include <libcore/core.hpp>
 #include <libmachine/machine.hpp>
 
 #include "window.hpp"
