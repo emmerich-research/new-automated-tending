@@ -17,13 +17,18 @@ SpeedProfileWindow::~SpeedProfileWindow() {}
 
 void SpeedProfileWindow::show([[maybe_unused]] Manager* manager) {
   massert(State::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto*        state = State::get();
+  auto*  state = State::get();
+  auto&& movement = mechanism::movement_mechanism();
+
   unsigned int status_id = 0;
   const ImVec2 size = util::size::h_wide(50.0f);
   const auto&  current_speed = state->speed_profile();
 
-  const bool disabled = !tsm()->is_no_task();
+  const bool disabled =
+      !tsm()->is_no_task() && (!state->fault() || !movement->ready());
 
   if (disabled) {
     ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
