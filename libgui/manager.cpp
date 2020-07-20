@@ -72,7 +72,18 @@ void Manager::init(const char* name, int width, int height) {
 #endif
 #endif
 
-  window_ = glfwCreateWindow(width, height, name, nullptr, nullptr);
+  auto*              monitor = glfwGetPrimaryMonitor();
+  const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+  glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+  glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+  glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+  glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+  window_ = glfwCreateWindow(mode->width, mode->height, name, nullptr, nullptr);
+
+  glfwSetWindowMonitor(window(), monitor, 0, 0, mode->width, mode->height,
+                       mode->refreshRate);
 
   if (window() == nullptr) {
     active_ = false;
