@@ -21,8 +21,9 @@
 NAMESPACE_BEGIN
 
 namespace gui {
-Manager::Manager(ImVec4 clear_color)
-    : active_{true},
+Manager::Manager(const char* name, ImVec4 clear_color)
+    : name_{name},
+      active_{true},
       terminated_{false},
       exited_{false},
       clear_color_{clear_color} {}
@@ -39,6 +40,14 @@ Manager::~Manager() {
   }
 }
 
+void Manager::name(const char* name) {
+  name_ = name;
+}
+
+void Manager::clear_color(const ImVec4& color) {
+  clear_color_ = color;
+}
+
 void Manager::error_callback(const ErrorCallback&& error_cb) {
   glfwSetErrorCallback(error_cb);
 }
@@ -47,7 +56,7 @@ void Manager::key_callback(const KeyCallback&& key_cb) {
   glfwSetKeyCallback(window(), key_cb);
 }
 
-void Manager::init(const char* name, int width, int height) {
+void Manager::init() {
   if (!glfwInit()) {
     active_ = false;
     return;
@@ -80,7 +89,8 @@ void Manager::init(const char* name, int width, int height) {
   glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
   glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-  window_ = glfwCreateWindow(mode->width, mode->height, name, nullptr, nullptr);
+  window_ =
+      glfwCreateWindow(mode->width, mode->height, name(), nullptr, nullptr);
 
   glfwSetWindowMonitor(window(), monitor, 0, 0, mode->width, mode->height,
                        mode->refreshRate);

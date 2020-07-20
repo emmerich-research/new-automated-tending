@@ -29,7 +29,8 @@ int main() {
     return status;
   }
 
-  ui_manager.init("Emmerich Tending Machine", 400, 400);
+  ui_manager.name(Config::get()->name().c_str());
+  ui_manager.init();
 
   // early stopping
   if (!ui_manager.active()) {

@@ -38,9 +38,11 @@ class Manager : public StackObj {
   /**
    * Manager constructor
    *
+   * @param name          main window name
    * @param clear_color   background color of main window
    */
-  Manager(ImVec4 clear_color = ImVec4{0.0f, 0.0f, 0.0f, 1.00f});
+  Manager(const char* name = "",
+          ImVec4      clear_color = ImVec4{0.0f, 0.0f, 0.0f, 1.00f});
   /**
    * Manager destructor
    */
@@ -68,11 +70,14 @@ class Manager : public StackObj {
   /**
    * Init GLFW, OpenGL, and other initializations
    *
-   * @param name   main window name
-   * @param width  main window width
-   * @param height main window height
    */
-  void init(const char* name, int width, int height);
+  void init();
+  /**
+   * Set window name
+   *
+   * @param name window name to set
+   */
+  void name(const char* name);
   /**
    * Set clear color
    *
@@ -126,6 +131,12 @@ class Manager : public StackObj {
 
  protected:
   /**
+   * Get main window name
+   *
+   * @return main window name
+   */
+  inline const char* name() const { return name_; }
+  /**
    * Get windows container
    *
    * @return windows container
@@ -157,6 +168,10 @@ class Manager : public StackObj {
   inline const ImVec4& clear_color() const { return clear_color_; }
 
  private:
+  /**
+   * Main window name
+   */
+  const char* name_;
   /**
    * Active status
    */
