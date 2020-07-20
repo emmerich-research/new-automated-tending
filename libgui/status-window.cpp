@@ -38,9 +38,6 @@ void StatusWindow::show([[maybe_unused]] Manager* manager) {
                         state->spraying_running(), size);
     util::status_button("Spraying Complete", status_id++,
                         state->spraying_complete(), size);
-    // util::status_button("Spraying Fault", status_id++,
-    // state->spraying_fault(),
-    //                     size);
   }
   ImGui::NextColumn();
   {
@@ -52,22 +49,17 @@ void StatusWindow::show([[maybe_unused]] Manager* manager) {
                         state->tending_running(), size);
     util::status_button("Tending Complete", status_id++,
                         state->tending_complete(), size);
-    // util::status_button("Tending Fault", status_id++, state->tending_fault(),
-    //                     size);
   }
   ImGui::NextColumn();
   {
     // Cleaning Status
     ImGui::Text("Cleaning Status");
-    util::status_button("Cleaning Ready", status_id++, state->tending_ready(),
+    util::status_button("Cleaning Ready", status_id++, state->cleaning_ready(),
                         size);
     util::status_button("Cleaning Running", status_id++,
-                        state->tending_running(), size);
+                        state->cleaning_running(), size);
     util::status_button("Cleaning Complete", status_id++,
-                        state->tending_complete(), size);
-    // util::status_button("Cleaning Fault", status_id++,
-    // state->tending_fault(),
-    //                     size);
+                        state->cleaning_complete(), size);
   }
   ImGui::NextColumn();
 

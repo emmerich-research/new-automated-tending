@@ -164,40 +164,13 @@ struct TendingDef : public StackObj,
                          tr<spraying, event::task_complete, no_task>,
                          tr<tending, event::task_complete, no_task>,
                          tr<no_task, event::tending::start, tending>>;
-
-    /**
-     * Constructor
-     */
-    running();
-    /**
-     * Check if spraying is completed
-     *
-     * @return spraying is completed or not
-     */
-    bool is_spraying_completed() const;
-    /**
-     * Check if tending completed
-     *
-     * @return tending completed or not
-     */
-    bool is_tending_completed() const;
-    /**
-     * This will become true if only spraying has
-     * been completed
-     */
-    bool is_spraying_completed_;
-    /**
-     * This will become true if only tending has
-     * been completed
-     */
-    bool is_tending_completed_;
   };
 
   using initial_state = initial;
   using transitions = transition_table<
       /* State, Event, Next, Action, Guard */
       tr<initial, event::start, running, action::start>,
-      tr<running, event::fault::trigger, fault, action::fault>,
+      tr<running, event::fault::trigger, fault, action::fault, guard::fault>,
       tr<fault, event::fault::restart, running, action::restart>,
       tr<fault, event::stop, terminated, action::stop>,
       tr<running, event::stop, terminated, action::stop>>;
@@ -271,6 +244,12 @@ struct TendingDef : public StackObj,
    * @return machine is running or not
    */
   bool is_running() const;
+  /**
+   * Check if machine is having no task
+   *
+   * @return machine is having no task or not
+   */
+  bool is_no_task() const;
   /**
    * Check if machine is terminated
    *

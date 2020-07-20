@@ -1,6 +1,7 @@
 #ifndef LIB_GUI_FAULT_WINDOW_HPP_
 #define LIB_GUI_FAULT_WINDOW_HPP_
 
+#include <libcore/core.hpp>
 #include <libmachine/machine.hpp>
 
 #include "window.hpp"
@@ -37,9 +38,17 @@ class FaultWindow : public Window {
   virtual void show(Manager* manager) override;
 
  private:
+  /**
+   * Get state machine
+   *
+   * @return state machine
+   */
   inline machine::tending* tsm() { return tsm_; }
 
  private:
+  /**
+   * State machine
+   */
   machine::tending* tsm_;
 };
 }  // namespace gui

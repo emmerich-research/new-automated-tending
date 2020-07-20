@@ -56,6 +56,9 @@ int main() {
   ui_manager.add_window<gui::StatusWindow>();
   ui_manager.add_window<gui::CleaningWindow>();
   ui_manager.add_window<gui::CleaningControlWindow>();
+  ui_manager.add_window<gui::PLCTriggerWindow>();
+  ui_manager.add_window<gui::SpeedProfileWindow>(
+      reinterpret_cast<const machine::tending*>(&tsm));
 
   while (ui_manager.handle_events()) {
     ui_manager.render();
@@ -63,6 +66,10 @@ int main() {
 
   // stopping
   ui_manager.exit();
+  State::get()->fault(true);
+  LOG_INFO("Killing task workers, will go into fault mode to kill app...");
+  tsm.fault();
+  sleep_for<time_units::seconds>(5);
   tsm.stop();
   massert(tsm.is_terminated(), "sanity");
 

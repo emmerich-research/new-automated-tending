@@ -344,9 +344,17 @@ class Movement : public StackObj {
   /**
    * Check if movement mechanism is active or not
    *
+   * This is for checking the initialization
+   *
    * @return active (true/false)
    */
   inline bool active() const { return active_; }
+  /**
+   * Get status of ready to start a new move or not
+   *
+   * @return ready or not
+   */
+  inline const bool& ready() const { return ready_; }
   /**
    * Homing all stepper
    */
@@ -439,12 +447,6 @@ class Movement : public StackObj {
   static long convert_length_to_steps(
       double                       length,
       const device::stepper::step& steps_per_mm);
-  /**
-   * Get thread pool instance
-   *
-   * @return instance of algo::ThreadPool
-   */
-  inline algo::ThreadPool& thread_pool() { return thread_pool_; }
   /**
    * Get instance of impl::MovementBuilderImpl
    *
@@ -589,12 +591,6 @@ class Movement : public StackObj {
     return next_move_interval_;
   }
   /**
-   * Get status of ready to start a new move or not
-   *
-   * @return ready or not
-   */
-  inline const bool& ready() const { return ready_; }
-  /**
    * Update position of x
    */
   void update_x() const;
@@ -648,10 +644,6 @@ class Movement : public StackObj {
    * Instance of impl::MovementBuilderImpl to reduce verbosity
    */
   const impl::MovementBuilderImpl* builder_;
-  /**
-   * ThreadPool to run tasks in separate thread
-   */
-  algo::ThreadPool thread_pool_;
   /**
    * Check wether movement mechanism is usable or not
    */

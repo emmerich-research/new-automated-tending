@@ -56,6 +56,7 @@ void Manager::init(const char* name, int width, int height) {
     return;
   }
 
+#if defined(OPENGL3_EXIST)
 // Decide GL+GLSL versions
 #if __APPLE__
   // GL 3.2 + GLSL 150
@@ -71,6 +72,7 @@ void Manager::init(const char* name, int width, int height) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
   // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+
   // only glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // 3.0+ only
+#endif
 #endif
 
   window_ = glfwCreateWindow(width, height, name, nullptr, nullptr);

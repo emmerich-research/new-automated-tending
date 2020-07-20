@@ -27,8 +27,6 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
     auto*  shift_register = device::ShiftRegister::get();
     auto&& movement = mechanism::movement_mechanism();
 
-    // state->spraying_fault(false);
-    // state->tending_fault(false);
     state->fault(false);
     state->manual_mode(false);
 
@@ -51,15 +49,15 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
                           device::digital::value::high);
     state->tending_ready(true);
 
-    guard::spraying::height spraying_height;
-    guard::tending::height  tending_height;
+    guard::height::spraying_tending spraying_tending_height;
+    guard::height::cleaning         cleaning_height;
 
     while (!root_machine(fsm).is_terminated() && !state->fault()) {
-      if (spraying_height.check()) {
+      if (spraying_tending_height.check()) {
         root_machine(fsm).start_spraying();
-        break;
-      } else if (tending_height.check()) {
         root_machine(fsm).start_tending();
+        break;
+      } else if (cleaning_height.check()) {
         break;
       }
       sleep_for<time_units::millis>(500);
@@ -160,9 +158,6 @@ void TendingDef::running::tending::preparation::on_enter(Event&&, FSM& fsm) {
   LOG_INFO("Homing to make sure ready to tend...");
   movement->homing();
 
-  LOG_INFO("Homing finger...");
-  movement->homing_finger();
-
   root_machine(fsm).run_tending();
 }
 
@@ -206,11 +201,18 @@ void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
 
 template <typename Event, typename FSM>
 void TendingDef::fault::manual::on_enter(Event const&&, FSM& fsm) const {
+  massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
   LOG_INFO("Entering fault manual mode");
 
-  auto* state = State::get();
+  auto*  config = Config::get();
+  auto*  state = State::get();
+  auto&& movement = mechanism::movement_mechanism();
 
+  movement->motor_profile(config->fault_speed_profile(state->speed_profile()));
   state->manual_mode(true);
 }
 

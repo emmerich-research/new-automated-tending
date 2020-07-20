@@ -37,6 +37,10 @@ bool TendingDef::is_terminated() const {
   return rebind().is_in_state<terminated>();
 }
 
+bool TendingDef::is_no_task() const {
+  return rebind().is_in_state<running::no_task>();
+}
+
 void TendingDef::start_spraying() {
   rebind().process_event(event::spraying::start{});
 }
@@ -68,23 +72,6 @@ void TendingDef::fault_manual() {
 void TendingDef::restart() {
   rebind().process_event(event::fault::restart{});
 }
-
-TendingDef::running::running()
-    : is_spraying_completed_{false}, is_tending_completed_{false} {}
-
-bool TendingDef::running::is_spraying_completed() const {
-  return is_spraying_completed_;
-}
-
-bool TendingDef::running::is_tending_completed() const {
-  return is_tending_completed_;
-}
-
-// spraying
-// TendingDef::running::spraying::spraying()} {}
-
-// tending
-// TendingDef::running::tending::tending() {}
 }  // namespace machine
 
 NAMESPACE_END

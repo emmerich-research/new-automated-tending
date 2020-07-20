@@ -53,27 +53,18 @@ void Movement::move(Point x, Point y, Point z) {
                                               builder()->steps_per_mm_z());
     }
 
-    auto result =
-        thread_pool().enqueue([this, state, &steps_x, &steps_y, &steps_z] {
-          LOG_INFO("Starting to move steps_x={}, steps_y={}, steps_z={}...",
-                   steps_x, steps_y, steps_z);
-          start_move(steps_x, steps_y, steps_z);  // will trigger ready to false
-          while (!ready()) {
-            if (state->fault() && !state->manual_mode()) {
-              stop();
-            } else {
-              next();
-            }
-          }
-          LOG_INFO("Move is finished");
-          return true;
-        });
-
-    // BEWARE!
-    // this line will enforce waiting of move task until finished
-    // this to simplify solution so we do not need any queue to implement with
-    // if this line is deleted, then the move will be in race condition
-    [[maybe_unused]] bool finished = result.get();
+    LOG_INFO("Starting to move steps_x={}, steps_y={}, steps_z={}...", steps_x,
+             steps_y, steps_z);
+    start_move(steps_x, steps_y, steps_z);  // will trigger ready to false
+    while (!ready()) {
+      if (state->fault() && !state->manual_mode()) {
+        stop();
+        return;
+      } else {
+        next();
+      }
+    }
+    LOG_INFO("Move is finished");
 
     if (state->manual_mode()) {
       state->coordinate({x + current_x, y + current_y, z + current_z});

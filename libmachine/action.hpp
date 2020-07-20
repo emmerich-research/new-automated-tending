@@ -6,7 +6,12 @@
 NAMESPACE_BEGIN
 
 namespace action {
+
 void shutdown_hook();
+
+struct base : public StackObj {
+  virtual void act() = 0;
+};
 
 struct start : public StackObj {
   template <typename Event,

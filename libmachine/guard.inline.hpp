@@ -25,44 +25,37 @@ bool reset::operator()(FSM const&, State const&) const {
   return check();
 }
 
-namespace spraying {
 template <typename FSM, typename State>
-bool height::operator()(FSM const&, State const&) const {
+bool fault::operator()(FSM const&, State const&) const {
   return check();
 }
 
+namespace spraying {
 template <typename FSM, typename State>
-auto completed::operator()(FSM const& fsm, State const&) const
-    -> decltype(fsm.is_spraying_completed(), bool()) {
-  return fsm.is_spraying_completed();
-}
-
-template <typename FSM, typename State>
-auto completed::operator()(FSM const& fsm, State const&) const
-    -> decltype(fsm.enclosing_fsm().is_spraying_completed(), bool()) {
-  return fsm.enclosing_fsm().is_spraying_completed();
+bool completed::operator()(FSM const&, State const&) const {
+  return check();
 }
 }  // namespace spraying
 
 namespace tending {
 template <typename FSM, typename State>
-bool height::operator()(FSM const&, State const&) const {
+bool completed::operator()(FSM const&, State const&) const {
+  return check();
+}
+}  // namespace tending
+
+namespace height {
+template <typename FSM, typename State>
+bool spraying_tending::operator()(FSM const&, State const&) const {
   return check();
 }
 
 template <typename FSM, typename State>
-auto completed::operator()(FSM const& fsm, State const&) const
-    -> decltype(fsm.is_tending_completed(), bool()) {
-  return fsm.is_tending_completed();
+bool cleaning::operator()(FSM const&, State const&) const {
+  return check();
 }
-
-template <typename FSM, typename State>
-auto completed::operator()(FSM const& fsm, State const&) const
-    -> decltype(fsm.enclosing_fsm().is_tending_completed(), bool()) {
-  return fsm.enclosing_fsm().is_tending_completed();
-}
-}  // namespace tending
-}  // namespace guard
+}  // namespace height
+}  // namespace height
 
 NAMESPACE_END
 

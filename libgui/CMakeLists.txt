@@ -27,6 +27,8 @@ ucm_add_files(
   "status-window.cpp"
   "cleaning-window.cpp"
   "cleaning-control-window.cpp"
+  "plc-trigger-window.cpp"
+  "speed-profile-window.cpp"
 
   TO SOURCES)
 
@@ -84,6 +86,8 @@ target_link_libraries(gui PUBLIC
   ${GLAD_LIBRARIES}
   "${PROJECT_NAMESPACE}::util"
   "${PROJECT_NAMESPACE}::core"
+  "${PROJECT_NAMESPACE}::algo"
+  "${PROJECT_NAMESPACE}::device"
   "${PROJECT_NAMESPACE}::mechanism"
   "${PROJECT_NAMESPACE}::machine")
 
