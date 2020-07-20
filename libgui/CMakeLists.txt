@@ -29,6 +29,7 @@ ucm_add_files(
   "cleaning-control-window.cpp"
   "plc-trigger-window.cpp"
   "speed-profile-window.cpp"
+  "system-info-window.cpp"
 
   TO SOURCES)
 

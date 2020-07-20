@@ -11,7 +11,14 @@ Window::Window(const char*             name,
                float                   width,
                float                   height,
                const ImGuiWindowFlags& flags)
-    : name_{name}, width_{width}, height_{height}, flags_{flags} {}
+    : name_{name},
+      width_{width},
+      height_{height},
+      flags_{ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+             ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoResize |
+             ImGuiWindowFlags_NoCollapse |
+             ImGuiWindowFlags_NoBringToFrontOnFocus |
+             ImGuiWindowFlags_NoFocusOnAppearing} {}
 
 Window::~Window() {}
 

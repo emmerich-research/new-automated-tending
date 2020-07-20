@@ -70,5 +70,6 @@
 #include "plc-trigger-window.hpp"
 #include "speed-profile-window.hpp"
 #include "status-window.hpp"
+#include "system-info-window.hpp"
 
 #endif  // APP_PRECOMPILED_HPP_

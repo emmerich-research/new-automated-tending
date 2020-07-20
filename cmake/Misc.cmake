@@ -16,7 +16,10 @@ file(COPY "${PROJECT_SOURCE_DIR}/config"
      DESTINATION "${PROJECT_BINARY_DIR}")
 
 configure_file("${PROJECT_CONFIG_DIR}/config.toml"
-               "${PROJECT_CONFIG_DIR}/config.toml" COPYONLY)
+               "${PROJECT_BINARY_DIR}/config/config.toml" COPYONLY)
+
+configure_file("${PROJECT_SOURCE_DIR}/imgui.ini"
+               "${PROJECT_BINARY_DIR}/imgui.ini" COPYONLY)
 # add the binary tree to the search path for include files
 # so that we will find config.h
 # include_directories("${PROJECT_BINARY_DIR}")

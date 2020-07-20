@@ -50,6 +50,7 @@ int main() {
     LOG_ERROR("Glfw Error {}: {}", error, description);
   });
 
+  ui_manager.add_window<gui::SystemInfoWindow>();
   ui_manager.add_window<gui::FaultWindow>(&tsm);
   ui_manager.add_window<gui::MovementWindow>();
   ui_manager.add_window<gui::ManualMovementWindow>(&tsm);
