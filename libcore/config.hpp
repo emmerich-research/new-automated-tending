@@ -10,6 +10,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -117,8 +118,10 @@ class ConfigImpl : public StackObj {
   friend ATM_STATUS StaticObj<ConfigImpl>::create(Args&&... args);
 
  public:
-  typedef std::pair<double, double> coordinate;
-  typedef std::vector<coordinate>   path_container;
+  typedef std::pair<double, double>                coordinate;
+  typedef std::vector<coordinate>                  path_container;
+  typedef std::tuple<double, double, unsigned int> cleaning;
+  typedef std::vector<cleaning>                    cleaning_container;
   /**
    * Get name of app from config
    *
@@ -393,6 +396,22 @@ class ConfigImpl : public StackObj {
    */
   const coordinate tending_path_zigzag(size_t idx);
   /**
+   * Get cleaning stations
+   *
+   * It should be in key "mechanisms.cleaning.stations"
+   *
+   * @return tending zigzag movement path
+   */
+  const cleaning_container& cleaning_stations();
+  /**
+   * Get cleaning station at specified index
+   *
+   * @param idx index to get
+   *
+   * @return cleaning station at specified index
+   */
+  const cleaning& cleaning_station(size_t idx);
+  /**
    * Get mechanisms fault manual mode movement
    *
    * It should be in key "mechanisms.fault.manual.movement"
@@ -518,6 +537,10 @@ class ConfigImpl : public StackObj {
    * Tending position
    */
   coordinate tending_position_;
+  /**
+   * Cleaning container
+   */
+  cleaning_container cleaning_stations_;
   /**
    * Fault speed profile
    */

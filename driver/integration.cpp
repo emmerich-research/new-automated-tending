@@ -14,6 +14,9 @@ static bool       stop = false;
 static ATM_STATUS init();
 static void       shutdown_hook();
 static int        throw_message();
+static void       do_spraying();
+static void       do_tending();
+static void       do_cleaning();
 static bool       menu();
 
 static ATM_STATUS init() {
@@ -160,8 +163,6 @@ static void do_tending() {
 
   movement->stop_finger();
 
-  // movement->homing_finger();
-
   movement->homing();
 
   shift_register->write(device::id::comm::pi::tending_ready(),
@@ -169,6 +170,57 @@ static void do_tending() {
   shift_register->write(device::id::comm::pi::tending_running(),
                         device::digital::value::low);
   shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::high);
+}
+
+static void do_cleaning() {
+  massert(Config::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
+  massert(device::PWMDeviceRegistry::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
+  auto*  config = Config::get();
+  auto*  state = State::get();
+  auto*  shift_register = device::ShiftRegister::get();
+  auto&& movement = mechanism::movement_mechanism();
+
+  shift_register->write(device::id::comm::pi::spraying_ready(),
+                        device::digital::value::low);
+  state->spraying_ready(false);
+  shift_register->write(device::id::comm::pi::tending_ready(),
+                        device::digital::value::low);
+  state->tending_ready(false);
+  state->cleaning_ready(true);
+
+  movement->homing();
+
+  state->cleaning_running(true);
+  movement->homing_finger();
+
+  for (const auto& [x, y, time] : config->cleaning_stations()) {
+    LOG_INFO("Moving to cleaning station with x:{} y:{}", x, y);
+    movement->move<mechanism::movement::unit::mm>(x, y, 0.0);
+
+    LOG_INFO("Moving finger down");
+    movement->move_finger_down();
+
+    LOG_INFO("Wait for {} seconds", time);
+    sleep_for<time_units::seconds>(time);
+
+    LOG_INFO("Moving finger up");
+    movement->move_finger_up();
+  }
+
+  state->cleaning_running(false);
+  state->cleaning_complete(true);
+  sleep_for<time_units::millis>(1000);
+
+  state->cleaning_complete(false);
+
+  shift_register->write(device::id::comm::pi::spraying_ready(),
+                        device::digital::value::high);
+  shift_register->write(device::id::comm::pi::tending_ready(),
                         device::digital::value::high);
 }
 
@@ -237,7 +289,7 @@ static bool menu() {
   } else if (choice == 3) {
     do_tending();
   } else if (choice == 4) {
-    // TODO: implementing cleaning
+    do_cleaning();
   } else if (choice == 5) {
     movement->homing();
   } else if (choice == 6) {

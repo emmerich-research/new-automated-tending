@@ -66,11 +66,7 @@ template <typename Event,
           typename FSM,
           typename SourceState,
           typename TargetState>
-void fault::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
-  massert(State::get() != nullptr, "sanity");
-
-  auto* state = State::get();
-}
+void fault::operator()(Event const&, FSM&, SourceState&, TargetState&) const {}
 
 template <typename Event,
           typename FSM,
@@ -82,12 +78,6 @@ void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
   auto* state = State::get();
 
   state->fault(false);
-
-  // if (state->spraying_running()) {
-  //   state->spraying_fault(false);
-  // } else if (state->tending_running()) {
-  //   state->tending_fault(false);
-  // }
 }
 
 namespace spraying {
@@ -330,23 +320,61 @@ template <typename Event,
           typename SourceState,
           typename TargetState>
 void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
+  massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto* state = State::get();
-  auto* shift_register = device::ShiftRegister::get();
-
-  // do real job
+  auto*  config = Config::get();
+  auto*  state = State::get();
+  auto*  shift_register = device::ShiftRegister::get();
+  auto&& movement = mechanism::movement_mechanism();
 
   if (state->fault())
     return;
 
-  shift_register->write(device::id::comm::pi::tending_running(),
-                        device::digital::value::low);
-  state->cleaning_running(false);
+  LOG_INFO("Cleaning begins...");
 
-  shift_register->write(device::id::comm::pi::tending_complete(),
-                        device::digital::value::high);
+  LOG_INFO("Homing finger...");
+  movement->homing_finger();
+
+  if (state->fault())
+    return;
+
+  for (const auto& [x, y, time] : config->cleaning_stations()) {
+    if (state->fault())
+      return;
+
+    LOG_INFO("Moving to cleaning station with x:{} y:{}", x, y);
+    movement->move<mechanism::movement::unit::mm>(x, y, 0.0);
+
+    if (state->fault())
+      return;
+
+    LOG_INFO("Moving finger down");
+    movement->move_finger_down();
+
+    if (state->fault())
+      return;
+
+    LOG_INFO("Wait for {} seconds", time);
+    sleep_for<time_units::seconds>(time);
+
+    if (state->fault())
+      return;
+
+    LOG_INFO("Moving finger up");
+    movement->move_finger_up();
+
+    if (state->fault())
+      return;
+  }
+
+  if (state->fault())
+    return;
+
+  state->cleaning_running(false);
   state->cleaning_complete(true);
 }
 
@@ -357,6 +385,8 @@ template <typename Event,
 void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
   massert(State::get() != nullptr, "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
 
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
