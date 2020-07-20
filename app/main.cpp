@@ -29,7 +29,7 @@ int main() {
     return status;
   }
 
-  ui_manager.name(Config::get()->name().c_str());
+  ui_manager.name(Config::get()->name());
   ui_manager.init();
 
   // early stopping

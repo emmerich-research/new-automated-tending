@@ -41,8 +41,8 @@ class Manager : public StackObj {
    * @param name          main window name
    * @param clear_color   background color of main window
    */
-  Manager(const char* name = "",
-          ImVec4      clear_color = ImVec4{0.0f, 0.0f, 0.0f, 1.00f});
+  Manager(const std::string& name = "",
+          ImVec4             clear_color = ImVec4{0.0f, 0.0f, 0.0f, 1.00f});
   /**
    * Manager destructor
    */
@@ -78,6 +78,12 @@ class Manager : public StackObj {
    * @param name window name to set
    */
   void name(const char* name);
+  /**
+   * Set window name
+   *
+   * @param name window name to set
+   */
+  void name(const std::string& name);
   /**
    * Set clear color
    *
@@ -135,7 +141,7 @@ class Manager : public StackObj {
    *
    * @return main window name
    */
-  inline const char* name() const { return name_; }
+  inline const std::string& name() const { return name_; }
   /**
    * Get windows container
    *
@@ -171,7 +177,7 @@ class Manager : public StackObj {
   /**
    * Main window name
    */
-  const char* name_;
+  std::string name_;
   /**
    * Active status
    */

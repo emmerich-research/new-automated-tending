@@ -21,7 +21,7 @@
 NAMESPACE_BEGIN
 
 namespace gui {
-Manager::Manager(const char* name, ImVec4 clear_color)
+Manager::Manager(const std::string& name, ImVec4 clear_color)
     : name_{name},
       active_{true},
       terminated_{false},
@@ -41,6 +41,10 @@ Manager::~Manager() {
 }
 
 void Manager::name(const char* name) {
+  name_ = name;
+}
+
+void Manager::name(const std::string& name) {
   name_ = name;
 }
 
@@ -89,8 +93,8 @@ void Manager::init() {
   glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
   glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-  window_ =
-      glfwCreateWindow(mode->width, mode->height, name(), nullptr, nullptr);
+  window_ = glfwCreateWindow(mode->width, mode->height, name().c_str(), nullptr,
+                             nullptr);
 
   glfwSetWindowMonitor(window(), monitor, 0, 0, mode->width, mode->height,
                        mode->refreshRate);
