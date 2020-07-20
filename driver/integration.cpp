@@ -205,11 +205,19 @@ static void do_cleaning() {
     LOG_INFO("Moving finger down");
     movement->move_finger_down();
 
+    LOG_INFO("Turning on the sonicator relay");
+    shift_register->write(device::id::comm::pi::sonicator_relay(),
+                          device::digital::value::high);
+
     LOG_INFO("Wait for {} seconds", time);
     sleep_for<time_units::seconds>(time);
 
     LOG_INFO("Moving finger up");
     movement->move_finger_up();
+
+    LOG_INFO("Turning off the sonicator relay");
+    shift_register->write(device::id::comm::pi::sonicator_relay(),
+                          device::digital::value::low);
   }
 
   state->cleaning_running(false);

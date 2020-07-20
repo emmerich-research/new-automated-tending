@@ -358,8 +358,22 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
     if (state->fault())
       return;
 
+    LOG_INFO("Turning on the sonicator relay");
+    shift_register->write(device::id::comm::pi::sonicator_relay(),
+                          device::digital::value::high);
+
+    if (state->fault())
+      return;
+
     LOG_INFO("Wait for {} seconds", time);
     sleep_for<time_units::seconds>(time);
+
+    if (state->fault())
+      return;
+
+    LOG_INFO("Turning off the sonicator relay");
+    shift_register->write(device::id::comm::pi::sonicator_relay(),
+                          device::digital::value::low);
 
     if (state->fault())
       return;
