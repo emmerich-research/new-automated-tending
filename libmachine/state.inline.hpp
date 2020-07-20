@@ -38,6 +38,8 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
                           device::digital::value::low);
     state->tending_ready(false);
 
+    state->cleaning_ready(false);
+
     LOG_INFO("Homing...");
     movement->homing();
 
@@ -49,6 +51,8 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
                           device::digital::value::high);
     state->tending_ready(true);
 
+    state->cleaning_ready(true);
+
     guard::height::spraying_tending spraying_tending_height;
     guard::height::cleaning         cleaning_height;
 
@@ -58,6 +62,7 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
         root_machine(fsm).start_tending();
         break;
       } else if (cleaning_height.check()) {
+        root_machine(fsm).start_cleaning();
         break;
       }
       sleep_for<time_units::millis>(500);
@@ -71,7 +76,7 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
 template <typename Event, typename FSM>
 void TendingDef::running::spraying::idle::on_enter(Event const&&,
                                                    FSM& fsm) const {
-  LOG_INFO("Entering spraying mode, waiting for signal for spraying height");
+  LOG_INFO("Entering spraying mode");
 }
 
 template <typename Event, typename FSM>
@@ -94,6 +99,10 @@ void TendingDef::running::spraying::preparation::on_enter(Event&&, FSM& fsm) {
   shift_register->write(device::id::comm::pi::spraying_complete(),
                         device::digital::value::low);
   state->spraying_complete(false);
+
+  // make sure tending and cleaning ready is off
+  state->tending_ready(false);
+  state->cleaning_ready(false);
 
   LOG_INFO("Homing to make sure ready to spray...");
   movement->homing();
@@ -118,6 +127,10 @@ void TendingDef::running::spraying::preparation::on_exit(Event&&,
                         device::digital::value::low);
   state->spraying_complete(false);
 
+  // make sure tending and cleaning ready is off
+  state->tending_ready(false);
+  state->cleaning_ready(false);
+
   LOG_INFO("Spraying is ready, waiting for 3 seconds...");
   sleep_for<time_units::millis>(3000);
 }
@@ -131,7 +144,7 @@ void TendingDef::running::spraying::preparation::on_exit(Event&&,
 template <typename Event, typename FSM>
 void TendingDef::running::tending::idle::on_enter(Event const&&,
                                                   FSM& fsm) const {
-  LOG_INFO("Entering tending mode, waiting for signal for tending height");
+  LOG_INFO("Entering tending mode");
 }
 
 template <typename Event, typename FSM>
@@ -155,6 +168,10 @@ void TendingDef::running::tending::preparation::on_enter(Event&&, FSM& fsm) {
                         device::digital::value::low);
   state->tending_complete(false);
 
+  // make sure spray and clean ready are off
+  state->spraying_ready(false);
+  state->cleaning_ready(false);
+
   LOG_INFO("Homing to make sure ready to tend...");
   movement->homing();
 
@@ -177,11 +194,72 @@ void TendingDef::running::tending::preparation::on_exit(Event&&,
                         device::digital::value::low);
   state->tending_complete(false);
 
+  // make sure spray and clean ready are off
+  state->spraying_ready(false);
+  state->cleaning_ready(false);
+
   LOG_INFO("Tending is ready, waiting for 3 seconds...");
   sleep_for<time_units::millis>(3000);
 }
 /**
  * End of tending
+ */
+
+/**
+ * Beginning of Cleaning
+ */
+template <typename Event, typename FSM>
+void TendingDef::running::cleaning::idle::on_enter(Event const&&,
+                                                   FSM& fsm) const {
+  LOG_INFO("Entering cleaning mode");
+}
+
+template <typename Event, typename FSM>
+void TendingDef::running::cleaning::preparation::on_enter(Event&&, FSM& fsm) {
+  massert(State::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
+
+  auto*  state = State::get();
+  auto*  shift_register = device::ShiftRegister::get();
+  auto&& movement = mechanism::movement_mechanism();
+
+  LOG_INFO("Cleaning preparation...");
+
+  state->cleaning_running(false);
+  state->cleaning_complete(false);
+
+  // make sure spray and tending ready are off
+  state->spraying_ready(false);
+  state->tending_ready(false);
+
+  LOG_INFO("Homing to make sure ready to clean...");
+  movement->homing();
+
+  root_machine(fsm).run_cleaning();
+}
+
+template <typename Event, typename FSM>
+void TendingDef::running::cleaning::preparation::on_exit(Event&&,
+                                                         FSM const& fsm) const {
+  massert(State::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+  auto* shift_register = device::ShiftRegister::get();
+
+  state->cleaning_running(false);
+  state->cleaning_complete(false);
+
+  // make sure spray and tending ready are off
+  state->spraying_ready(false);
+  state->tending_ready(false);
+
+  LOG_INFO("Cleaning is ready, waiting for 3 seconds...");
+  sleep_for<time_units::millis>(3000);
+}
+/**
+ * End of cleaning
  */
 
 /**

@@ -182,6 +182,9 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
                         device::digital::value::low);
   state->spraying_complete(false);
 
+  // reset back the spraying, tending, and cleaning ready to true
+  machine::util::reset_task_ready();
+
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
 }
@@ -313,6 +316,9 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
                         device::digital::value::low);
   state->tending_complete(false);
 
+  // reset back the spraying, tending, and cleaning ready to true
+  machine::util::reset_task_ready();
+
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
 }
@@ -324,13 +330,49 @@ template <typename Event,
           typename SourceState,
           typename TargetState>
 void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
+  massert(State::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+  auto* shift_register = device::ShiftRegister::get();
+
+  // do real job
+
+  if (state->fault())
+    return;
+
+  shift_register->write(device::id::comm::pi::tending_running(),
+                        device::digital::value::low);
+  state->cleaning_running(false);
+
+  shift_register->write(device::id::comm::pi::tending_complete(),
+                        device::digital::value::high);
+  state->cleaning_complete(true);
 }
 
 template <typename Event,
           typename FSM,
           typename SourceState,
           typename TargetState>
-void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {}
+void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
+  massert(State::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+  auto* shift_register = device::ShiftRegister::get();
+
+  LOG_INFO("Cleaning is completed...");
+
+  sleep_for<time_units::millis>(3000);
+
+  state->cleaning_complete(false);
+
+  // reset back the spraying, tending, and cleaning ready to true
+  machine::util::reset_task_ready();
+
+  sleep_for<time_units::millis>(1000);
+  root_machine(fsm).task_completed();
+}
 }  // namespace cleaning
 }  // namespace action
 

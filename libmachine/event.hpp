@@ -26,6 +26,11 @@ namespace tending {
 struct start {};
 struct run {};
 }  // namespace tending
+
+namespace cleaning {
+struct start {};
+struct run {};
+}  // namespace cleaning
 }  // namespace event
 
 NAMESPACE_END

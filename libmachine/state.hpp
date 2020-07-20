@@ -100,13 +100,7 @@ struct TendingDef : public StackObj,
         template <typename Event, typename FSM>
         void on_exit(Event&& event, FSM const& fsm) const;
       };
-      struct ongoing : state<ongoing> {
-        // template <typename FSM>
-        // void on_enter(event::spraying::run const&& event, FSM& fsm) const;
-
-        // template <typename Event, typename FSM>
-        // void on_exit(Event const&& event, FSM const& fsm) const;
-      };
+      struct ongoing : state<ongoing> {};
       struct completed : terminal_state<completed> {};
 
       using initial_state = idle;
@@ -158,12 +152,51 @@ struct TendingDef : public StackObj,
              guard::tending::completed>>;
     };
 
+    /**
+     * @brief Cleaning Machine State implementation.
+     *
+     * Machine state of cleaning action
+     *
+     * @author Ray Andrew
+     * @date   July 2020
+     */
+    struct cleaning : state_machine<cleaning> {
+      using cleaning_fsm = afsm::inner_state_machine<cleaning, running_fsm>;
+
+      struct idle : state<idle> {
+        template <typename Event, typename FSM>
+        void on_enter(Event const&& event, FSM& fsm) const;
+      };
+      struct preparation : state<preparation> {
+        template <typename Event, typename FSM>
+        void on_enter(Event&& event, FSM& fsm);
+
+        template <typename Event, typename FSM>
+        void on_exit(Event&& event, FSM const& fsm) const;
+      };
+      struct ongoing : state<ongoing> {};
+      struct completed : terminal_state<completed> {};
+
+      using initial_state = idle;
+      using transitions = transition_table<
+          /* State, Event, Next, Action, Guard */
+          tr<idle, none, preparation, none>,
+          tr<preparation, event::cleaning::run, ongoing, action::cleaning::job>,
+          tr<ongoing,
+             none,
+             completed,
+             action::cleaning::complete,
+             guard::cleaning::completed>>;
+    };
+
     using initial_state = no_task;
     using transitions =
         transition_table<tr<no_task, event::spraying::start, spraying>,
                          tr<spraying, event::task_complete, no_task>,
+                         tr<no_task, event::tending::start, tending>,
                          tr<tending, event::task_complete, no_task>,
-                         tr<no_task, event::tending::start, tending>>;
+                         tr<no_task, event::cleaning::start, cleaning>,
+                         tr<cleaning, event::task_complete, no_task>>;
   };
 
   using initial_state = initial;
@@ -232,6 +265,14 @@ struct TendingDef : public StackObj,
    */
   void run_tending();
   /**
+   * Start cleaning
+   */
+  void start_cleaning();
+  /**
+   * Run cleaning
+   */
+  void run_cleaning();
+  /**
    * Check if machine is ready
    * This denotes as "all devices are ready"
    *
@@ -240,6 +281,11 @@ struct TendingDef : public StackObj,
   bool is_ready() const;
   /**
    * Check if machine is running
+   *
+   * Running condition can be idle (no_task),
+   * spraying, tending, or cleaning
+   *
+   * as long as it is not fault
    *
    * @return machine is running or not
    */
