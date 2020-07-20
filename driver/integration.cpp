@@ -218,6 +218,8 @@ static void do_cleaning() {
 
   state->cleaning_complete(false);
 
+  movement->homing();
+
   shift_register->write(device::id::comm::pi::spraying_ready(),
                         device::digital::value::high);
   shift_register->write(device::id::comm::pi::tending_ready(),
