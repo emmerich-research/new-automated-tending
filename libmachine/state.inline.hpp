@@ -290,7 +290,6 @@ void TendingDef::fault::manual::on_enter(Event const&&, FSM& fsm) const {
   auto*  state = State::get();
   auto&& movement = mechanism::movement_mechanism();
 
-  movement->motor_profile(config->fault_speed_profile(state->speed_profile()));
   state->manual_mode(true);
 }
 
