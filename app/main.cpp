@@ -57,7 +57,8 @@ int main() {
   ui_manager.add_window<gui::CleaningWindow>();
   ui_manager.add_window<gui::CleaningControlWindow>();
   ui_manager.add_window<gui::PLCTriggerWindow>();
-  ui_manager.add_window<gui::SpeedProfileWindow>();
+  ui_manager.add_window<gui::SpeedProfileWindow>(
+      reinterpret_cast<const machine::tending*>(&tsm));
 
   while (ui_manager.handle_events()) {
     ui_manager.render();
