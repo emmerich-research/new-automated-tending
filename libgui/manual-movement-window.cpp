@@ -50,37 +50,43 @@ void ManualMovementWindow::show([[maybe_unused]] Manager* manager) {
       ImGui::Separator();
 
     if (ImGui::Button("X+", button_size)) {
-      thread_pool().enqueue(
-          [&]() { move<mechanism::movement::unit::mm>(x_manual, 0.0, 0.0); });
+      thread_pool().enqueue([this, x_manual]() {
+        move<mechanism::movement::unit::mm>(x_manual, 0.0, 0.0);
+      });
     }
 
     if (ImGui::Button("X-", button_size)) {
-      thread_pool().enqueue(
-          [&]() { move<mechanism::movement::unit::mm>(-x_manual, 0.0, 0.0); });
+      thread_pool().enqueue([this, x_manual]() {
+        move<mechanism::movement::unit::mm>(-x_manual, 0.0, 0.0);
+      });
     }
   }
   ImGui::NextColumn();
   {
     if (ImGui::Button("Y+", button_size)) {
-      thread_pool().enqueue(
-          [&]() { move<mechanism::movement::unit::mm>(0.0, y_manual, 0.0); });
+      thread_pool().enqueue([this, y_manual]() {
+        move<mechanism::movement::unit::mm>(0.0, y_manual, 0.0);
+      });
     }
 
     if (ImGui::Button("Y-", button_size)) {
-      thread_pool().enqueue(
-          [&]() { move<mechanism::movement::unit::mm>(0.0, -y_manual, 0.0); });
+      thread_pool().enqueue([this, y_manual]() {
+        move<mechanism::movement::unit::mm>(0.0, -y_manual, 0.0);
+      });
     }
   }
   ImGui::NextColumn();
   {
     if (ImGui::Button("Z+", button_size)) {
-      thread_pool().enqueue(
-          [&]() { move<mechanism::movement::unit::mm>(0.0, 0.0, z_manual); });
+      thread_pool().enqueue([this, z_manual]() {
+        move<mechanism::movement::unit::mm>(0.0, 0.0, z_manual);
+      });
     }
 
     if (ImGui::Button("Z-", button_size)) {
-      thread_pool().enqueue(
-          [&]() { move<mechanism::movement::unit::mm>(0.0, 0.0, -z_manual); });
+      thread_pool().enqueue([this, z_manual]() {
+        move<mechanism::movement::unit::mm>(0.0, 0.0, -z_manual);
+      });
     }
   }
   ImGui::NextColumn();

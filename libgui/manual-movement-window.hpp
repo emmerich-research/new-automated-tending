@@ -71,7 +71,7 @@ class ManualMovementWindow : public Window {
 
     movement->motor_profile(
         config->fault_speed_profile(state->speed_profile()));
-    movement->move<mechanism::movement::unit::mm>(x, y, z);
+    movement->move<Unit>(x, y, z);
   }
 
  private:
