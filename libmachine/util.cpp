@@ -41,8 +41,9 @@ void reset_task_state() {
 
   shift_register->write(device::id::spray(), device::digital::value::low);
 
-  // state->spraying_fault(false);
-  // state->tending_fault(false);
+  state->cleaning_ready(false);
+  state->cleaning_running(false);
+  state->cleaning_complete(false);
 }
 
 void reset_task_ready() {
