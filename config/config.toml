@@ -290,6 +290,8 @@ max-range                    = 25.0 # in cm
 # - Motors will be active if manual mode are true (check UI/HMI)
 # ----------------------------------------------------------
 [mechanisms.fault]
+# tasks timeout in seconds
+timeout                      = 40
 
 [mechanisms.fault.manual.movement]
 # movement of manual mode in mm

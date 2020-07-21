@@ -4,8 +4,10 @@ ucm_add_files(
   "action.cpp"
   "guard.cpp"
   "state.cpp"
-  "fault-listener.cpp"
   "util.cpp"
+
+  "fault-listener.cpp"
+  "task-listener.cpp"
 
   TO SOURCES)
   

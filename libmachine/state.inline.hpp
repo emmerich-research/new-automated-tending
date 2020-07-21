@@ -269,11 +269,16 @@ template <typename Event, typename FSM>
 void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
   massert(State::get() != nullptr, "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto* state = State::get();
-  auto* shift_register = device::ShiftRegister::get();
+  auto*  state = State::get();
+  auto*  shift_register = device::ShiftRegister::get();
+  auto&& movement = mechanism::movement_mechanism();
 
   LOG_INFO("Entering fault mode");
+
+  movement->disable_motors();
   machine::util::reset_task_state();
 }
 

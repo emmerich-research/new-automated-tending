@@ -39,7 +39,7 @@ void FaultListener::stop() {
     if (thread().joinable()) {
       thread().join();
     }
-    LOG_INFO("Stopping fault listener complete");
+    LOG_INFO("Fault listener is stopped completely");
   }
 }
 
@@ -55,10 +55,10 @@ void FaultListener::execute() {
       digital_input_registry->get(device::id::limit_switch::x());
   auto&& limit_switch_y =
       digital_input_registry->get(device::id::limit_switch::y());
-  auto&& limit_switch_z1 =
-      digital_input_registry->get(device::id::limit_switch::z1());
-  auto&& limit_switch_z2 =
-      digital_input_registry->get(device::id::limit_switch::z2());
+  // auto&& limit_switch_z1 =
+  //     digital_input_registry->get(device::id::limit_switch::z1());
+  // auto&& limit_switch_z2 =
+  //     digital_input_registry->get(device::id::limit_switch::z2());
   auto&& finger_protection = digital_input_registry->get(
       device::id::limit_switch::finger_protection());
   auto&& spraying_tending_height = digital_input_registry->get(
@@ -77,15 +77,17 @@ void FaultListener::execute() {
 
     // case 1: e-stop button is pressed
     if (e_stop->read_bool()) {
+      LOG_ERROR("[FAULT] E-stop button is pressed");
       state->fault(true);
       tsm()->fault();
     }
 
-    // case 2: limit switches are turning on while moving
+    // case 2: not homing
+    //         limit switches are turning on while moving
     //         except for homing
     if (!state->homing() &&
-        (limit_switch_x->read_bool() || limit_switch_y->read_bool() ||
-         limit_switch_z1->read_bool() || limit_switch_z2->read_bool())) {
+        (limit_switch_x->read_bool() || limit_switch_y->read_bool())) {
+      LOG_ERROR("[FAULT] Limit switch x or y are touched");
       state->fault(true);
       tsm()->fault();
     }
@@ -95,11 +97,15 @@ void FaultListener::execute() {
     //           and the special limit switch for checking the finger
     if (state->spraying_running() || state->tending_running()) {
       if (!spraying_tending_height->read_bool()) {
+        LOG_ERROR(
+            "[FAULT] Spraying/Tending height is changed while running spray "
+            "or tending task");
         state->fault(true);
         tsm()->fault();
       }
 
       if (finger_protection->read_bool()) {
+        LOG_ERROR("[FAULT] Finger protection limit switch is touched");
         state->fault(true);
         tsm()->fault();
       }
@@ -108,6 +114,8 @@ void FaultListener::execute() {
     // case 3.2: at tending and spraying height
     if (state->cleaning_running()) {
       if (!cleaning_height->read_bool()) {
+        LOG_ERROR(
+            "[FAULT] Cleaning height is changed while running cleaning task");
         state->fault(true);
         tsm()->fault();
       }

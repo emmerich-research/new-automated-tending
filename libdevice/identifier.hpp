@@ -108,14 +108,6 @@ static auto        finger = []() {
   return finger_;
 };
 
-extern std::string anomaly_;
-static auto        anomaly = []() {
-  if (anomaly_.empty()) {
-    anomaly_ = Config::get()->anomaly<std::string>("key");
-  }
-  return anomaly_;
-};
-
 namespace ultrasonic {
 extern std::string water_level_;
 static auto        water_level = []() {

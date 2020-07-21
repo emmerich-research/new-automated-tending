@@ -115,7 +115,7 @@ std::string ConfigImpl::name() const {
     return find<std::string>("general", "name");
   }
 
-  return "Emmerich";
+  return "Emmerich Automated Tending";
 }
 
 bool ConfigImpl::debug() const {
@@ -125,6 +125,16 @@ bool ConfigImpl::debug() const {
   }
 
   return false;
+}
+
+unsigned int ConfigImpl::timeout() const {
+  if (config().contains("mechanisms") &&
+      config().at("mechanisms").contains("fault") &&
+      config().at("mechanisms").at("fault").contains("timeout")) {
+    return find<unsigned int>("mechanisms", "fault", "timeout");
+  }
+
+  return 60;  // default to 60s
 }
 
 const ConfigImpl::coordinate& ConfigImpl::spraying_position() {

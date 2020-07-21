@@ -13,6 +13,7 @@ int main() {
   machine::tending       tsm;
   gui::Manager           ui_manager;
   machine::FaultListener fault_listener(&tsm);
+  machine::TaskListener  task_listener(&tsm);
 
   // initialization
   try {
@@ -30,7 +31,9 @@ int main() {
     return status;
   }
 
+  // starting listeners
   fault_listener.start();
+  task_listener.start();
 
   ui_manager.name(Config::get()->name());
   ui_manager.init();
@@ -69,9 +72,14 @@ int main() {
     ui_manager.render();
   }
 
-  // stopping
-  ui_manager.exit();
+  // stopping listeners
+  task_listener.stop();
   fault_listener.stop();
+
+  // stopping ui
+  ui_manager.exit();
+
+  // killing machine
   State::get()->fault(true);
   LOG_INFO("Killing task workers, will go into fault mode to kill app...");
   tsm.fault();

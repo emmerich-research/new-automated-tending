@@ -829,11 +829,11 @@ void Movement::homing() {
     }
   }
 
-  // move a bit
-  start_move(5, 5, 5);
-  while (!ready()) {
-    next();
-  }
+  // set state to 0,0,0
+  state->reset_coordinate();
+
+  // move a bit (5mm for each axis)
+  move<movement::unit::mm>(5.0, 5.0, 5.0);
 
   // set state to 0,0,0
   state->reset_coordinate();

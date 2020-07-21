@@ -1,5 +1,5 @@
-#ifndef LIB_MACHINE_FAULT_LISTENER_HPP_
-#define LIB_MACHINE_FAULT_LISTENER_HPP_
+#ifndef LIB_MACHINE_TASK_LISTENER_HPP_
+#define LIB_MACHINE_TASK_LISTENER_HPP_
 
 #include <thread>
 
@@ -10,18 +10,18 @@
 NAMESPACE_BEGIN
 
 namespace machine {
-class FaultListener : public Listener {
+class TaskListener : public Listener {
  public:
   /**
-   * Fault listener constructor
+   * Task listener constructor
    *
    * @param tsm tending state machine
    */
-  FaultListener(tending* tsm);
+  TaskListener(tending* tsm);
   /**
-   * Fault listener destructor
+   * Task listener destructor
    */
-  virtual ~FaultListener() override;
+  virtual ~TaskListener() override;
   /**
    * Start listener
    */
@@ -51,6 +51,18 @@ class FaultListener : public Listener {
    */
   inline std::mutex& mutex() { return mutex_; }
   /**
+   * Get signal (const)
+   *
+   * @return signal (const)
+   */
+  inline const std::condition_variable& signal() const { return signal_; }
+  /**
+   * Get signal
+   *
+   * @return signal
+   */
+  inline std::condition_variable& signal() { return signal_; }
+  /**
    * Execute listener tasks
    */
   void execute();
@@ -64,9 +76,20 @@ class FaultListener : public Listener {
    * Mutex
    */
   mutable std::mutex mutex_;
+  /**
+   * Signal
+   */
+  std::condition_variable signal_;
 };
 }  // namespace machine
 
 NAMESPACE_END
 
-#endif  // LIB_MACHINE_FAULT_LISTENER_HPP_
+// case 2: homing
+//         can be longer than expected
+//         if motor is stopped or hardware related issues
+// if (state->homing()) {
+//   LOG_ERROR("[FAULT]")
+// }
+
+#endif  // LIB_MACHINE_TASK_LISTENER_HPP_

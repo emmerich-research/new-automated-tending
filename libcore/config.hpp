@@ -139,6 +139,14 @@ class ConfigImpl : public StackObj {
    */
   bool debug() const;
   /**
+   * Get task timeout
+   *
+   * It should be in key "mechanism.fault.timeout"
+
+   * @return task timeout
+   */
+  unsigned int timeout() const;
+  /**
    * Get speed Profile of Fault mechanism
    *
    * @param speed_profile type of speed
@@ -303,20 +311,6 @@ class ConfigImpl : public StackObj {
   inline T limit_switch_finger_protection(Keys&&... keys) const {
     return find<T>("devices", "limit-switch", "finger-protection",
                    std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get anomaly device info
-   *
-   * It should be in key "devices.anomaly"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return anomaly device info with type T
-   */
-  template <typename T, typename... Keys>
-  inline T anomaly(Keys&&... keys) const {
-    return find<T>("devices", "anomaly", std::forward<Keys>(keys)...);
   }
   /**
    * Get finger device info

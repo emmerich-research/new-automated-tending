@@ -25,8 +25,6 @@ std::string finger_protection_;
 std::string spray_;
 std::string finger_;
 
-std::string anomaly_;
-
 namespace ultrasonic {
 std::string water_level_;
 std::string disinfectant_level_;

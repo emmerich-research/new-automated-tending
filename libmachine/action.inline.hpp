@@ -102,7 +102,6 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
   LOG_INFO("Spraying...");
   shift_register->write(device::id::comm::pi::spraying_running(),
                         device::digital::value::high);
-  // fsm.spraying_running->write(device::digital::value::high);
   state->spraying_running(true);
 
   if (state->fault())
@@ -335,6 +334,7 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
     return;
 
   LOG_INFO("Cleaning begins...");
+  state->cleaning_running(true);
 
   LOG_INFO("Homing finger...");
   movement->homing_finger();
