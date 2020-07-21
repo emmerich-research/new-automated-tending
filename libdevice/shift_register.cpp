@@ -51,7 +51,7 @@ ATM_STATUS ShiftRegisterDeviceImpl::write(unsigned int          pin,
 }
 
 void ShiftRegisterDeviceImpl::shift_out(unsigned int value) const {
-  for (unsigned int i = 0; i < shift_bits * cascade_num; ++i) {
+  for (unsigned int i = 0; i < shift_bits; ++i) {
     if (order() == shift_register::bit_order::lsb) {
       data_device()->write(!!(value & (1 << i)) ? digital::value::high
                                                 : digital::value::low);
