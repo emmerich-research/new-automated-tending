@@ -63,7 +63,7 @@ class ShiftRegisterDeviceImpl : public StackObj {
    *
    * @return ATM_OK or ATM_ERR, but not both
    */
-  ATM_STATUS write(const byte& pin, const digital::value& level);
+  ATM_STATUS write(unsigned int pin, const digital::value& level);
 
  protected:
   /**
@@ -140,7 +140,7 @@ class ShiftRegisterDeviceImpl : public StackObj {
    *
    * @param value      value to set
    */
-  void shift_out(const byte& value) const;
+  void shift_out(unsigned int value) const;
 
   /**
    * Bit Write
@@ -152,7 +152,9 @@ class ShiftRegisterDeviceImpl : public StackObj {
    * @param bit_value  value to write to the bit
    *
    */
-  static void bit_write(byte& value, byte bit, const digital::value& bit_value);
+  static void bit_write(unsigned int&         value,
+                        unsigned int          bit,
+                        const digital::value& bit_value);
   /**
    * Check if device is active or not
    *
@@ -160,31 +162,17 @@ class ShiftRegisterDeviceImpl : public StackObj {
    */
   bool active() const;
   /**
-   * Get bits with specified index
+   * Get bits (const)
    *
-   * @param idx index of bits
-   *
-   * @return bits with specified index
+   * @return bits (const)
    */
-  inline const byte& bits(unsigned int idx) const {
-    massert(idx < cascade_num, "sanity");
-    return bits_[idx];
-  }
+  inline const unsigned int& bits() const { return bits_; }
   /**
-   * Get bits with specified index
+   * Get bits
    *
-   * @param idx index of bits
-   *
-   * @return bits with specified index
+   * @return bits
    */
-  inline byte& bits(unsigned int idx) {
-    massert(idx < cascade_num, "sanity");
-    return bits_[idx];
-  }
-  /**
-   * Reset bits
-   */
-  void reset_bits();
+  inline unsigned int& bits() { return bits_; }
 
  protected:
   /**
@@ -226,7 +214,7 @@ class ShiftRegisterDeviceImpl : public StackObj {
   /**
    * Last bits of registers
    */
-  byte* bits_;
+  unsigned int bits_;
 };
 
 /**
@@ -257,7 +245,7 @@ class ShiftRegisterImpl : public ShiftRegisterDeviceImpl {
   /**
    * Connected devices metadata
    */
-  typedef std::pair<byte, bool> metadata;
+  typedef std::pair<unsigned int, bool> metadata;
   /**
    * Register device with id and virtual pin in the
    * shift register
@@ -268,7 +256,7 @@ class ShiftRegisterImpl : public ShiftRegisterDeviceImpl {
    * @return status ATM_ERR or ATM_OK
    */
   ATM_STATUS assign(const std::string& id,
-                    const byte&        pin,
+                    unsigned int       pin,
                     const bool&        active_state = true);
   /**
    * Write the HIGH/LOW data to ShiftRegisterDeviceImpl

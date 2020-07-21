@@ -54,15 +54,15 @@ int main() {
 
   auto* shift_register = device::ShiftRegister::get();
 
-  std::array<byte, 16> ids = {0, 1, 2,  3,  4,  5,  6,  7,
-                              8, 9, 10, 11, 12, 13, 14, 15};
+  std::array<unsigned int, 16> ids = {0, 1, 2,  3,  4,  5,  6,  7,
+                                      8, 9, 10, 11, 12, 13, 14, 15};
 
-  std::for_each(ids.begin(), ids.end(), [shift_register](const byte& id) {
+  std::for_each(ids.begin(), ids.end(), [shift_register](unsigned int id) {
     shift_register->assign(std::to_string(id), id, true);
     shift_register->write(std::to_string(id), device::digital::value::low);
   });
 
-  std::for_each(ids.begin(), ids.end(), [shift_register](const byte& id) {
+  std::for_each(ids.begin(), ids.end(), [shift_register](unsigned int id) {
     // turn on
     shift_register->write(std::to_string(id), device::digital::value::high);
     sleep_for<time_units::millis>(100);
@@ -71,7 +71,7 @@ int main() {
   LOG_INFO("Wait for 2 seconds");
   sleep_for<time_units::millis>(2000);
 
-  std::for_each(ids.begin(), ids.end(), [shift_register](const byte& id) {
+  std::for_each(ids.begin(), ids.end(), [shift_register](unsigned int id) {
     // turn off
     shift_register->write(std::to_string(id), device::digital::value::low);
     sleep_for<time_units::millis>(100);

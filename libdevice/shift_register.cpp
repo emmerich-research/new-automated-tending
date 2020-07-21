@@ -21,48 +21,28 @@ ShiftRegisterDeviceImpl::ShiftRegisterDeviceImpl(
       order_{order},
       latch_device_{DigitalOutputDevice::create(latch_pin)},
       clock_device_{DigitalOutputDevice::create(clock_pin)},
-      data_device_{DigitalOutputDevice::create(data_pin)} {
+      data_device_{DigitalOutputDevice::create(data_pin)},
+      bits_{0} {
   DEBUG_ONLY(obj_name_ = "ShiftRegisterDevice");
   massert(active(), "sanity");
-
-  bits_ = new byte[cascade_num];
-  reset_bits();
 }
 
-ShiftRegisterDeviceImpl::~ShiftRegisterDeviceImpl() {
-  delete bits_;
-}
+ShiftRegisterDeviceImpl::~ShiftRegisterDeviceImpl() {}
 
-void ShiftRegisterDeviceImpl::reset_bits() {
-  for (unsigned int idx = 0; idx < cascade_num; ++idx) {
-    bits_[idx] = 0;
-  }
-}
-
-ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
+ATM_STATUS ShiftRegisterDeviceImpl::write(unsigned int          pin,
                                           const digital::value& level) {
   if (pin > cascade_num * shift_bits) {
     return ATM_ERR;
   }
 
-  unsigned int reg = pin / shift_bits;
-
-  // Determines address for actual register
-  byte address = static_cast<byte>(pin - (shift_bits * reg));
-
-  // turn off the output so the pins don't
-  // light up while the bits are being shifted in
+  // turn off the output
   latch_device()->write(digital::value::low);
 
-  for (unsigned int idx = 0; idx < cascade_num; ++idx) {
-    if (reg == idx) {
-      // turn on the next highest bit in bits
-      bit_write(bits(idx), address, level);
-    }
+  // turn on the next highest bit in bits
+  bit_write(bits(), pin, level);
 
-    // shift the bits out
-    shift_out(bits(idx));
-  }
+  // shift the bits out
+  shift_out(bits());
 
   // turn on the output
   latch_device()->write(digital::value::high);
@@ -70,8 +50,8 @@ ATM_STATUS ShiftRegisterDeviceImpl::write(const byte&           pin,
   return ATM_OK;
 }
 
-void ShiftRegisterDeviceImpl::shift_out(const byte& value) const {
-  for (unsigned int i = 0; i < shift_bits; i++) {
+void ShiftRegisterDeviceImpl::shift_out(unsigned int value) const {
+  for (unsigned int i = 0; i < shift_bits; ++i) {
     if (order() == shift_register::bit_order::lsb) {
       data_device()->write(!!(value & (1 << i)) ? digital::value::high
                                                 : digital::value::low);
@@ -85,8 +65,8 @@ void ShiftRegisterDeviceImpl::shift_out(const byte& value) const {
   }
 }
 
-void ShiftRegisterDeviceImpl::bit_write(byte&                 value,
-                                        byte                  bit,
+void ShiftRegisterDeviceImpl::bit_write(unsigned int&         value,
+                                        unsigned int          bit,
                                         const digital::value& bit_value) {
   if (bit_value == digital::value::high) {
     value |= (1UL << bit);
@@ -111,14 +91,13 @@ ShiftRegisterImpl::ShiftRegisterImpl(PI_PIN                    latch_pin,
 ShiftRegisterImpl::~ShiftRegisterImpl() {}
 
 ATM_STATUS ShiftRegisterImpl::assign(const std::string& id,
-                                     const byte&        pin,
+                                     unsigned int       pin,
                                      const bool&        active_state) {
   massert(container_.count(id) == 0, "device id must be unique");
   if (container_.count(id) > 0) {
     return ATM_ERR;
   }
-  LOG_DEBUG("ShiftRegisterImpl::assign device with key {} and bit {}", id,
-            static_cast<int>(pin));
+  LOG_DEBUG("ShiftRegisterImpl::assign device with key {} and bit {}", id, pin);
   container_[id] = {pin, active_state};
   // enforce to write low
   write(id, digital::value::low);
