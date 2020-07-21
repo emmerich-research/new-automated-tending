@@ -2,6 +2,8 @@
 
 #include "task-listener.hpp"
 
+#include <thread>
+
 #include <libdevice/device.hpp>
 #include <libutil/util.hpp>
 
@@ -20,8 +22,6 @@ TaskListener::~TaskListener() {
 void TaskListener::start() {
   massert(tsm()->is_ready(), "sanity");
 
-  std::lock_guard<std::mutex> lock(mutex());
-
   if (!running() && tsm()->is_ready()) {
     LOG_INFO("Starting task listener");
     running_ = true;
@@ -31,8 +31,6 @@ void TaskListener::start() {
 
 void TaskListener::stop() {
   massert(tsm()->is_ready(), "sanity");
-
-  std::lock_guard<std::mutex> lock(mutex());
 
   if (running() && tsm()->is_ready()) {
     LOG_INFO("Stopping task listener");
@@ -47,7 +45,6 @@ void TaskListener::stop() {
 void TaskListener::execute() {
   massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
-  // massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
   massert(tsm()->is_ready(), "sanity");
 
   auto* state = State::get();

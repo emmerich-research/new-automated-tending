@@ -2,6 +2,8 @@
 
 #include "fault-listener.hpp"
 
+#include <thread>
+
 #include <libdevice/device.hpp>
 
 NAMESPACE_BEGIN
@@ -19,8 +21,6 @@ FaultListener::~FaultListener() {
 void FaultListener::start() {
   massert(tsm()->is_ready(), "sanity");
 
-  std::lock_guard<std::mutex> lock(mutex());
-
   if (!running() && tsm()->is_ready()) {
     LOG_INFO("Starting fault listener");
     running_ = true;
@@ -30,8 +30,6 @@ void FaultListener::start() {
 
 void FaultListener::stop() {
   massert(tsm()->is_ready(), "sanity");
-
-  std::lock_guard<std::mutex> lock(mutex());
 
   if (running() && tsm()->is_ready()) {
     LOG_INFO("Stopping fault listener");

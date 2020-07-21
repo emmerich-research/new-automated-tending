@@ -1,8 +1,6 @@
 #ifndef LIB_MACHINE_FAULT_LISTENER_HPP_
 #define LIB_MACHINE_FAULT_LISTENER_HPP_
 
-#include <thread>
-
 #include <libcore/core.hpp>
 
 #include "state.hpp"
@@ -39,18 +37,6 @@ class FaultListener : public Listener {
    */
   inline tending* tsm() const { return tsm_; }
   /**
-   * Get mutex (const)
-   *
-   * @return mutex (const)
-   */
-  inline const std::mutex& mutex() const { return mutex_; }
-  /**
-   * Get mutex
-   *
-   * @return mutex
-   */
-  inline std::mutex& mutex() { return mutex_; }
-  /**
    * Execute listener tasks
    */
   void execute();
@@ -60,10 +46,6 @@ class FaultListener : public Listener {
    * Tending state machine
    */
   tending* tsm_;
-  /**
-   * Mutex
-   */
-  mutable std::mutex mutex_;
 };
 }  // namespace machine
 
