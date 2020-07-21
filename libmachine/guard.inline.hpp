@@ -44,6 +44,13 @@ bool completed::operator()(FSM const&, State const&) const {
 }
 }  // namespace tending
 
+namespace cleaning {
+template <typename FSM, typename State>
+bool completed::operator()(FSM const&, State const&) const {
+  return check();
+}
+}  // namespace cleaning
+
 namespace height {
 template <typename FSM, typename State>
 bool spraying_tending::operator()(FSM const&, State const&) const {
@@ -55,7 +62,7 @@ bool cleaning::operator()(FSM const&, State const&) const {
   return check();
 }
 }  // namespace height
-}  // namespace height
+}  // namespace guard
 
 NAMESPACE_END
 

@@ -58,7 +58,7 @@ int main() {
                               8, 9, 10, 11, 12, 13, 14, 15};
 
   std::for_each(ids.begin(), ids.end(), [shift_register](const byte& id) {
-    shift_register->assign(std::to_string(id), id, true);
+    shift_register->assign(std::to_string(id), id, false);
     shift_register->write(std::to_string(id), device::digital::value::low);
   });
 

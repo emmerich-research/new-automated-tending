@@ -39,6 +39,13 @@ bool completed::check() const {
 }
 }  // namespace tending
 
+namespace cleaning {
+bool completed::check() const {
+  massert(State::get() != nullptr, "sanity");
+  return State::get()->cleaning_complete();
+}
+}  // namespace cleaning
+
 namespace height {
 bool spraying_tending::check() const {
   massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");

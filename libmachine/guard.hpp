@@ -55,6 +55,15 @@ struct completed : public base {
 };
 }  // namespace tending
 
+namespace cleaning {
+struct completed : public base {
+  template <typename FSM, typename State>
+  bool operator()(FSM const&, State const&) const;
+
+  virtual bool check() const override;
+};
+}  // namespace cleaning
+
 namespace height {
 struct spraying_tending : public base {
   template <typename FSM, typename State>

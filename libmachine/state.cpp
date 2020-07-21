@@ -57,6 +57,14 @@ void TendingDef::run_tending() {
   rebind().process_event(event::tending::run{});
 }
 
+void TendingDef::start_cleaning() {
+  rebind().process_event(event::cleaning::start{});
+}
+
+void TendingDef::run_cleaning() {
+  rebind().process_event(event::cleaning::run{});
+}
+
 void TendingDef::task_completed() {
   rebind().process_event(event::task_complete{});
 }
