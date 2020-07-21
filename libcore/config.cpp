@@ -159,6 +159,14 @@ const ConfigImpl::path_container& ConfigImpl::tending_path_edge() {
   return tending_path_edge_;
 }
 
+const ConfigImpl::cleaning_container& ConfigImpl::cleaning_stations() {
+  if (cleaning_stations_.empty()) {
+    cleaning_stations_ = find<ConfigImpl::cleaning_container>(
+        "mechanisms", "cleaning", "stations");
+  }
+  return cleaning_stations_;
+}
+
 const ConfigImpl::path_container& ConfigImpl::tending_path_zigzag() {
   if (tending_path_zigzag_.empty()) {
     tending_path_zigzag_ = find<ConfigImpl::path_container>(
@@ -183,6 +191,12 @@ const ConfigImpl::coordinate ConfigImpl::tending_path_zigzag(size_t idx) {
   const auto paths = tending_path_zigzag();
   massert(idx < paths.size(), "sanity");
   return paths[idx];
+}
+
+const ConfigImpl::cleaning& ConfigImpl::cleaning_station(size_t idx) {
+  const auto& cleanings = cleaning_stations();
+  massert(idx < cleanings.size(), "sanity");
+  return cleanings[idx];
 }
 
 void ConfigImpl::load_speed_profiles() {

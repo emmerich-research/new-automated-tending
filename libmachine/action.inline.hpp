@@ -66,11 +66,7 @@ template <typename Event,
           typename FSM,
           typename SourceState,
           typename TargetState>
-void fault::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
-  massert(State::get() != nullptr, "sanity");
-
-  auto* state = State::get();
-}
+void fault::operator()(Event const&, FSM&, SourceState&, TargetState&) const {}
 
 template <typename Event,
           typename FSM,
@@ -82,12 +78,6 @@ void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
   auto* state = State::get();
 
   state->fault(false);
-
-  // if (state->spraying_running()) {
-  //   state->spraying_fault(false);
-  // } else if (state->tending_running()) {
-  //   state->tending_fault(false);
-  // }
 }
 
 namespace spraying {
@@ -181,6 +171,9 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
   shift_register->write(device::id::comm::pi::spraying_complete(),
                         device::digital::value::low);
   state->spraying_complete(false);
+
+  // reset back the spraying, tending, and cleaning ready to true
+  machine::util::reset_task_ready();
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
@@ -313,6 +306,9 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
                         device::digital::value::low);
   state->tending_complete(false);
 
+  // reset back the spraying, tending, and cleaning ready to true
+  machine::util::reset_task_ready();
+
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
 }
@@ -324,13 +320,107 @@ template <typename Event,
           typename SourceState,
           typename TargetState>
 void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
+  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
+  auto*  config = Config::get();
+  auto*  state = State::get();
+  auto*  shift_register = device::ShiftRegister::get();
+  auto&& movement = mechanism::movement_mechanism();
+
+  if (state->fault())
+    return;
+
+  LOG_INFO("Cleaning begins...");
+
+  LOG_INFO("Homing finger...");
+  movement->homing_finger();
+
+  if (state->fault())
+    return;
+
+  for (const auto& [x, y, time, sonicator] : config->cleaning_stations()) {
+    if (state->fault())
+      return;
+
+    LOG_INFO("Moving to cleaning station with x:{} y:{}", x, y);
+    movement->move<mechanism::movement::unit::mm>(x, y, 0.0);
+
+    if (state->fault())
+      return;
+
+    LOG_INFO("Moving finger down");
+    movement->move_finger_down();
+
+    if (state->fault())
+      return;
+
+    if (sonicator) {
+      LOG_INFO("Turning on the sonicator relay");
+      shift_register->write(device::id::comm::pi::sonicator_relay(),
+                            device::digital::value::high);
+    }
+
+    if (state->fault())
+      return;
+
+    LOG_INFO("Wait for {} seconds", time);
+    sleep_for<time_units::seconds>(time);
+
+    if (state->fault())
+      return;
+
+    if (sonicator) {
+      LOG_INFO("Turning off the sonicator relay");
+      shift_register->write(device::id::comm::pi::sonicator_relay(),
+                            device::digital::value::low);
+    }
+
+    if (state->fault())
+      return;
+
+    LOG_INFO("Moving finger up");
+    movement->move_finger_up();
+
+    if (state->fault())
+      return;
+  }
+
+  if (state->fault())
+    return;
+
+  state->cleaning_running(false);
+  state->cleaning_complete(true);
 }
 
 template <typename Event,
           typename FSM,
           typename SourceState,
           typename TargetState>
-void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {}
+void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
+  massert(State::get() != nullptr, "sanity");
+  massert(device::ShiftRegister::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
+
+  auto* state = State::get();
+  auto* shift_register = device::ShiftRegister::get();
+
+  LOG_INFO("Cleaning is completed...");
+
+  sleep_for<time_units::millis>(3000);
+
+  state->cleaning_complete(false);
+
+  // reset back the spraying, tending, and cleaning ready to true
+  machine::util::reset_task_ready();
+
+  sleep_for<time_units::millis>(1000);
+  root_machine(fsm).task_completed();
+}
 }  // namespace cleaning
 }  // namespace action
 

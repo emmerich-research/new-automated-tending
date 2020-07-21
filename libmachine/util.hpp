@@ -13,6 +13,13 @@ namespace util {
  * Only call if you have initialize all core and device functionality
  */
 void reset_task_state();
+
+/**
+ * Will reset ready state to true
+ *
+ * Only call if you have initialize all core and device functionality
+ */
+void reset_task_ready();
 }  // namespace util
 }  // namespace machine
 
