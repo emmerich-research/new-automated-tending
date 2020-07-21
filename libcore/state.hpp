@@ -215,18 +215,6 @@ class StateImpl : public StackObj {
    */
   bool spraying_complete();
   /**
-   * Set spraying fault
-   *
-   * @param fault fault status (true or false)
-   */
-  // void spraying_fault(bool fault);
-  /**
-   * Get spraying fault
-   *
-   * @return status of spraying fault
-   */
-  // bool spraying_fault();
-  /**
    * Get tending task
    *
    * @return tending task
@@ -268,18 +256,6 @@ class StateImpl : public StackObj {
    * @return status of tending complete
    */
   bool tending_complete();
-  /**
-   * Set tending fault
-   *
-   * @param fault fault status (true or false)
-   */
-  // void tending_fault(bool fault);
-  /**
-   * Get tending fault
-   *
-   * @return status of tending fault
-   */
-  // bool tending_fault();
   /**
    * Get cleaning task
    *
@@ -323,18 +299,6 @@ class StateImpl : public StackObj {
    */
   bool cleaning_complete();
   /**
-   * Set cleaning fault
-   *
-   * @param fault fault status (true or false)
-   */
-  // void cleaning_fault(bool fault);
-  /**
-   * Get cleaning fault
-   *
-   * @return status of cleaning fault
-   */
-  // bool cleaning_fault();
-  /**
    * Set fault status
    *
    * @param fault fault status (true or false)
@@ -348,6 +312,8 @@ class StateImpl : public StackObj {
   bool fault();
   /**
    * Set manual mode
+   *
+   * @param manual manual mode status
    */
   void manual_mode(bool manual);
   /**
@@ -356,6 +322,18 @@ class StateImpl : public StackObj {
    * @return status of manual mode
    */
   bool manual_mode();
+  /**
+   * Set homing status
+   *
+   * @param status homing status
+   */
+  void homing(bool status);
+  /**
+   * Homing status
+   *
+   * @return status of homing
+   */
+  bool homing();
   /**
    * Set profile speed
    */
@@ -427,6 +405,10 @@ class StateImpl : public StackObj {
    * Manual mode
    */
   bool manual_mode_;
+  /**
+   * Homing
+   */
+  bool homing_;
 };
 }  // namespace impl
 

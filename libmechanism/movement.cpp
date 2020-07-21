@@ -764,6 +764,8 @@ void Movement::homing() {
 
   LOG_INFO("Homing is started...");
 
+  state->homing(true);
+
   // set speed profile
   motor_profile(config->homing_speed_profile(state->speed_profile()));
 
@@ -838,6 +840,8 @@ void Movement::homing() {
 
   // disabling motor
   disable_motors();
+
+  state->homing(false);
 
   LOG_INFO("Homing is finished...");
 }

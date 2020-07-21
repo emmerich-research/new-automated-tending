@@ -9,9 +9,10 @@
 int main() {
   USE_NAMESPACE;
 
-  ATM_STATUS       status = ATM_OK;
-  machine::tending tsm;
-  gui::Manager     ui_manager;
+  ATM_STATUS             status = ATM_OK;
+  machine::tending       tsm;
+  gui::Manager           ui_manager;
+  machine::FaultListener fault_listener(&tsm);
 
   // initialization
   try {
@@ -28,6 +29,8 @@ int main() {
     massert(tsm.is_terminated(), "sanity");
     return status;
   }
+
+  fault_listener.start();
 
   ui_manager.name(Config::get()->name());
   ui_manager.init();
@@ -68,6 +71,7 @@ int main() {
 
   // stopping
   ui_manager.exit();
+  fault_listener.stop();
   State::get()->fault(true);
   LOG_INFO("Killing task workers, will go into fault mode to kill app...");
   tsm.fault();

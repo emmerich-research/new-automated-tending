@@ -12,7 +12,9 @@ StateImpl::StateImpl()
       coordinate_{0.0, 0.0, 0.0},
       tending_{},
       spraying_{},
-      manual_mode_{false} {
+      cleaning_{},
+      manual_mode_{false},
+      homing_{false} {
   DEBUG_ONLY(obj_name_ = "StateImpl");
 }
 
@@ -230,16 +232,6 @@ bool StateImpl::cleaning_complete() {
   return cleaning_.complete;
 }
 
-// void StateImpl::cleaning_fault(bool fault) {
-//   const StateImpl::StateLock lock(mutex());
-//   cleaning_.fault = fault;
-// }
-
-// bool StateImpl::cleaning_fault() {
-//   const StateImpl::StateLock lock(mutex());
-//   return cleaning_.fault;
-// }
-
 void StateImpl::fault(bool fault) {
   const StateImpl::StateLock lock(mutex());
   fault_ = fault;
@@ -247,7 +239,6 @@ void StateImpl::fault(bool fault) {
 
 bool StateImpl::fault() {
   const StateImpl::StateLock lock(mutex());
-  // return tending_.fault || spraying_.fault || cleaning_.fault;
   return fault_;
 }
 
@@ -259,6 +250,16 @@ void StateImpl::manual_mode(bool manual) {
 bool StateImpl::manual_mode() {
   const StateImpl::StateLock lock(mutex());
   return manual_mode_;
+}
+
+void StateImpl::homing(bool value) {
+  const StateImpl::StateLock lock(mutex());
+  homing_ = value;
+}
+
+bool StateImpl::homing() {
+  const StateImpl::StateLock lock(mutex());
+  return homing_;
 }
 
 void StateImpl::speed_profile(const config::speed& speed_profile) {

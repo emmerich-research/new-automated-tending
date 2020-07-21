@@ -65,6 +65,7 @@ void StatusWindow::show([[maybe_unused]] Manager* manager) {
 
   ImGui::Columns(1);
   util::status_button("Fault", status_id++, state->fault(), size);
+  util::status_button("Homing", status_id++, state->homing(), size);
 
   ImGui::PopStyleVar();
 }

@@ -4,6 +4,7 @@
 #pragma GCC system_header
 
 // 1. STD
+#include <condition_variable>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
@@ -32,6 +33,8 @@
 
 #include "guard.hpp"
 #include "guard.inline.hpp"
+
+#include "fault-listener.hpp"
 
 #include "util.hpp"
 

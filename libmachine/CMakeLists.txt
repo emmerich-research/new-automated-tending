@@ -4,6 +4,7 @@ ucm_add_files(
   "action.cpp"
   "guard.cpp"
   "state.cpp"
+  "fault-listener.cpp"
   "util.cpp"
 
   TO SOURCES)
