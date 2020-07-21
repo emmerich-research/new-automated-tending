@@ -59,6 +59,8 @@ void FaultListener::execute() {
       digital_input_registry->get(device::id::limit_switch::z1());
   auto&& limit_switch_z2 =
       digital_input_registry->get(device::id::limit_switch::z2());
+  auto&& finger_protection = digital_input_registry->get(
+      device::id::limit_switch::finger_protection());
   auto&& spraying_tending_height = digital_input_registry->get(
       device::id::comm::plc::spraying_tending_height());
   auto&& cleaning_height =
@@ -89,9 +91,15 @@ void FaultListener::execute() {
     }
 
     // case 3: height is changing while running
-    // case 3.1: at tending and spraying height
+    // case 3.1: at tending and spraying, check the height
+    //           and the special limit switch for checking the finger
     if (state->spraying_running() || state->tending_running()) {
       if (!spraying_tending_height->read_bool()) {
+        state->fault(true);
+        tsm()->fault();
+      }
+
+      if (finger_protection->read_bool()) {
         state->fault(true);
         tsm()->fault();
       }

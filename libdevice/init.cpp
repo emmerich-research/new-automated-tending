@@ -124,11 +124,19 @@ static ATM_STATUS initialize_limit_switches() {
     return status;
   }
 
+  status = digital_input_registry->create(
+      id::limit_switch::finger_protection(),
+      config->limit_switch_finger_protection<PI_PIN>("pin"),
+      config->limit_switch_finger_protection<bool>("active-state"),
+      PI_PUD_DOWN);
+  if (status == ATM_ERR) {
+    return status;
+  }
+
   return status;
 }
 
 static ATM_STATUS initialize_input_digital_devices() {
-  auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
 
   status = DigitalInputDeviceRegistry::create();
@@ -146,17 +154,6 @@ static ATM_STATUS initialize_input_digital_devices() {
     return status;
   }
 
-  /**
-   * Anomaly PIN
-   */
-  auto* digital_input_registry = DigitalInputDeviceRegistry::get();
-  status = digital_input_registry->create(
-      id::anomaly(), config->anomaly<PI_PIN>("pin"),
-      config->anomaly<bool>("active-state"), PI_PUD_DOWN);
-  if (status == ATM_ERR) {
-    return status;
-  }
-
   return status;
 }
 
@@ -168,28 +165,6 @@ static ATM_STATUS initialize_output_digital_devices() {
   if (status == ATM_ERR) {
     return status;
   }
-
-  // auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
-
-  // status = digital_output_registry->create(
-  //     id::spray(), config->spray<PI_PIN>("pin"),
-  //     config->spray<bool>("active-state"), PI_PUD_UP);
-  // if (status == ATM_ERR) {
-  //   return status;
-  // }
-
-  // auto&& spray = digital_output_registry->get(id::spray());
-  // spray->write(device::digital::value::low);
-
-  /**
-   * Anomaly with Pin 18 BCM
-   * Always start with mode IN with value 1
-   */
-  // auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
-  // status = digital_output_registry->create("UNK", 18, true);
-  // if (status == ATM_ERR) {
-  //   return ATM_ERR;
-  // }
 
   return status;
 }

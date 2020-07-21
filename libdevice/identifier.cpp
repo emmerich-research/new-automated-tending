@@ -19,6 +19,7 @@ std::string x_;
 std::string y_;
 std::string z1_;
 std::string z2_;
+std::string finger_protection_;
 }  // namespace limit_switch
 
 std::string spray_;

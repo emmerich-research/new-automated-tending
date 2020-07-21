@@ -80,6 +80,16 @@ static auto        z2 = []() {
   }
   return z2_;
 };
+
+// finger protection
+extern std::string finger_protection_;
+static auto        finger_protection = []() {
+  if (finger_protection_.empty()) {
+    finger_protection_ =
+        Config::get()->limit_switch_finger_protection<std::string>("key");
+  }
+  return finger_protection_;
+};
 }  // namespace limit_switch
 
 extern std::string spray_;

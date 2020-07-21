@@ -93,11 +93,6 @@ pin                          = 18
 active-state                 = true
 zero-degree                  = 127
 
-[devices.anomaly]
-key                          = "ANOMALY"
-pin                          = 12
-active-state                 = true
-
 # ----------------------------------------------------------
 # Limit Switch
 #
@@ -132,6 +127,12 @@ active-state                 = false
 [devices.limit-switch.z2]
 key                          = "LIMIT-Z2"
 pin                          = 16
+active-state                 = false
+
+# limit switch for finger protection
+[devices.limit-switch.finger-protection]
+key                          = "LIMIT-FINGER-PROTECTION"
+pin                          = 12
 active-state                 = false
 # ----------------------------------------------------------
 # End of Limit Switch

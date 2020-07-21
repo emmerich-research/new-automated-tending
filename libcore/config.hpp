@@ -290,6 +290,21 @@ class ConfigImpl : public StackObj {
                    std::forward<Keys>(keys)...);
   }
   /**
+   * Get limit switch finger protection device info
+   *
+   * It should be in key "devices.limit-switch.finger-protection"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return limit switch finger protection info with type T
+   */
+  template <typename T, typename... Keys>
+  inline T limit_switch_finger_protection(Keys&&... keys) const {
+    return find<T>("devices", "limit-switch", "finger-protection",
+                   std::forward<Keys>(keys)...);
+  }
+  /**
    * Get anomaly device info
    *
    * It should be in key "devices.anomaly"
