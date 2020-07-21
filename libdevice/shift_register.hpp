@@ -80,7 +80,7 @@ class ShiftRegisterDeviceImpl : public StackObj {
       PI_PIN                    latch_pin,
       PI_PIN                    clock_pin,
       PI_PIN                    data_pin,
-      shift_register::bit_order order = shift_register::bit_order::lsb);
+      shift_register::bit_order order = shift_register::bit_order::msb);
   /**
    * ShiftRegisterDeviceImpl Destructor
    *
