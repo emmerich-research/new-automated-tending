@@ -653,9 +653,9 @@ deceleration                 = 300.0 # steps / s^2
 [mechanisms.cleaning]
 
 stations = [
-  # x      y    wait time (in seconds)
-  [10.0,  40.0, 15.0], # water
-  [450.0, 40.0, 15.0], # cleaning
+  # x      y     wait (s)  sonicator state
+  [10.0,   40.0, 15,       true],          # water
+  [450.0,  40.0, 15,       false],         # disinfectant
 ]
 
 [mechanisms.cleaning.speed.slow]

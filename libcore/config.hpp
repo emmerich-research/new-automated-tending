@@ -118,10 +118,10 @@ class ConfigImpl : public StackObj {
   friend ATM_STATUS StaticObj<ConfigImpl>::create(Args&&... args);
 
  public:
-  typedef std::pair<double, double>                coordinate;
-  typedef std::vector<coordinate>                  path_container;
-  typedef std::tuple<double, double, unsigned int> cleaning;
-  typedef std::vector<cleaning>                    cleaning_container;
+  typedef std::pair<double, double>                      coordinate;
+  typedef std::vector<coordinate>                        path_container;
+  typedef std::tuple<double, double, unsigned int, bool> cleaning;
+  typedef std::vector<cleaning>                          cleaning_container;
   /**
    * Get name of app from config
    *

@@ -198,16 +198,18 @@ static void do_cleaning() {
   state->cleaning_running(true);
   movement->homing_finger();
 
-  for (const auto& [x, y, time] : config->cleaning_stations()) {
+  for (const auto& [x, y, time, sonicator] : config->cleaning_stations()) {
     LOG_INFO("Moving to cleaning station with x:{} y:{}", x, y);
     movement->move<mechanism::movement::unit::mm>(x, y, 0.0);
 
     LOG_INFO("Moving finger down");
     movement->move_finger_down();
 
-    LOG_INFO("Turning on the sonicator relay");
-    shift_register->write(device::id::comm::pi::sonicator_relay(),
-                          device::digital::value::high);
+    if (sonicator) {
+      LOG_INFO("Turning on the sonicator relay");
+      shift_register->write(device::id::comm::pi::sonicator_relay(),
+                            device::digital::value::high);
+    }
 
     LOG_INFO("Wait for {} seconds", time);
     sleep_for<time_units::seconds>(time);
@@ -215,9 +217,11 @@ static void do_cleaning() {
     LOG_INFO("Moving finger up");
     movement->move_finger_up();
 
-    LOG_INFO("Turning off the sonicator relay");
-    shift_register->write(device::id::comm::pi::sonicator_relay(),
-                          device::digital::value::low);
+    if (sonicator) {
+      LOG_INFO("Turning off the sonicator relay");
+      shift_register->write(device::id::comm::pi::sonicator_relay(),
+                            device::digital::value::low);
+    }
   }
 
   state->cleaning_running(false);
@@ -273,20 +277,20 @@ static bool menu() {
   shift_register->write(device::id::spray(), device::digital::value::low);
 
   LOG_INFO("----MENU----");
-  LOG_INFO("1.   Spraying and Tending");
-  LOG_INFO("2.   Spraying");
-  LOG_INFO("3.   Tending");
-  LOG_INFO("4.   Cleaning");
-  LOG_INFO("5.   Homing");
-  LOG_INFO("6.   Just X");
-  LOG_INFO("7.   Just Y");
-  LOG_INFO("8.   Just Z");
-  LOG_INFO("9.   Spraying and Tending trigger");
-  LOG_INFO("10.  Move X with specified distance (in cm, can be negative)");
-  LOG_INFO("11.  Move Y with specified distance (in cm, can be negative)");
-  LOG_INFO("12.  Homing finger");
-  LOG_INFO("13.  Set speed <fast/normal/slow>");
-  LOG_INFO("0.   Exit");
+  LOG_INFO("1.  Spraying and Tending");
+  LOG_INFO("2.  Spraying");
+  LOG_INFO("3.  Tending");
+  LOG_INFO("4.  Cleaning");
+  LOG_INFO("5.  Homing");
+  LOG_INFO("6.  Just X");
+  LOG_INFO("7.  Just Y");
+  LOG_INFO("8.  Just Z");
+  LOG_INFO("9.  Spraying and Tending trigger");
+  LOG_INFO("10. Move X with specified distance (in cm, can be negative)");
+  LOG_INFO("11. Move Y with specified distance (in cm, can be negative)");
+  LOG_INFO("12. Homing finger");
+  LOG_INFO("13. Set speed <fast/normal/slow>");
+  LOG_INFO("0.  Exit");
 
   unsigned int choice;
   std::cin >> choice;
@@ -346,7 +350,7 @@ static bool menu() {
 
         do_tending();
       } else if (cleaning_height_status) {
-        // noop
+        do_cleaning();
       }
 
       sleep_for<time_units::millis>(500);

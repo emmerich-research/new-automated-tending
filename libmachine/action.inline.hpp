@@ -342,7 +342,7 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
   if (state->fault())
     return;
 
-  for (const auto& [x, y, time] : config->cleaning_stations()) {
+  for (const auto& [x, y, time, sonicator] : config->cleaning_stations()) {
     if (state->fault())
       return;
 
@@ -358,9 +358,11 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
     if (state->fault())
       return;
 
-    LOG_INFO("Turning on the sonicator relay");
-    shift_register->write(device::id::comm::pi::sonicator_relay(),
-                          device::digital::value::high);
+    if (sonicator) {
+      LOG_INFO("Turning on the sonicator relay");
+      shift_register->write(device::id::comm::pi::sonicator_relay(),
+                            device::digital::value::high);
+    }
 
     if (state->fault())
       return;
@@ -371,9 +373,11 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
     if (state->fault())
       return;
 
-    LOG_INFO("Turning off the sonicator relay");
-    shift_register->write(device::id::comm::pi::sonicator_relay(),
-                          device::digital::value::low);
+    if (sonicator) {
+      LOG_INFO("Turning off the sonicator relay");
+      shift_register->write(device::id::comm::pi::sonicator_relay(),
+                            device::digital::value::low);
+    }
 
     if (state->fault())
       return;
