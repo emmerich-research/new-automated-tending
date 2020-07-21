@@ -56,10 +56,8 @@ void ShiftRegisterDeviceImpl::shift_out(unsigned int value) const {
       data_device()->write(!!(value & (1 << i)) ? digital::value::high
                                                 : digital::value::low);
     } else {
-      data_device()->write(
-          !!(value & (1 << (((shift_bits * cascade_num) - 1) - i)))
-              ? digital::value::high
-              : digital::value::low);
+      data_device()->write(!!(value & (1 << (7 - i))) ? digital::value::high
+                                                      : digital::value::low);
     }
 
     clock_device()->write(digital::value::high);
