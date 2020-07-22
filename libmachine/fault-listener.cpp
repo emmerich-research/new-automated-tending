@@ -68,7 +68,6 @@ void FaultListener::execute() {
 
   while (running() && state->running()) {
     impl::StateImpl::UniqueLock lock(state->mutex());
-    LOG_DEBUG("Here Fault");
     state->signal().wait(lock, [this, state] {
       return !state->running() || !(tsm()->is_no_task() || state->fault());
     });

@@ -55,7 +55,6 @@ void TaskListener::execute() {
 
   while (running() && state->running()) {
     impl::StateImpl::UniqueLock lock(state->mutex());
-    LOG_DEBUG("Here Task");
     state->signal().wait(
         lock, [state] { return !state->running() || state->homing(); });
 
