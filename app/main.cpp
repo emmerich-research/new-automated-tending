@@ -30,9 +30,10 @@ int main() {
 
   // re-init logger based on config
   const auto* config = Config::get();
+  auto*       logger = Logger::get();
   logger_window->set_level(config->debug() ? spdlog::level::debug
                                            : spdlog::level::info);
-  Logger::get()->init(config, {logger_window});
+  logger->init(config, {logger_window});
   // logger_window->set_pattern("%v");
 
   // init state
@@ -40,6 +41,8 @@ int main() {
     LOG_ERROR("Failed to initialize state");
     return ATM_ERR;
   }
+
+  auto* state = State::get();
 
   LOG_INFO("Booting up...");
 
@@ -51,6 +54,8 @@ int main() {
     std::cerr << e.what() << std::endl;
     status = ATM_ERR;
   }
+
+  state->running(true);
 
   // early stopping
   if (status == ATM_ERR) {
@@ -109,10 +114,13 @@ int main() {
   ui_manager.exit();
 
   // killing machine
-  State::get()->fault(true);
+  state->fault(true);
   LOG_INFO("Killing task workers, will go into fault mode to kill app...");
   tsm.fault();
   sleep_for<time_units::seconds>(5);
+
+  state->running(false);
+
   tsm.stop();
   massert(tsm.is_terminated(), "sanity");
 

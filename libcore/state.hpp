@@ -7,6 +7,7 @@
  * Hold all machine's state
  */
 
+#include <condition_variable>
 #include <shared_mutex>
 #include <thread>
 #include <utility>
@@ -81,21 +82,44 @@ class StateImpl : public StackObj {
   friend ATM_STATUS StaticObj<StateImpl>::create(Args&&... args);
 
  public:
-  using StateMutex = std::shared_mutex;
+  using StateMutex = std::mutex;
+  using UniqueLock = std::unique_lock<StateMutex>;
   using StateLock = std::lock_guard<StateMutex>;
+  using Signal = std::condition_variable;
 
   /**
-   * Return the latest path movement id
+   * Get signal
    *
-   * @return latest path id
+   * @return signal
    */
-  unsigned int path_id();
+  Signal& signal();
   /**
-   * Set the latest path id
-   *
-   * @param path_id  set the latest path id
+   * Notify one thread
    */
-  void path_id(unsigned int path_id);
+  void notify_one();
+  /**
+   * Notify all threads
+   */
+  void notify_all();
+  /**
+   * Get mutex
+   *
+   * @return state mutex
+   */
+  StateMutex& mutex();
+
+  /**
+   * Return running status
+   *
+   * @return running status
+   */
+  bool running();
+  /**
+   * Set the running status
+   *
+   * @param run  set the running status
+   */
+  void running(bool run);
   /**
    * Set new coordinate
    *
@@ -362,21 +386,13 @@ class StateImpl : public StackObj {
 
  private:
   /**
-   * Get mutex
-   *
-   * @return state mutex
-   */
-  StateMutex& mutex();
-
- private:
-  /**
    * Speed profile
    */
   config::speed speed_profile_;
   /**
-   * Latest path id
+   * Running
    */
-  unsigned int path_id_;
+  bool running_;
   /**
    * Current coordinate
    */
@@ -385,6 +401,10 @@ class StateImpl : public StackObj {
    * State read mutex
    */
   StateMutex mutex_;
+  /**
+   * Signal
+   */
+  Signal signal_;
   /**
    * Tending task
    */

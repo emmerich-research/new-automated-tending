@@ -56,7 +56,8 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
     guard::height::spraying_tending spraying_tending_height;
     guard::height::cleaning         cleaning_height;
 
-    while (!root_machine(fsm).is_terminated() && !state->fault()) {
+    while (state->running() && !root_machine(fsm).is_terminated() &&
+           !state->fault()) {
       if (spraying_tending_height.check()) {
         root_machine(fsm).start_spraying();
         root_machine(fsm).start_tending();
