@@ -55,6 +55,7 @@ void TaskListener::execute() {
 
   while (running()) {
     while (running() && (!state->homing())) {
+      sleep_for<time_units::millis>(100);
     }
 
     if (!running()) {

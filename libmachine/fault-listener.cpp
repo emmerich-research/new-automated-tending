@@ -5,6 +5,7 @@
 #include <thread>
 
 #include <libdevice/device.hpp>
+#include <libutil/util.hpp>
 
 NAMESPACE_BEGIN
 
@@ -67,6 +68,7 @@ void FaultListener::execute() {
 
   while (running()) {
     while (running() && (tsm()->is_no_task() || state->fault())) {
+      sleep_for<time_units::millis>(100);
     }
 
     if (!running()) {
