@@ -94,7 +94,7 @@ void ManualMovementWindow::show([[maybe_unused]] Manager* manager) {
   ImGui::Columns(1);
   ImGui::Separator();
   if (ImGui::Button("HOME", button_size)) {
-    thread_pool().enqueue([&]() { movement->homing(); });
+    thread_pool().enqueue([movement]() mutable { movement->homing(); });
   }
 
   if (disabled) {

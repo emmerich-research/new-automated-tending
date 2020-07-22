@@ -37,6 +37,12 @@ class TaskListener : public Listener {
    */
   inline tending* tsm() const { return tsm_; }
   /**
+   * Get mutex
+   *
+   * @return state machine
+   */
+  inline std::mutex& mutex() { return mutex_; }
+  /**
    * Execute listener tasks
    */
   void execute();
@@ -46,6 +52,10 @@ class TaskListener : public Listener {
    * Tending state machine
    */
   tending* tsm_;
+  /**
+   * Mutex
+   */
+  std::mutex mutex_;
 };
 }  // namespace machine
 

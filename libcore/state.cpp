@@ -35,7 +35,7 @@ void StateImpl::notify_all() {
 }
 
 bool StateImpl::running() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return running_;
 }
 
@@ -90,7 +90,7 @@ void StateImpl::dec_x() {
 }
 
 const Point& StateImpl::x() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return coordinate_.x;
 }
 
@@ -119,7 +119,7 @@ void StateImpl::dec_y() {
 }
 
 const Point& StateImpl::y() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return coordinate_.y;
 }
 
@@ -148,12 +148,12 @@ void StateImpl::dec_z() {
 }
 
 const Point& StateImpl::z() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return coordinate_.z;
 }
 
 const Task& StateImpl ::spraying() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return spraying_;
 }
 
@@ -166,7 +166,7 @@ void StateImpl::spraying_ready(bool ready) {
 }
 
 bool StateImpl::spraying_ready() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return spraying_.ready;
 }
 
@@ -179,7 +179,7 @@ void StateImpl::spraying_running(bool running) {
 }
 
 bool StateImpl::spraying_running() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return spraying_.running;
 }
 
@@ -192,12 +192,12 @@ void StateImpl::spraying_complete(bool complete) {
 }
 
 bool StateImpl::spraying_complete() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return spraying_.complete;
 }
 
 const Task& StateImpl ::tending() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return tending_;
 }
 
@@ -210,7 +210,7 @@ void StateImpl::tending_ready(bool ready) {
 }
 
 bool StateImpl::tending_ready() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return tending_.ready;
 }
 
@@ -223,7 +223,7 @@ void StateImpl::tending_running(bool running) {
 }
 
 bool StateImpl::tending_running() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return tending_.running;
 }
 
@@ -236,12 +236,12 @@ void StateImpl::tending_complete(bool complete) {
 }
 
 bool StateImpl::tending_complete() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return tending_.complete;
 }
 
 const Task& StateImpl ::cleaning() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return cleaning_;
 }
 
@@ -254,7 +254,7 @@ void StateImpl::cleaning_ready(bool ready) {
 }
 
 bool StateImpl::cleaning_ready() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return cleaning_.ready;
 }
 
@@ -267,7 +267,7 @@ void StateImpl::cleaning_running(bool running) {
 }
 
 bool StateImpl::cleaning_running() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return cleaning_.running;
 }
 
@@ -280,7 +280,7 @@ void StateImpl::cleaning_complete(bool complete) {
 }
 
 bool StateImpl::cleaning_complete() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return cleaning_.complete;
 }
 
@@ -293,7 +293,7 @@ void StateImpl::fault(bool fault) {
 }
 
 bool StateImpl::fault() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return fault_;
 }
 
@@ -306,7 +306,7 @@ void StateImpl::manual_mode(bool manual) {
 }
 
 bool StateImpl::manual_mode() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return manual_mode_;
 }
 
@@ -319,7 +319,7 @@ void StateImpl::homing(bool value) {
 }
 
 bool StateImpl::homing() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return homing_;
 }
 
@@ -332,7 +332,7 @@ void StateImpl::speed_profile(const config::speed& speed_profile) {
 }
 
 const config::speed& StateImpl::speed_profile() {
-  // const StateImpl::StateLock lock(mutex());
+  const StateImpl::StateLock lock(mutex());
   return speed_profile_;
 }
 }  // namespace impl

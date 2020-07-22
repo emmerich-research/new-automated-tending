@@ -82,8 +82,7 @@ class StateImpl : public StackObj {
   friend ATM_STATUS StaticObj<StateImpl>::create(Args&&... args);
 
  public:
-  using StateMutex = std::mutex;
-  using UniqueLock = std::unique_lock<StateMutex>;
+  using StateMutex = std::shared_mutex;
   using StateLock = std::lock_guard<StateMutex>;
   using Signal = std::condition_variable;
 

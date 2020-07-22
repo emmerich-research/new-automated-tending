@@ -22,6 +22,8 @@ TaskListener::~TaskListener() {
 void TaskListener::start() {
   massert(tsm()->is_ready(), "sanity");
 
+  std::lock_guard<std::mutex> lock(mutex());
+
   if (!running() && tsm()->is_ready()) {
     LOG_INFO("Starting task listener");
     running_ = true;
@@ -31,6 +33,8 @@ void TaskListener::start() {
 
 void TaskListener::stop() {
   massert(tsm()->is_ready(), "sanity");
+
+  std::lock_guard<std::mutex> lock(mutex());
 
   if (running() && tsm()->is_ready()) {
     LOG_INFO("Stopping task listener");
@@ -54,15 +58,12 @@ void TaskListener::execute() {
   time_unit end = seconds();
 
   while (running() && state->running()) {
-    impl::StateImpl::UniqueLock lock(state->mutex());
+    std::unique_lock<std::mutex> lock(mutex());
     state->signal().wait(
         lock, [state] { return !state->running() || state->homing(); });
 
     lock.unlock();
     state->notify_all();
-
-    // while (running() && (!state->homing())) {
-    // }
 
     if (!running() || !state->running()) {
       return;
