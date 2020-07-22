@@ -278,6 +278,7 @@ void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
 
   LOG_INFO("Entering fault mode");
 
+  state->homing(false);
   movement->disable_motors();
   machine::util::reset_task_state();
 }

@@ -70,6 +70,7 @@ void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
 
   auto* state = State::get();
 
+  state->homing(false);
   state->fault(false);
 }
 
