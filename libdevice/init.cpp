@@ -127,8 +127,7 @@ static ATM_STATUS initialize_limit_switches() {
   status = digital_input_registry->create(
       id::limit_switch::finger_protection(),
       config->limit_switch_finger_protection<PI_PIN>("pin"),
-      config->limit_switch_finger_protection<bool>("active-state"),
-      PI_PUD_DOWN);
+      config->limit_switch_finger_protection<bool>("active-state"), PI_PUD_UP);
   if (status == ATM_ERR) {
     return status;
   }
