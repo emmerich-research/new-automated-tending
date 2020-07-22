@@ -30,9 +30,9 @@ Manager::Manager(const std::string& name, ImVec4 clear_color)
 
 Manager::~Manager() {
   // Cleanup
-  for (const auto* window : windows()) {
-    delete window;
-  }
+  // for (const auto* window : windows()) {
+  //   delete window;
+  // }
   windows().clear();
 
   if (!exited()) {
@@ -123,6 +123,7 @@ void Manager::init() {
 
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
+  // ImGui::StyleColorsLight();
   // ImGui::StyleColorsClassic();
 
   // Setup Platform/Renderer bindings
@@ -163,10 +164,9 @@ bool Manager::handle_events() {
   return !terminate;
 }
 
-void Manager::add_window(Window* window) {
+void Manager::add_window(Manager::WindowPtr&& window) {
   massert(active(), "sanity");
   windows().push_back(window);
-  // window->render(this);
 }
 
 void Manager::render() {
@@ -182,7 +182,7 @@ void Manager::render() {
   ImGui::NewFrame();
 
   // render windows
-  for (auto* s_window : windows())
+  for (auto&& s_window : windows())
     s_window->render(this);
 
   ImGui::Render();
@@ -202,7 +202,7 @@ void Manager::render() {
   glfwSwapBuffers(window());
 
   // after render windows
-  for (auto* s_window : windows())
+  for (auto&& s_window : windows())
     s_window->after_render(this);
 }
 }  // namespace gui

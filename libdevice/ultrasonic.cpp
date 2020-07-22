@@ -19,11 +19,11 @@ UltrasonicDevice::UltrasonicDevice(PI_PIN echo_pin,
       echo_device_{DigitalInputDevice::create(echo_pin, echo_active_state)},
       trigger_device_{
           DigitalOutputDevice::create(trigger_pin, trigger_active_state)} {
-  DEBUG_ONLY(obj_name_ =
-                 fmt::format("UltraSonicDevice echo_pin {} echo_active_state "
-                             "{} trigger_pin {} trigger_active_state {}",
-                             echo_pin, echo_active_state, trigger_pin,
-                             trigger_active_state));
+  DEBUG_ONLY_DEFINITION(
+      obj_name_ = fmt::format("UltraSonicDevice echo_pin {} echo_active_state "
+                              "{} trigger_pin {} trigger_active_state {}",
+                              echo_pin, echo_active_state, trigger_pin,
+                              trigger_active_state));
   massert(active(), "sanity");
 }
 

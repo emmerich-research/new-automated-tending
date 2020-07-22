@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <functional>
+#include <memory>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -32,9 +33,10 @@ class Manager;
 
 class Manager : public StackObj {
  public:
-  typedef GLFWwindow   MainWindow;
-  typedef GLFWerrorfun ErrorCallback;
-  typedef GLFWkeyfun   KeyCallback;
+  typedef GLFWwindow              MainWindow;
+  typedef GLFWerrorfun            ErrorCallback;
+  typedef GLFWkeyfun              KeyCallback;
+  typedef std::shared_ptr<Window> WindowPtr;
   /**
    * Manager constructor
    *
@@ -52,7 +54,7 @@ class Manager : public StackObj {
    *
    * @param window  window to be added
    */
-  void add_window(Window* window);
+  void add_window(WindowPtr&& window);
   /**
    * Add window to manager
    *
@@ -63,9 +65,7 @@ class Manager : public StackObj {
             typename = std::enable_if_t<std::is_base_of_v<Window, T>>>
   inline void add_window(Args&&... args) {
     massert(active(), "sanity");
-    T* window_ptr = new T(std::forward<Args>(args)...);
-    windows().push_back(window_ptr);
-    // window_ptr->render(this);
+    windows().push_back(std::make_shared<T>(std::forward<Args>(args)...));
   }
   /**
    * Init GLFW, OpenGL, and other initializations
@@ -147,13 +147,13 @@ class Manager : public StackObj {
    *
    * @return windows container
    */
-  inline std::vector<Window*>& windows() { return windows_; }
+  inline std::vector<WindowPtr>& windows() { return windows_; }
   /**
    * Get windows container (const)
    *
    * @return windows container (const)
    */
-  inline const std::vector<Window*>& windows() const { return windows_; }
+  inline const std::vector<WindowPtr>& windows() const { return windows_; }
   /**
    * Get main window pointer
    *
@@ -197,7 +197,7 @@ class Manager : public StackObj {
   /**
    * Windows container
    */
-  std::vector<Window*> windows_;
+  std::vector<WindowPtr> windows_;
   /**
    * Main window
    */

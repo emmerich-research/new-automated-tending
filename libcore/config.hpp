@@ -49,7 +49,7 @@ namespace config {
  */
 struct Speed {
   Speed();
-  DEBUG_ONLY(void print(std::ostream& os) const);
+  DEBUG_ONLY_DEFINITION(void print(std::ostream& os) const);
 
   double rpm;
   double acceleration;
@@ -66,7 +66,7 @@ struct Speed {
  */
 struct MechanismSpeed {
   MechanismSpeed();
-  DEBUG_ONLY(void print(std::ostream& os) const);
+  DEBUG_ONLY_DEFINITION(void print(std::ostream& os) const);
 
   Speed        x;
   Speed        y;
@@ -84,7 +84,7 @@ struct MechanismSpeed {
  */
 struct SpeedProfile {
   SpeedProfile();
-  DEBUG_ONLY(void print(std::ostream& os) const);
+  DEBUG_ONLY_DEFINITION(void print(std::ostream& os) const);
 
   double         finger_threshold;
   MechanismSpeed slow;

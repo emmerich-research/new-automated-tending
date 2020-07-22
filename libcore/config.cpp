@@ -80,7 +80,7 @@ Speed::Speed() {
   deceleration = 0.0;
 }
 
-DEBUG_ONLY(void Speed::print(std::ostream& os) const {
+DEBUG_ONLY_DEFINITION(void Speed::print(std::ostream& os) const {
   os << "[rpm: " << rpm << ", accel: " << acceleration
      << ", decel: " << deceleration << "]";
 })
@@ -89,14 +89,14 @@ MechanismSpeed::MechanismSpeed() {
   duty_cycle = 0;
 }
 
-DEBUG_ONLY(void MechanismSpeed::print(std::ostream& os) const {
+DEBUG_ONLY_DEFINITION(void MechanismSpeed::print(std::ostream& os) const {
   os << "[x: " << x << ", y: " << y << ", z: " << z
      << ", duty_cycle: " << duty_cycle << "]";
 })
 
 SpeedProfile::SpeedProfile() {}
 
-DEBUG_ONLY(void SpeedProfile::print(std::ostream& os) const {
+DEBUG_ONLY_DEFINITION(void SpeedProfile::print(std::ostream& os) const {
   os << "[slow: " << slow;
   os << ", normal: " << normal;
   os << ", fast: " << fast << "]";
@@ -106,7 +106,7 @@ DEBUG_ONLY(void SpeedProfile::print(std::ostream& os) const {
 namespace impl {
 ConfigImpl::ConfigImpl(const std::string& config_path)
     : config_{toml::parse(config_path)}, config_path_{std::move(config_path)} {
-  DEBUG_ONLY(obj_name_ = "ConfigImpl");
+  DEBUG_ONLY_DEFINITION(obj_name_ = "ConfigImpl");
   load_speed_profiles();
 }
 
@@ -213,30 +213,32 @@ void ConfigImpl::load_speed_profiles() {
   // Fault speed profile
   fault_speed_profile_ =
       find<config::SpeedProfile>("mechanisms", "fault", "manual");
-  DEBUG_ONLY(std::cout << "Fault Speed Profile " << fault_speed_profile_
-                       << std::endl);
+  // DEBUG_ONLY(std::cout << "Fault Speed Profile " << fault_speed_profile_
+  // << std::endl);
 
   // Homing speed profile
   homing_speed_profile_ = find<config::SpeedProfile>("mechanisms", "homing");
-  DEBUG_ONLY(std::cout << "Homing Speed Profile " << homing_speed_profile_
-                       << std::endl);
+  // DEBUG_ONLY(std::cout << "Homing Speed Profile " << homing_speed_profile_
+  // << std::endl);
 
   // Spraying speed profile
   spraying_speed_profile_ =
       find<config::SpeedProfile>("mechanisms", "spraying");
-  DEBUG_ONLY(std::cout << "Spraying Speed Profile " << spraying_speed_profile_
-                       << std::endl);
+  // DEBUG_ONLY(std::cout << "Spraying Speed Profile " <<
+  // spraying_speed_profile_
+  // << std::endl);
 
   // Tending speed profile
   tending_speed_profile_ = find<config::SpeedProfile>("mechanisms", "tending");
-  DEBUG_ONLY(std::cout << "Tending Speed Profile " << tending_speed_profile_
-                       << std::endl);
+  // DEBUG_ONLY(std::cout << "Tending Speed Profile " << tending_speed_profile_
+  // << std::endl);
 
   // Cleaning speed profile
   cleaning_speed_profile_ =
       find<config::SpeedProfile>("mechanisms", "cleaning");
-  DEBUG_ONLY(std::cout << "Cleaning Speed Profile " << cleaning_speed_profile_
-                       << std::endl);
+  // DEBUG_ONLY(std::cout << "Cleaning Speed Profile " <<
+  // cleaning_speed_profile_
+  // << std::endl);
 }
 
 const config::MechanismSpeed& ConfigImpl::fault_speed_profile(

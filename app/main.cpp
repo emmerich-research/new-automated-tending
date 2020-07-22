@@ -9,11 +9,39 @@
 int main() {
   USE_NAMESPACE;
 
-  ATM_STATUS             status = ATM_OK;
+  ATM_STATUS status = ATM_OK;
+
   machine::tending       tsm;
   gui::Manager           ui_manager;
   machine::FaultListener fault_listener(&tsm);
   machine::TaskListener  task_listener(&tsm);
+  auto logger_window = std::make_shared<gui::LoggerWindowMT>();
+
+  // initialize logger
+  if (Logger::create() == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  // initialize config
+  if (Config::create(PROJECT_CONFIG_FILE) == ATM_ERR) {
+    LOG_ERROR("Failed to load configuration");
+    return ATM_ERR;
+  }
+
+  // re-init logger based on config
+  const auto* config = Config::get();
+  logger_window->set_level(config->debug() ? spdlog::level::debug
+                                           : spdlog::level::info);
+  Logger::get()->init(config, {logger_window});
+  // logger_window->set_pattern("%v");
+
+  // init state
+  if (State::create() == ATM_ERR) {
+    LOG_ERROR("Failed to initialize state");
+    return ATM_ERR;
+  }
+
+  LOG_INFO("Booting up...");
 
   // initialization
   try {
@@ -57,6 +85,7 @@ int main() {
     LOG_ERROR("Glfw Error {}: {}", error, description);
   });
 
+  ui_manager.add_window(logger_window);
   ui_manager.add_window<gui::SystemInfoWindow>();
   ui_manager.add_window<gui::FaultWindow>(&tsm);
   ui_manager.add_window<gui::MovementWindow>();

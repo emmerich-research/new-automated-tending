@@ -24,13 +24,6 @@ void start::operator()(Event const&,
                        TargetState&) const {
   ATM_STATUS status = ATM_OK;
 
-  // initialize `core` such as config, logger, and state
-  status = initialize_core();
-  if (status == ATM_ERR) {
-    throw std::runtime_error(
-        "Failed to initialize `core` functionality, something is wrong");
-  }
-
   // initialize `GPIO-based` devices such as analog, digital, and PWM
   status = initialize_device();
   if (status == ATM_ERR) {

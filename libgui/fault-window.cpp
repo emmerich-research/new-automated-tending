@@ -70,7 +70,7 @@ void FaultWindow::show([[maybe_unused]] Manager* manager) {
     }
 
     if (util::button("Fault Trigger", id++, fault, size)) {
-      LOG_INFO("Fault trigger");
+      LOG_ERROR("[FAULT] fault trigger");
       state->fault(true);
       tsm()->fault();
     }

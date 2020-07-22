@@ -13,16 +13,17 @@ DigitalDevice<Mode>::DigitalDevice(PI_PIN        pin,
                                    const bool&   active_state,
                                    const PI_PUD& pull)
     : pin_{pin}, mode_{Mode}, active_state_{active_state}, active_{true} {
-  DEBUG_ONLY(obj_name_ = fmt::format("DigitalDevice<{}> pin {} active_state {}",
-                                     get_mode(Mode), pin, active_state));
+  DEBUG_ONLY_DEFINITION(
+      obj_name_ = fmt::format("DigitalDevice<{}> pin {} active_state {}",
+                              get_mode(Mode), pin, active_state));
 
   if (pin == PI_UNDEF_PIN) {
     active_ = false;
     return;
   }
 
-  LOG_DEBUG("Initializing DigitalDevice<{}> using GPIO with pin {}",
-            get_mode(Mode), pin);
+  DEBUG_ONLY(LOG_DEBUG("Initializing DigitalDevice<{}> using GPIO with pin {}",
+                       get_mode(Mode), pin));
 
   PI_RES res =
       gpioSetMode(pin_, mode_ == digital::mode::input ? PI_INPUT : PI_OUTPUT);

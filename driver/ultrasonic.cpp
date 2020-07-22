@@ -20,21 +20,32 @@ static int              throw_message();
 static bool             menu();
 
 static ATM_STATUS init() {
-  ATM_STATUS status = ATM_OK;
+  // initialize logger
+  if (Logger::create() == ATM_ERR) {
+    return ATM_ERR;
+  }
 
-  // initialize `core` such as config, logger, and state
-  status = initialize_core();
-  if (status == ATM_ERR) {
-    return status;
+  // initialize config
+  if (Config::create(PROJECT_CONFIG_FILE) == ATM_ERR) {
+    LOG_ERROR("Failed to load configuration");
+    return ATM_ERR;
+  }
+
+  // re-init logger based on config
+  Logger::get()->init(Config::get());
+
+  // init state
+  if (State::create() == ATM_ERR) {
+    LOG_ERROR("Failed to initialize state");
+    return ATM_ERR;
   }
 
   // initialize `GPIO-based` devices such as analog, digital, and PWM
-  status = initialize_device();
-  if (status == ATM_ERR) {
-    return status;
+  if (initialize_device() == ATM_ERR) {
+    return ATM_ERR;
   }
 
-  return status;
+  return ATM_OK;
 }
 
 static void shutdown_hook() {

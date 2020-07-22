@@ -12,6 +12,12 @@ ImVec2 h_wide(float height) {
 }
 }  // namespace size
 
+namespace color {
+ImVec4 red = static_cast<ImVec4>(ImColor::HSV(0.0f, 0.6f, 0.6f));
+ImVec4 green = static_cast<ImVec4>(ImColor::HSV(2.0f / 7.0f, 0.6f, 0.6f));
+ImVec4 blue = static_cast<ImVec4>(ImColor::HSV(4.0f / 7.0f, 0.6f, 0.6f));
+}  // namespace color
+
 bool button(const char*   label,
             unsigned int  status_id,
             bool          active,

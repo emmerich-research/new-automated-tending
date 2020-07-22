@@ -22,7 +22,7 @@ ShiftRegisterDeviceImpl::ShiftRegisterDeviceImpl(
       latch_device_{DigitalOutputDevice::create(latch_pin)},
       clock_device_{DigitalOutputDevice::create(clock_pin)},
       data_device_{DigitalOutputDevice::create(data_pin)} {
-  DEBUG_ONLY(obj_name_ = "ShiftRegisterDevice");
+  DEBUG_ONLY_DEFINITION(obj_name_ = "ShiftRegisterDevice");
   massert(active(), "sanity");
 
   bits_ = new byte[cascade_num];
@@ -117,8 +117,9 @@ ATM_STATUS ShiftRegisterImpl::assign(const std::string& id,
   if (container_.count(id) > 0) {
     return ATM_ERR;
   }
-  LOG_DEBUG("ShiftRegisterImpl::assign device with key {} and bit {}", id,
-            static_cast<int>(pin));
+  DEBUG_ONLY(
+      LOG_DEBUG("ShiftRegisterImpl::assign device with key {} and bit {}", id,
+                static_cast<int>(pin)));
   container_[id] = {pin, active_state};
   // enforce to write low
   write(id, digital::value::low);
@@ -129,8 +130,9 @@ ATM_STATUS ShiftRegisterImpl::write(const std::string&    id,
                                     const digital::value& level) {
   if (auto current_metadata = get(id)) {
     const auto& [address, active_state] = *current_metadata;
-    LOG_DEBUG("Write ShiftRegister with address {} active_state {} level {}",
-              address, active_state, level);
+    DEBUG_ONLY(LOG_DEBUG(
+        "Write ShiftRegister with address {} active_state {} level {}", address,
+        active_state, level));
     if (active_state) {
       return ShiftRegisterDeviceImpl::write(address, level);
     }

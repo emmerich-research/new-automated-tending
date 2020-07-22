@@ -7,7 +7,7 @@ NAMESPACE_BEGIN
 namespace device {
 namespace analog {
 PCF8591Device::PCF8591Device() : AnalogDevice(0x48, 1, 0) {
-  DEBUG_ONLY(obj_name_ = "PCF8591Device");
+  DEBUG_ONLY_DEFINITION(obj_name_ = "PCF8591Device");
 }
 
 ATM_STATUS PCF8591Device::write(const PI_PIN& pin, const analog::value& val) {

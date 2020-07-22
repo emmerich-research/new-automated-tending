@@ -13,6 +13,12 @@ namespace size {
 ImVec2 h_wide(float height = 50.0f);
 }
 
+namespace color {
+extern ImVec4 red;
+extern ImVec4 green;
+extern ImVec4 blue;
+}  // namespace color
+
 bool button(const char*   label,
             unsigned int  status_id,
             bool          active = false,

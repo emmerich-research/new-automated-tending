@@ -68,6 +68,7 @@ enable_testing()
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
   add_definitions(-DNDEBUG)
+  add_definitions(-DPROJECT_DEBUG)
 endif()
 
 add_definitions(-DATM_COMPILATION)

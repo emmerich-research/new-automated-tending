@@ -505,7 +505,7 @@ time_unit Movement::next() {
 }
 
 void Movement::move_to_spraying_position() {
-  LOG_INFO("Move to spraying position...");
+  LOG_DEBUG("Move to spraying position...");
   const auto& iter = Config::get()->spraying_position();
   move<movement::unit::mm>(iter.first, iter.second, 0.0);
   // reset position so imaginary homing equals tending position
@@ -513,7 +513,7 @@ void Movement::move_to_spraying_position() {
 }
 
 void Movement::move_to_tending_position() {
-  LOG_INFO("Move to tending position...");
+  LOG_DEBUG("Move to tending position...");
   const auto& iter = Config::get()->tending_position();
   move<movement::unit::mm>(iter.first, iter.second, 0.0);
   // reset position so imaginary homing equals tending position
@@ -529,11 +529,11 @@ void Movement::follow_spraying_paths() {
 
   motor_profile(config->spraying_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Following spraying paths...");
+  LOG_DEBUG("Following spraying paths...");
   for (const auto& iter : Config::get()->spraying_path()) {
     if (state->fault())
       return;
-    LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+    LOG_DEBUG("Move to x={}mm y={}mm", iter.first, iter.second);
     move<movement::unit::mm>(iter.first, iter.second, 0.0);
   }
 
@@ -549,12 +549,12 @@ void Movement::follow_tending_paths_edge() {
 
   motor_profile(config->tending_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Following tending paths edge...");
+  LOG_DEBUG("Following tending paths edge...");
 
   for (const auto& iter : config->tending_path_edge()) {
     if (state->fault())
       return;
-    LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+    LOG_DEBUG("Move to x={}mm y={}mm", iter.first, iter.second);
     move<movement::unit::mm>(iter.first, iter.second, state->z());
   }
 
@@ -570,12 +570,12 @@ void Movement::follow_tending_paths_zigzag() {
 
   motor_profile(config->tending_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Following tending paths zigzag...");
+  LOG_DEBUG("Following tending paths zigzag...");
 
   for (const auto& iter : config->tending_path_zigzag()) {
     if (state->fault())
       return;
-    LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+    LOG_DEBUG("Move to x={}mm y={}mm", iter.first, iter.second);
     move<movement::unit::mm>(iter.first, iter.second, state->z());
   }
 
@@ -621,7 +621,7 @@ void Movement::move_finger_up() {
   // set speed profile
   motor_profile(config->homing_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Lifting finger...");
+  LOG_DEBUG("Lifting finger...");
 
   enable_motors();
 
@@ -664,7 +664,7 @@ void Movement::move_finger_down() {
   // set speed profile
   motor_profile(config->homing_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Lowering finger...");
+  LOG_DEBUG("Lowering finger...");
 
   enable_motors();
 
@@ -707,14 +707,14 @@ void Movement::rotate_finger() const {
 
   const auto& speed_profile =
       config->tending_speed_profile(state->speed_profile());
-  LOG_INFO("Rotating finger...");
+  LOG_DEBUG("Rotating finger...");
   if (finger()->duty_cycle(speed_profile.duty_cycle) == ATM_ERR) {
-    LOG_INFO("Cannot set finger duty cycle...");
+    LOG_DEBUG("Cannot set finger duty cycle...");
   }
 }
 
 void Movement::stop_finger() const {
-  LOG_INFO("Stopping finger...");
+  LOG_DEBUG("Stopping finger...");
   finger()->write(device::digital::value::low);
 }
 
@@ -737,7 +737,7 @@ void Movement::homing_finger() const {
 
   double average = 0;
 
-  LOG_INFO("Setting to homing duty cycle");
+  LOG_DEBUG("Setting to homing duty cycle");
   finger()->duty_cycle(speed_profile.duty_cycle);
   while (true) {
     if (auto degree = analog_device->read(builder()->rotary_encoder_pin())) {
@@ -762,7 +762,7 @@ void Movement::homing() {
   auto* config = Config::get();
   auto* state = State::get();
 
-  LOG_INFO("Homing is started...");
+  LOG_DEBUG("Homing is started...");
 
   state->homing(true);
 
@@ -843,18 +843,18 @@ void Movement::homing() {
 
   state->homing(false);
 
-  LOG_INFO("Homing is finished...");
+  LOG_DEBUG("Homing is finished...");
 }
 
 void Movement::enable_motors() const {
-  LOG_INFO("Enabling motors...");
+  LOG_DEBUG("Enabling motors...");
   stepper_x()->enable();
   stepper_y()->enable();
   stepper_z()->enable();
 }
 
 void Movement::disable_motors() const {
-  LOG_INFO("Disabling motors...");
+  LOG_DEBUG("Disabling motors...");
   stepper_x()->disable();
   stepper_y()->disable();
   stepper_z()->disable();

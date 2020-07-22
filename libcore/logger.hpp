@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
@@ -140,24 +141,38 @@ class LoggerImpl : public StackObj {
 
  public:
   /**
+   * Initialize logger
+   *
+   * @param config           configuration
+   * @param additional_sinks additional sinks to add
+   */
+  void init(const impl::ConfigImpl*              config,
+            const std::vector<spdlog::sink_ptr>& additional_sinks = {});
+  /**
+   * Get shared_ptr of spdlog logger (const)
+   *
+   * @return shared_ptr<spdlog::logger> (const)
+   */
+  inline const std::shared_ptr<spdlog::logger>& logger() const {
+    return logger_;
+  }
+  /**
    * Get shared_ptr of spdlog logger
    *
    * @return shared_ptr<spdlog::logger>
    */
-  inline const std::shared_ptr<spdlog::logger>& getLogger() const {
-    return logger_;
-  }
+  inline std::shared_ptr<spdlog::logger>& logger() { return logger_; }
   /**
    * Get current level of spdlog logger
    *
    * @return spdlog logger level
    */
-  inline spdlog::level::level_enum level() const { return logger_->level(); }
+  inline spdlog::level::level_enum level() const { return logger()->level(); }
   /**
    * Set spdlog logger level
    */
   inline void set_level(const spdlog::level::level_enum& log_level) {
-    logger_->set_level(log_level);
+    logger()->set_level(log_level);
   }
   /**
    * Output log message in trace level
@@ -168,7 +183,7 @@ class LoggerImpl : public StackObj {
    */
   template <typename... Args>
   inline void trace(fmt::basic_string_view<char> fmt, const Args&... args) {
-    logger_->trace(fmt, args...);
+    logger()->trace(fmt, args...);
   }
   /**
    * Output log message in debug level
@@ -231,10 +246,8 @@ class LoggerImpl : public StackObj {
    * LoggerImpl Constructor
    *
    * Initialize log file and log to screen functionality
-   *
-   * @param config   impl::ConfigImpl pointer
    */
-  explicit LoggerImpl(const impl::ConfigImpl* config);
+  explicit LoggerImpl();
   /**
    * LoggerImpl Destructor
    *
@@ -243,10 +256,6 @@ class LoggerImpl : public StackObj {
   ~LoggerImpl();
 
  private:
-  /**
-   * Logger instance name
-   */
-  const std::string name_;
   /**
    * Shared pointer of spdlog logger
    */

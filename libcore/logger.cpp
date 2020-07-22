@@ -12,9 +12,17 @@
 NAMESPACE_BEGIN
 
 namespace impl {
-LoggerImpl::LoggerImpl(const impl::ConfigImpl* config) : name_{config->name()} {
-  DEBUG_ONLY(obj_name_ = "LoggerImpl");
+LoggerImpl::LoggerImpl() : logger_{spdlog::default_logger()} {
+  DEBUG_ONLY_DEFINITION(obj_name_ = "LoggerImpl");
+}
 
+LoggerImpl::~LoggerImpl() {
+  spdlog::drop_all();
+  spdlog::shutdown();
+}
+
+void LoggerImpl::init(const impl::ConfigImpl*              config,
+                      const std::vector<spdlog::sink_ptr>& additional_sinks) {
   spdlog::init_thread_pool(8192, 1);
 
   auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -30,10 +38,13 @@ LoggerImpl::LoggerImpl(const impl::ConfigImpl* config) : name_{config->name()} {
 
   std::vector<spdlog::sink_ptr> sinks{stdout_sink, rotating_sink};
 
-  logger_ = spdlog::get(name_);
+  sinks.insert(sinks.end(), std::make_move_iterator(additional_sinks.begin()),
+               std::make_move_iterator(additional_sinks.end()));
+
+  logger_ = spdlog::get(config->name());
   if (!logger_) {
     logger_ = std::make_shared<spdlog::async_logger>(
-        name_, begin(sinks), end(sinks), spdlog::thread_pool(),
+        config->name(), begin(sinks), end(sinks), spdlog::thread_pool(),
         spdlog::async_overflow_policy::block);
 
     spdlog::register_logger(logger_);
@@ -43,11 +54,6 @@ LoggerImpl::LoggerImpl(const impl::ConfigImpl* config) : name_{config->name()} {
 
   logger_->set_level(spdlog::level::trace);
   logger_->flush_on(spdlog::level::trace);
-}
-
-LoggerImpl::~LoggerImpl() {
-  spdlog::drop_all();
-  spdlog::shutdown();
 }
 }  // namespace impl
 

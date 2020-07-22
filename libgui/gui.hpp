@@ -11,10 +11,12 @@
 #pragma GCC system_header
 
 // 1. STD
+#include <array>
 #include <chrono>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 #include <iostream>
 #include <memory>
@@ -65,6 +67,8 @@
 #include "cleaning-control-window.hpp"
 #include "cleaning-window.hpp"
 #include "fault-window.hpp"
+#include "logger-window.hpp"
+#include "logger-window.inline.hpp"
 #include "manual-movement-window.hpp"
 #include "movement-window.hpp"
 #include "plc-trigger-window.hpp"

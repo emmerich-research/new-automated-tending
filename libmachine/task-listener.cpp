@@ -91,7 +91,7 @@ void TaskListener::execute() {
       state->fault(true);
       tsm()->fault();
     } else {
-      LOG_INFO("Homing task take about {} seconds", end - start);
+      LOG_INFO("Homing task took about {} seconds", end - start);
     }
   }
 }

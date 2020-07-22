@@ -31,9 +31,9 @@ void Movement::move(Point x, Point y, Point z) {
     auto current_y = state->y();
     auto current_z = state->z();
 
-    LOG_INFO("Current X {}, Next X {}", current_x, x);
-    LOG_INFO("Current Y {}, Next Y {}", current_y, y);
-    LOG_INFO("Current Z {}, Next Z {}", current_z, z);
+    LOG_DEBUG("Current X {}, Next X {}", current_x, x);
+    LOG_DEBUG("Current Y {}, Next Y {}", current_y, y);
+    LOG_DEBUG("Current Z {}, Next Z {}", current_z, z);
 
     long steps_x;
     long steps_y;

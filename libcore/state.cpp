@@ -15,7 +15,7 @@ StateImpl::StateImpl()
       cleaning_{},
       manual_mode_{false},
       homing_{false} {
-  DEBUG_ONLY(obj_name_ = "StateImpl");
+  DEBUG_ONLY_DEFINITION(obj_name_ = "StateImpl");
 }
 
 StateImpl::StateMutex& StateImpl::mutex() {

@@ -14,7 +14,7 @@ namespace impl {
 
 template <typename T>
 InstanceRegistryImpl<T>::InstanceRegistryImpl() {
-  DEBUG_ONLY(obj_name_ = "InstanceRegistryImpl");
+  DEBUG_ONLY_DEFINITION(obj_name_ = "InstanceRegistryImpl");
 }
 
 template <typename T>
@@ -25,7 +25,8 @@ inline ATM_STATUS InstanceRegistryImpl<T>::create(const std::string& id,
   if (container_.count(id) > 0) {
     return ATM_ERR;
   }
-  LOG_DEBUG("InstanceRegistryImpl::create instance with key {}", id);
+  DEBUG_ONLY(
+      LOG_DEBUG("InstanceRegistryImpl::create instance with key {}", id));
   container_[id] = U::create(std::forward<Args>(args)...);
   return ATM_OK;
 }
@@ -37,7 +38,7 @@ inline ATM_STATUS InstanceRegistryImpl<T>::create(
   for (const auto& [id, args] : initializers) {
     ATM_STATUS res = create(id, std::forward<Args>(args)...);
     if (res == ATM_ERR) {
-      LOG_DEBUG("Failed to create instances with id = {}", id);
+      DEBUG_ONLY(LOG_ERROR("Failed to create instances with id = {}", id));
       return ATM_ERR;
     }
   }
