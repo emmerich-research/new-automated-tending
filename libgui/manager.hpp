@@ -134,6 +134,24 @@ class Manager : public StackObj {
    * @param error_cb error callback
    */
   void key_callback(const KeyCallback&& error_cb);
+  /**
+   * General font
+   *
+   * @return general font
+   */
+  inline ImFont* general_font() { return general_font_; }
+  /**
+   * Button font
+   *
+   * @return button font
+   */
+  inline ImFont* button_font() { return button_font_; }
+  /**
+   * Logger font
+   *
+   * @return logger font
+   */
+  inline ImFont* logging_font() { return logging_font_; }
 
  protected:
   /**
@@ -201,7 +219,19 @@ class Manager : public StackObj {
   /**
    * Main window
    */
-  GLFWwindow* window_ = nullptr;
+  GLFWwindow* window_;
+  /**
+   * General font
+   */
+  ImFont* general_font_;
+  /**
+   * Button font
+   */
+  ImFont* button_font_;
+  /**
+   * Logging font
+   */
+  ImFont* logging_font_;
 };
 }  // namespace gui
 

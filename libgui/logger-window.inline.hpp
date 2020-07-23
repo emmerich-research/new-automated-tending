@@ -26,13 +26,13 @@ LoggerWindow<Mutex>::~LoggerWindow() {
 }
 
 template <typename Mutex>
-void LoggerWindow<Mutex>::show([[maybe_unused]] Manager* manager) {
+void LoggerWindow<Mutex>::show(Manager* manager) {
   // const ImGuiInputTextFlags flags = ImGuiInputTextFlags_ReadOnly;
   const ImVec2 window_size = ImGui::GetWindowSize();
-  float        wrap_width = window_size.x;
-  const float  footer_height_to_reserve =
-      ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-
+  float        wrap_width = window_size.x - 24;
+  // const float  footer_height_to_reserve =
+  //     ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
+  ImGui::PushFont(manager->logging_font());
   {
     ImGui::RadioButton("all", reinterpret_cast<int*>(&level_),
                        spdlog::level::trace);
@@ -63,8 +63,8 @@ void LoggerWindow<Mutex>::show([[maybe_unused]] Manager* manager) {
   }
 
   {
-    ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve),
-                      false, ImGuiWindowFlags_NoScrollbar);
+    ImGui::BeginChild("ScrollingRegion", ImVec2{0, -FLT_MIN}, false,
+                      ImGuiWindowFlags_NoScrollbar);
     ImGui::SetScrollX(0);
 
     ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
@@ -116,6 +116,7 @@ void LoggerWindow<Mutex>::show([[maybe_unused]] Manager* manager) {
 
     ImGui::EndChild();
   }
+  ImGui::PopFont();
 }
 
 template <typename Mutex>
