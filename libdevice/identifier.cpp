@@ -6,7 +6,7 @@ NAMESPACE_BEGIN
 
 namespace device {
 namespace id {
-std::string analog_;
+// std::string analog_;
 
 namespace stepper {
 std::string x_;
@@ -24,6 +24,7 @@ std::string finger_protection_;
 
 std::string spray_;
 std::string finger_;
+std::string finger_infrared_;
 
 namespace ultrasonic {
 std::string water_level_;

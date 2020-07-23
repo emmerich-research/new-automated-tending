@@ -12,13 +12,13 @@ NAMESPACE_BEGIN
 
 namespace device {
 namespace id {
-extern std::string   analog_;
-static auto          analog = []() {
-  if (analog_.empty()) {
-    analog_ = Config::get()->analog<std::string>("key");
-  }
-  return analog_;
-};
+// extern std::string   analog_;
+// static auto          analog = []() {
+//   if (analog_.empty()) {
+//     analog_ = Config::get()->analog<std::string>("key");
+//   }
+//   return analog_;
+// };
 
 namespace stepper {
 extern std::string x_;
@@ -106,6 +106,14 @@ static auto        finger = []() {
     finger_ = Config::get()->finger<std::string>("key");
   }
   return finger_;
+};
+
+extern std::string finger_infrared_;
+static auto        finger_infrared = []() {
+  if (finger_infrared_.empty()) {
+    finger_infrared_ = Config::get()->finger_infrared<std::string>("key");
+  }
+  return finger_infrared_;
 };
 
 namespace ultrasonic {

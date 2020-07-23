@@ -89,14 +89,16 @@ ATM_STATUS MovementBuilderImpl::setup_z(
   return ATM_OK;
 }
 
-ATM_STATUS MovementBuilderImpl::setup_finger(const std::string& finger_id,
-                                             PI_PIN rotary_encoder_pin) {
-  if (!device::PWMDeviceRegistry::get()->exist(finger_id)) {
+ATM_STATUS MovementBuilderImpl::setup_finger(
+    const std::string& finger_id,
+    const std::string& finger_infrared_id) {
+  if (!device::PWMDeviceRegistry::get()->exist(finger_id) ||
+      !device::DigitalInputDeviceRegistry::get()->exist(finger_infrared_id)) {
     return ATM_ERR;
   }
 
   finger_id_ = finger_id;
-  rotary_encoder_pin_ = rotary_encoder_pin;
+  finger_infrared_id_ = finger_infrared_id;
 
   return ATM_OK;
 }
@@ -165,6 +167,7 @@ void Movement::setup_stepper() {
 }
 
 void Movement::setup_limit_switch() {
+  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
   auto* digital_input_registry = device::DigitalInputDeviceRegistry::get();
 
   auto&& limit_switch_x =
@@ -209,15 +212,23 @@ void Movement::setup_limit_switch() {
 }
 
 void Movement::setup_finger() {
-  auto*  pwm_registry = device::PWMDeviceRegistry::get();
-  auto&& finger = pwm_registry->get(builder()->finger_id());
+  massert(device::PWMRDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
 
-  if (!finger) {
+  auto* pwm_registry = device::PWMDeviceRegistry::get();
+  auto* digital_input_registry = device::DigitalInputDeviceRegistry::get();
+
+  auto&& finger = pwm_registry->get(builder()->finger_id());
+  auto&& finger_infrared =
+      digital_input_registry->get(builder()->limit_switch_z_top_id());
+
+  if (!finger || !finger_infrared) {
     active_ = false;
     return;
   }
 
   finger_ = finger;
+  finger_infrared_ = finger_infrared;
 }
 
 device::stepper::step Movement::stop_x(void) {
@@ -720,39 +731,25 @@ void Movement::stop_finger() const {
 
 void Movement::homing_finger() const {
   massert(Config::get() != nullptr, "sanity");
-  massert(device::PCF8591Device::get() != nullptr, "sanity");
 
   auto* config = Config::get();
-  auto* analog_device = device::PCF8591Device::get();
 
-  const auto& homing_speed_profile = config->homing_speed_profile();
   const auto& speed_profile =
       config->homing_speed_profile(State::get()->speed_profile());
-  const auto& offset = homing_speed_profile.finger_threshold;
 
-  double zero_deg =
-      static_cast<double>(config->finger<unsigned int>("zero-degree"));
-  double lower_bound = zero_deg - offset;
-  double upper_bound = zero_deg + offset;
-
-  double average = 0;
-
+  LOG_DEBUG("Starting to homing finger");
   LOG_DEBUG("Setting to homing duty cycle");
   finger()->duty_cycle(speed_profile.duty_cycle);
   while (true) {
-    if (auto degree = analog_device->read(builder()->rotary_encoder_pin())) {
-      util::math::moving_average<5>(average, *degree);
-      // DEBUG_ONLY(
-      //     LOG_DEBUG("Average {}, Degree {}, Lower Bound {}, Upper Bound {}",
-      //               average, *degree, lower_bound, upper_bound));
-      if ((lower_bound <= average) && (average <= upper_bound)) {
-        stop_finger();
-        break;
-      }
+    if (finger_infrared()->read().value_or(device::digital::value::low) ==
+        device::digital::value::high) {
+      stop_finger();
+      break;
     }
     // add delay
-    sleep_for<time_units::micros>(100);
+    sleep_for<time_units::micros>(50);
   }
+  LOG_DEBUG("Homing finger is finished");
 }
 
 void Movement::homing() {
