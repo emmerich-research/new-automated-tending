@@ -96,6 +96,7 @@ void TaskListener::execute() {
       } else if (state->cleaning_running()) {
         LOG_ERROR("[FAULT] Last task: cleaning");
       }
+      state->homing(false);
       state->fault(true);
       tsm()->fault();
     } else {
