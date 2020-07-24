@@ -220,7 +220,7 @@ void Movement::setup_finger() {
 
   auto&& finger = pwm_registry->get(builder()->finger_id());
   auto&& finger_infrared =
-      digital_input_registry->get(builder()->limit_switch_z_top_id());
+      digital_input_registry->get(builder()->finger_infrared_id());
 
   if (!finger || !finger_infrared) {
     active_ = false;

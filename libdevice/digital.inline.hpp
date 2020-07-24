@@ -108,7 +108,7 @@ bool DigitalDevice<Mode>::read_bool() const {
   auto result = read();
 
   if (result) {
-    if (result == digital::value::high) {
+    if (*result == digital::value::high) {
       return true;
     } else {
       return false;
