@@ -203,7 +203,7 @@ struct TendingDef : public StackObj,
   using transitions = transition_table<
       /* State, Event, Next, Action, Guard */
       tr<initial, event::start, running, action::start>,
-      tr<running, event::fault::trigger, fault, action::fault, guard::fault>,
+      tr<running, event::fault::trigger, fault, action::fault>,
       tr<fault, event::fault::restart, running, action::restart>,
       tr<fault, event::stop, terminated, action::stop>,
       tr<running, event::stop, terminated, action::stop>>;

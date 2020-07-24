@@ -22,10 +22,15 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
   massert(mechanism::movement_mechanism()->active(), "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
 
-  root_machine(fsm).thread_pool().enqueue([fsm]() mutable -> void {
+  root_machine(fsm).thread_pool().enqueue([&fsm]() mutable -> void {
     auto*  state = State::get();
     auto*  shift_register = device::ShiftRegister::get();
     auto&& movement = mechanism::movement_mechanism();
+
+    if (state->fault()) {
+      root_machine(fsm).fault();
+      return;
+    }
 
     state->fault(false);
     state->manual_mode(false);
@@ -58,15 +63,32 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
 
     while (state->running() && !root_machine(fsm).is_terminated() &&
            !state->fault()) {
-      if (spraying_tending_height.check()) {
+      if (spraying_tending_height.check() && !state->fault()) {
+        if (state->fault()) {
+          root_machine(fsm).fault();
+          return;
+        }
         root_machine(fsm).start_spraying();
+        if (state->fault()) {
+          root_machine(fsm).fault();
+          return;
+        }
         root_machine(fsm).start_tending();
-        break;
-      } else if (cleaning_height.check()) {
+        return;
+      } else if (cleaning_height.check() && !state->fault()) {
+        if (state->fault()) {
+          root_machine(fsm).fault();
+          return;
+        }
         root_machine(fsm).start_cleaning();
         break;
       }
-      sleep_for<time_units::millis>(500);
+      if (state->fault()) {
+        root_machine(fsm).fault();
+        return;
+      } else {
+        sleep_for<time_units::millis>(500);
+      }
     }
   });
 }
@@ -268,19 +290,6 @@ void TendingDef::running::cleaning::preparation::on_exit(Event&&,
  */
 template <typename Event, typename FSM>
 void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
-  massert(State::get() != nullptr, "sanity");
-  massert(device::ShiftRegister::get() != nullptr, "sanity");
-  massert(device::PWMDeviceRegistry::get() != nullptr, "sanity");
-  massert(mechanism::movement_mechanism() != nullptr, "sanity");
-  massert(mechanism::movement_mechanism()->active(), "sanity");
-
-  auto*  state = State::get();
-  auto*  shift_register = device::ShiftRegister::get();
-  auto*  pwm_registry = device::PWMDeviceRegistry::get();
-  auto&& movement = mechanism::movement_mechanism();
-
-  auto&& finger = pwm_registry->get(device::id::finger());
-
   LOG_INFO("Entering fault mode");
 
   machine::util::reset_task_state();
