@@ -12,10 +12,19 @@ namespace util {
 void reset_task_state() {
   massert(State::get() != nullptr, "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
+  massert(device::PWMDeviceRegistry::get() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism() != nullptr, "sanity");
+  massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto* state = State::get();
-  auto* shift_register = device::ShiftRegister::get();
-  massert(shift_register != nullptr, "sanity");
+  auto*  state = State::get();
+  auto*  shift_register = device::ShiftRegister::get();
+  auto*  pwm_registry = device::PWMDeviceRegistry::get();
+  auto&& movement = mechanism::movement_mechanism();
+  auto&& finger = pwm_registry->get(device::id::finger());
+
+  finger->write(device::digital::value::low);
+  state->homing(false);
+  movement->disable_motors();
 
   shift_register->write(device::id::comm::pi::spraying_ready(),
                         device::digital::value::low);
