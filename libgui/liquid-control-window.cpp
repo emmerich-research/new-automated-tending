@@ -1,18 +1,18 @@
 #include "gui.hpp"
 
-#include "cleaning-control-window.hpp"
+#include "liquid-control-window.hpp"
 
 NAMESPACE_BEGIN
 
 namespace gui {
-CleaningControlWindow::CleaningControlWindow(float                   width,
-                                             float                   height,
-                                             const ImGuiWindowFlags& flags)
-    : Window{"Cleaning Control", width, height, flags} {}
+LiquidControlWindow::LiquidControlWindow(float                   width,
+                                         float                   height,
+                                         const ImGuiWindowFlags& flags)
+    : Window{"Liquid Control", width, height, flags} {}
 
-CleaningControlWindow::~CleaningControlWindow() {}
+LiquidControlWindow::~LiquidControlWindow() {}
 
-void CleaningControlWindow::show(Manager* manager) {
+void LiquidControlWindow::show(Manager* manager) {
   const ImVec2 size = util::size::h_wide(50.0f);
   unsigned int status_id = 0;
 
@@ -20,7 +20,7 @@ void CleaningControlWindow::show(Manager* manager) {
 
   ImGui::Columns(2, NULL, /* v_borders */ true);
   {
-    ImGui::BeginChild("water_cleaning_control");
+    ImGui::BeginChild("water_control");
     ImGui::Separator();
     ImGui::Text("Water");
     ImGui::Separator();
@@ -41,14 +41,14 @@ void CleaningControlWindow::show(Manager* manager) {
     {
       ImGui::PushFont(manager->button_font());
       if (util::button("EXCHANGE NOW", status_id++, active, size)) {
-      }     
+      }
       ImGui::PopFont();
     }
     ImGui::EndChild();
   }
   ImGui::NextColumn();
   {
-    ImGui::BeginChild("disinfectant_cleaning_control");
+    ImGui::BeginChild("disinfectant_control");
     ImGui::Separator();
     ImGui::Text("Disinfectant");
     ImGui::Separator();
@@ -69,7 +69,7 @@ void CleaningControlWindow::show(Manager* manager) {
     {
       ImGui::PushFont(manager->button_font());
       if (util::button("EXCHANGE NOW", status_id++, active, size)) {
-      }     
+      }
       ImGui::PopFont();
     }
     ImGui::EndChild();
