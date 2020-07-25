@@ -55,11 +55,6 @@ struct from<ns(config::SpeedProfile)> {
             class A>
   static ns(config::SpeedProfile) from_toml(const basic_value<C, M, A>& v) {
     ns(config::SpeedProfile) sp;
-    sp.finger_threshold = 10;
-    if (v.contains("finger") && v.at("finger").contains("threshold")) {
-      sp.finger_threshold = find<double>(v, "finger", "threshold");
-    }
-    sp.slow = find<ns(config::MechanismSpeed)>(v, "speed", "slow");
     sp.slow = find<ns(config::MechanismSpeed)>(v, "speed", "slow");
     sp.normal = find<ns(config::MechanismSpeed)>(v, "speed", "normal");
     sp.fast = find<ns(config::MechanismSpeed)>(v, "speed", "fast");

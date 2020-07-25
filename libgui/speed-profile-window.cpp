@@ -43,7 +43,7 @@ void SpeedProfileWindow::show([[maybe_unused]] Manager* manager) {
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     }
 
-    if (util::button("Slow", status_id++, is_slow, size)) {
+    if (util::button("SLOW", status_id++, is_slow, size)) {
       state->speed_profile(config::speed::slow);
     }
 
@@ -59,7 +59,7 @@ void SpeedProfileWindow::show([[maybe_unused]] Manager* manager) {
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     }
 
-    if (util::button("Normal", status_id++, is_normal, size)) {
+    if (util::button("NORMAL", status_id++, is_normal, size)) {
       state->speed_profile(config::speed::normal);
     }
 
@@ -75,7 +75,7 @@ void SpeedProfileWindow::show([[maybe_unused]] Manager* manager) {
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     }
 
-    if (util::button("Fast", status_id++, is_fast, size)) {
+    if (util::button("FAST", status_id++, is_fast, size)) {
       state->speed_profile(config::speed::fast);
     }
 

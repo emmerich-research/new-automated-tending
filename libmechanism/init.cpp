@@ -44,8 +44,8 @@ static ATM_STATUS initialize_movement_mechanism() {
     return ATM_ERR;
   }
 
-  status = movement_builder->setup_finger(
-      device::id::finger(), config->analog<PI_PIN>("rotary-encoder-pin"));
+  status = movement_builder->setup_finger(device::id::finger(),
+                                          device::id::finger_infrared());
   if (status == ATM_ERR) {
     return ATM_ERR;
   }

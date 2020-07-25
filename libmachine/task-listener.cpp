@@ -22,6 +22,8 @@ TaskListener::~TaskListener() {
 void TaskListener::start() {
   massert(tsm()->is_ready(), "sanity");
 
+  std::lock_guard<std::mutex> lock(mutex());
+
   if (!running() && tsm()->is_ready()) {
     LOG_INFO("Starting task listener");
     running_ = true;
@@ -32,12 +34,14 @@ void TaskListener::start() {
 void TaskListener::stop() {
   massert(tsm()->is_ready(), "sanity");
 
+  std::lock_guard<std::mutex> lock(mutex());
+
   if (running() && tsm()->is_ready()) {
     LOG_INFO("Stopping task listener");
     running_ = false;
-    if (thread().joinable()) {
-      thread().join();
-    }
+    // if (thread().joinable()) {
+    //   thread().join();
+    // }
     LOG_INFO("Task listener is stopped completely");
   }
 }
@@ -53,12 +57,15 @@ void TaskListener::execute() {
   time_unit start = seconds();
   time_unit end = seconds();
 
-  while (running()) {
-    while (running() && (!state->homing())) {
-      sleep_for<time_units::millis>(100);
-    }
+  while (running() && state->running()) {
+    std::unique_lock<std::mutex> lock(mutex());
+    state->signal().wait(
+        lock, [state] { return !state->running() || state->homing(); });
 
-    if (!running()) {
+    lock.unlock();
+    state->notify_all();
+
+    if (!running() || !state->running()) {
       return;
     }
 
@@ -89,6 +96,7 @@ void TaskListener::execute() {
       } else if (state->cleaning_running()) {
         LOG_ERROR("[FAULT] Last task: cleaning");
       }
+      state->homing(false);
       state->fault(true);
       tsm()->fault();
     } else {

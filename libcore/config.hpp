@@ -86,7 +86,6 @@ struct SpeedProfile {
   SpeedProfile();
   DEBUG_ONLY_DEFINITION(void print(std::ostream& os) const);
 
-  double         finger_threshold;
   MechanismSpeed slow;
   MechanismSpeed normal;
   MechanismSpeed fast;
@@ -315,7 +314,7 @@ class ConfigImpl : public StackObj {
   /**
    * Get finger device info
    *
-   * It should be in key "devices.finger"
+   * It should be in key "devices.finger.motor"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
@@ -324,7 +323,22 @@ class ConfigImpl : public StackObj {
    */
   template <typename T, typename... Keys>
   inline T finger(Keys&&... keys) const {
-    return find<T>("devices", "finger", std::forward<Keys>(keys)...);
+    return find<T>("devices", "finger", "motor", std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get finger infrared device info
+   *
+   * It should be in key "devices.finger.infrared"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return finger device info with type T
+   */
+  template <typename T, typename... Keys>
+  inline T finger_infrared(Keys&&... keys) const {
+    return find<T>("devices", "finger", "infrared",
+                   std::forward<Keys>(keys)...);
   }
   /**
    * Get analog device info

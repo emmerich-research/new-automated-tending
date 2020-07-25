@@ -26,14 +26,16 @@ void PLCTriggerWindow::show([[maybe_unused]] Manager* manager) {
   auto&& cleaning_height =
       input_registry->get(device::id::comm::plc::cleaning_height());
 
-  const ImVec2 size{288.5f, 50.0f};
+  const ImVec2 size{-FLT_MIN, 32.0f};
   unsigned int status_id = 0;
 
-  util::status_button("Spraying/Tending", status_id++,
+  ImGui::Columns(2, NULL, /* v_borders */ true);
+  util::status_button("SPRAYING / TENDING", status_id++,
                       spraying_tending_height->read_bool(), size);
-  ImGui::SameLine();
-  util::status_button("Cleaning", status_id++, cleaning_height->read_bool(),
+  ImGui::NextColumn();
+  util::status_button("CLEANING", status_id++, cleaning_height->read_bool(),
                       size);
+  ImGui::NextColumn();
 }
 }  // namespace gui
 

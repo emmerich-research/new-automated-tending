@@ -18,6 +18,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <libutil/util.hpp>
+
 NAMESPACE_BEGIN
 
 namespace gui {
@@ -26,7 +28,11 @@ Manager::Manager(const std::string& name, ImVec4 clear_color)
       active_{true},
       terminated_{false},
       exited_{false},
-      clear_color_{clear_color} {}
+      clear_color_{clear_color},
+      window_{nullptr},
+      general_font_{nullptr},
+      button_font_{nullptr},
+      logging_font_{nullptr} {}
 
 Manager::~Manager() {
   // Cleanup
@@ -135,11 +141,30 @@ void Manager::init() {
   ImGui_ImplOpenGL2_Init();
 #endif
 
-  ImFontConfig font_config;
-  font_config.SizePixels = 25.0f;
-
   ImGuiIO& io = ImGui::GetIO();
-  io.Fonts->AddFontDefault(&font_config);
+
+  // if (fs::is_regular_file("fonts/cousine.ttf")) {
+  general_font_ = io.Fonts->AddFontFromFileTTF("fonts/karla.ttf", 20.0f);
+  button_font_ = io.Fonts->AddFontFromFileTTF("fonts/karla.ttf", 32.0f);
+  // }
+
+  // if (fs::is_regular_file("fonts/mononoki.ttf")) {
+  logging_font_ = io.Fonts->AddFontFromFileTTF("fonts/mononoki.ttf", 20.0f);
+  // }
+
+  // if (general_font() == nullptr) {
+  //   ImFontConfig font_config;
+  //   font_config.SizePixels = 25.0f;
+
+  //   general_font_ = io.Fonts->AddFontDefault(&font_config);
+  // }
+
+  // if (logging_font() == nullptr) {
+  //   ImFontConfig font_config;
+  //   font_config.SizePixels = 25.0f;
+
+  //   logging_font_ = io.Fonts->AddFontDefault(&font_config);
+  // }
 }
 
 void Manager::exit() {
@@ -181,9 +206,13 @@ void Manager::render() {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
+  ImGui::PushFont(general_font());
+
   // render windows
   for (auto&& s_window : windows())
     s_window->render(this);
+
+  ImGui::PopFont();
 
   ImGui::Render();
   int display_w, display_h;

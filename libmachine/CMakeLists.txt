@@ -2,6 +2,7 @@ project(machine)
 
 ucm_add_files(
   "action.cpp"
+  "event.cpp"
   "guard.cpp"
   "state.cpp"
   "util.cpp"

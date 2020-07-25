@@ -33,20 +33,20 @@ static ATM_STATUS initialize_stepper_devices();
 static ATM_STATUS initialize_ultrasonic_devices();
 
 static ATM_STATUS initialize_analog_devices() {
-  ATM_STATUS status = ATM_OK;
+  // ATM_STATUS status = ATM_OK;
 
-  status = PCF8591Device::create();
-  if (status == ATM_ERR) {
-    return status;
-  }
+  // status = PCF8591Device::create();
+  // if (status == ATM_ERR) {
+  //   return status;
+  // }
 
-  auto* analog_device = PCF8591Device::get();
+  // auto* analog_device = PCF8591Device::get();
 
-  if (analog_device == nullptr) {
-    return ATM_ERR;
-  }
+  // if (analog_device == nullptr) {
+  //   return ATM_ERR;
+  // }
 
-  return status;
+  return ATM_OK;
 }
 
 static ATM_STATUS initialize_plc_to_pi_comm() {
@@ -136,6 +136,7 @@ static ATM_STATUS initialize_limit_switches() {
 }
 
 static ATM_STATUS initialize_input_digital_devices() {
+  auto* config = Config::get();
   ATM_STATUS status = ATM_OK;
 
   status = DigitalInputDeviceRegistry::create();
@@ -149,6 +150,16 @@ static ATM_STATUS initialize_input_digital_devices() {
   }
 
   status = initialize_plc_to_pi_comm();
+  if (status == ATM_ERR) {
+    return status;
+  }
+
+  // initialize IR
+  auto* digital_input_registry = DigitalInputDeviceRegistry::get();
+  status = digital_input_registry->create(
+      id::finger_infrared(),
+      config->finger_infrared<PI_PIN>("pin"),
+      config->finger_infrared<bool>("active-state"), PI_PUD_UP);
   if (status == ATM_ERR) {
     return status;
   }

@@ -22,6 +22,8 @@ FaultListener::~FaultListener() {
 void FaultListener::start() {
   massert(tsm()->is_ready(), "sanity");
 
+  std::lock_guard<std::mutex> lock(mutex());
+
   if (!running() && tsm()->is_ready()) {
     LOG_INFO("Starting fault listener");
     running_ = true;
@@ -32,12 +34,14 @@ void FaultListener::start() {
 void FaultListener::stop() {
   massert(tsm()->is_ready(), "sanity");
 
+  std::lock_guard<std::mutex> lock(mutex());
+
   if (running() && tsm()->is_ready()) {
     LOG_INFO("Stopping fault listener");
     running_ = false;
-    if (thread().joinable()) {
-      thread().join();
-    }
+    // if (thread().joinable()) {
+    //   thread().join();
+    // }
     LOG_INFO("Fault listener is stopped completely");
   }
 }
@@ -66,12 +70,16 @@ void FaultListener::execute() {
       digital_input_registry->get(device::id::comm::plc::cleaning_height());
   auto&& e_stop = digital_input_registry->get(device::id::comm::plc::e_stop());
 
-  while (running()) {
-    while (running() && (tsm()->is_no_task() || state->fault())) {
-      sleep_for<time_units::millis>(100);
-    }
+  while (running() && state->running()) {
+    std::unique_lock<std::mutex> lock(mutex());
+    state->signal().wait(lock, [this, state] {
+      return !state->running() || !(tsm()->is_no_task() || state->fault());
+    });
 
-    if (!running()) {
+    lock.unlock();
+    state->notify_all();
+
+    if (!running() || !state->running()) {
       return;
     }
 

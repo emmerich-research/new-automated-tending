@@ -15,6 +15,10 @@ set(PROJECT_MOVEMENT_ZIGZAG_FILE "${PROJECT_CONFIG_DIR}/zigzag.path")
 file(COPY "${PROJECT_SOURCE_DIR}/config"
      DESTINATION "${PROJECT_BINARY_DIR}")
 
+# Copy fonts folder
+file(COPY "${PROJECT_SOURCE_DIR}/fonts"
+     DESTINATION "${PROJECT_BINARY_DIR}")
+
 configure_file("${PROJECT_CONFIG_DIR}/config.toml"
                "${PROJECT_BINARY_DIR}/config/config.toml" COPYONLY)
 
