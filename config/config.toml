@@ -79,7 +79,7 @@ dir-pin                      = 26
 dir-active-state             = false
 enable-pin                   = 9
 enable-active-state          = true
-steps-per-mm                 = 20
+steps-per-mm                 = 40
 microsteps                   = 8
 
 # ----------------------------------------------------------
@@ -357,7 +357,7 @@ deceleration                 = 1000.0 # steps / s^2
 [mechanisms.homing.finger]
 
 [mechanisms.homing.speed.slow]
-duty-cycle                   = 150
+duty-cycle                   = 100
 
 [mechanisms.homing.speed.slow.x]
 rpm                          = 100.0
@@ -371,11 +371,11 @@ deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.homing.speed.slow.z]
 rpm                          = 100.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+acceleration                 = 100.0 # steps / s^2
+deceleration                 = 100.0 # steps / s^2
 
 [mechanisms.homing.speed.normal]
-duty-cycle                   = 150
+duty-cycle                   = 100
 
 [mechanisms.homing.speed.normal.x]
 rpm                          = 300.0
@@ -389,11 +389,11 @@ deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.homing.speed.normal.z]
 rpm                          = 100.0
-acceleration                 = 100.0 # steps / s^2
-deceleration                 = 100.0 # steps / s^2
+acceleration                 = 1000.0 # steps / s^2
+deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.homing.speed.fast]
-duty-cycle                   = 150
+duty-cycle                   = 100
 
 [mechanisms.homing.speed.fast.x]
 rpm                          = 300.0
@@ -406,9 +406,9 @@ acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.homing.speed.fast.z]
-rpm                          = 300.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 100.0
+acceleration                 = 100.0 # steps / s^2
+deceleration                 = 100.0 # steps / s^2
 
 # ----------------------------------------------------------
 # Spraying Mechanism
@@ -467,12 +467,12 @@ deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.spraying.speed.normal]
 [mechanisms.spraying.speed.normal.x]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.spraying.speed.normal.y]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
@@ -483,12 +483,12 @@ deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.spraying.speed.fast]
 [mechanisms.spraying.speed.fast.x]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 2000.0 # steps / s^2
 deceleration                 = 1500.0 # steps / s^2
 
 [mechanisms.spraying.speed.fast.y]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 2000.0 # steps / s^2
 deceleration                 = 1500.0 # steps / s^2
 
@@ -604,17 +604,17 @@ deceleration                 = 1000.0 # steps / s^2
 duty-cycle                   = 120
 
 [mechanisms.tending.speed.normal.x]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.tending.speed.normal.y]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.tending.speed.normal.z]
-rpm                          = 300.0
+rpm                          = 100.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
@@ -632,9 +632,9 @@ acceleration                 = 1500.0 # steps / s^2
 deceleration                 = 1200.0 # steps / s^2
 
 [mechanisms.tending.speed.fast.z]
-rpm                          = 300.0
-acceleration                 = 300.0 # steps / s^2
-deceleration                 = 300.0 # steps / s^2
+rpm                          = 100.0
+acceleration                 = 100.0 # steps / s^2
+deceleration                 = 100.0 # steps / s^2
 # ----------------------------------------------------------
 # End of Tending Mechanism
 # ----------------------------------------------------------
@@ -661,48 +661,48 @@ stations = [
 
 [mechanisms.cleaning.speed.slow]
 [mechanisms.cleaning.speed.slow.x]
-rpm                          = 300.0
+rpm                          = 100.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.cleaning.speed.slow.y]
-rpm                          = 300.0
+rpm                          = 100.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.cleaning.speed.slow.z]
-rpm                          = 300.0
+rpm                          = 100.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.cleaning.speed.normal]
 [mechanisms.cleaning.speed.normal.x]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.cleaning.speed.normal.y]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.cleaning.speed.normal.z]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.cleaning.speed.fast]
 [mechanisms.cleaning.speed.fast.x]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.cleaning.speed.fast.y]
-rpm                          = 300.0
+rpm                          = 250.0
 acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.cleaning.speed.fast.z]
-rpm                          = 300.0
-acceleration                 = 1000.0 # steps / s^2
-deceleration                 = 1000.0 # steps / s^2
+rpm                          = 100.0
+acceleration                 = 100.0 # steps / s^2
+deceleration                 = 100.0 # steps / s^2
