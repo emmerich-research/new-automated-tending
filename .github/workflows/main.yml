@@ -17,8 +17,13 @@ jobs:
             apt-get install -q -y libllvm-10-ocaml-dev libllvm10 llvm-10 llvm-10-dev llvm-10-doc llvm-10-examples llvm-10-runtime
             apt-get install -q -y clang-10 clang-tools-10 clang-10-doc libclang-common-10-dev libclang-10-dev libclang1-10 clang-format-10 python-clang-10 clangd-10
             apt-get install -q -y lldb-10 lld-10 libc++-10-dev libc++abi-10-dev
-            uname -a
-            echo ::set-output name=uname::$(uname -a)
-      - name: Get the output
+            apt-get install -q -y cmake ninja-build ccache
+            apt-get install -q -y libglfw3 libglfw3-dev
+            clang++ -v
+            export CC=clang
+            export CXX=clang++
+      - name: Build
         run: |
-            echo "The uname output was ${{ steps.runcmd.outputs.uname }}"
+            mkdir build
+            cd build
+            cmake .. -DCMAKE_BUILD_TYPE=Release -GNinja
