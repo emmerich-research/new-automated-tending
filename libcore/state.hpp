@@ -63,6 +63,9 @@ struct Task {
   bool running;
   bool complete;
   // bool fault;
+
+  Task();
+  void reset();
 };
 
 namespace impl {
@@ -86,6 +89,10 @@ class StateImpl : public StackObj {
   using StateLock = std::lock_guard<StateMutex>;
   using Signal = std::condition_variable;
 
+  /**
+   * Reset ui state
+   */
+  void reset_ui();
   /**
    * Get signal
    *

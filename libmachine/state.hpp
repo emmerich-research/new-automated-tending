@@ -31,7 +31,7 @@ struct TendingDef : public StackObj,
    * A type alias for actual state machine, that will be passed
    * to actions and guards
    **/
-  using tending_fsm = afsm::state_machine<TendingDef>;
+  using tending_fsm = afsm::priority_state_machine<TendingDef>;
 
   struct initial : state<initial> {
     template <typename Event, typename FSM>
@@ -323,7 +323,7 @@ struct TendingDef : public StackObj,
   algo::ThreadPool thread_pool_;
 };
 
-using tending = afsm::state_machine<TendingDef>;
+using tending = afsm::priority_state_machine<TendingDef>;
 }  // namespace machine
 
 NAMESPACE_END

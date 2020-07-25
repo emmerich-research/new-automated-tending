@@ -5,6 +5,14 @@
 
 NAMESPACE_BEGIN
 
+Task::Task() : ready{false}, running{false}, complete{false} {}
+
+void Task::reset() {
+  ready = false;
+  running = false;
+  complete = false;
+}
+
 namespace impl {
 StateImpl::StateImpl()
     : speed_profile_{config::speed::normal},
@@ -16,6 +24,17 @@ StateImpl::StateImpl()
       manual_mode_{false},
       homing_{false} {
   DEBUG_ONLY_DEFINITION(obj_name_ = "StateImpl");
+}
+
+void StateImpl::reset_ui() {
+  {
+    const StateImpl::StateLock lock(mutex());
+    tending_.reset();
+    spraying_.reset();
+    cleaning_.reset();
+    homing_ = false;
+  }
+  notify_all();
 }
 
 StateImpl::Signal& StateImpl::signal() {

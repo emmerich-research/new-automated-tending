@@ -35,18 +35,35 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
     state->fault(false);
     state->manual_mode(false);
 
-    shift_register->write(device::id::comm::pi::spraying_ready(),
-                          device::digital::value::low);
-    state->spraying_ready(false);
+    if (state->fault()) {
+      root_machine(fsm).fault();
+      return;
+    }
 
-    shift_register->write(device::id::comm::pi::tending_ready(),
-                          device::digital::value::low);
-    state->tending_ready(false);
+    machine::util::reset_task_state();
 
-    state->cleaning_ready(false);
+    if (state->fault()) {
+      root_machine(fsm).fault();
+      return;
+    }
+
+    // shift_register->write(device::id::comm::pi::spraying_ready(),
+    //                       device::digital::value::low);
+    // state->spraying_ready(false);
+
+    // shift_register->write(device::id::comm::pi::tending_ready(),
+    //                       device::digital::value::low);
+    // state->tending_ready(false);
+
+    // state->cleaning_ready(false);
 
     LOG_INFO("Homing...");
     movement->homing();
+
+    if (state->fault()) {
+      root_machine(fsm).fault();
+      return;
+    }
 
     shift_register->write(device::id::comm::pi::spraying_ready(),
                           device::digital::value::high);
@@ -297,18 +314,14 @@ void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
 
 template <typename Event, typename FSM>
 void TendingDef::fault::manual::on_enter(Event const&&, FSM& fsm) const {
-  massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
-  massert(mechanism::movement_mechanism() != nullptr, "sanity");
-  massert(mechanism::movement_mechanism()->active(), "sanity");
 
   LOG_INFO("Entering fault manual mode");
 
-  auto*  config = Config::get();
-  auto*  state = State::get();
-  auto&& movement = mechanism::movement_mechanism();
+  auto* state = State::get();
 
   state->manual_mode(true);
+  machine::util::reset_task_state();
 }
 
 template <typename Event, typename FSM>

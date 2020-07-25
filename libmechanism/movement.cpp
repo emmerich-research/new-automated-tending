@@ -662,7 +662,7 @@ void Movement::move_finger_up() {
 
   disable_motors();
 
-  State::get()->z(0.0);
+  state->z(0.0);
 }
 
 void Movement::move_finger_down() {
@@ -706,7 +706,7 @@ void Movement::move_finger_down() {
 
   disable_motors();
 
-  State::get()->z(52.0);
+  state->z(52.0);
 }
 
 void Movement::rotate_finger() const {
@@ -763,6 +763,11 @@ void Movement::homing() {
 
   state->homing(true);
 
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
+
   // set speed profile
   motor_profile(config->homing_speed_profile(state->speed_profile()));
 
@@ -780,7 +785,13 @@ void Movement::homing() {
       limit_switch_y()->read().value_or(device::digital::value::low) ==
       device::digital::value::high;
 
-  while (!is_x_completed || !is_y_completed) {
+  while ((!state->fault() || (state->fault() && state->manual_mode())) &&
+         (!is_x_completed || !is_y_completed)) {
+    if (state->fault() && !state->manual_mode()) {
+      state->homing(false);
+      return;
+    }
+
     long steps_x = 0;
     long steps_y = 0;
 
@@ -826,17 +837,42 @@ void Movement::homing() {
     }
   }
 
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
+
   // set state to 0,0,0
   state->reset_coordinate();
+
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
 
   // move a bit (5mm for each axis)
   move<movement::unit::mm>(5.0, 5.0, 5.0);
 
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
+
   // set state to 0,0,0
   state->reset_coordinate();
 
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
+
   // disabling motor
   disable_motors();
+
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
 
   state->homing(false);
 

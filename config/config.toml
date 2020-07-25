@@ -393,7 +393,7 @@ acceleration                 = 100.0 # steps / s^2
 deceleration                 = 100.0 # steps / s^2
 
 [mechanisms.homing.speed.fast]
-duty-cycle                   = 50
+duty-cycle                   = 150
 
 [mechanisms.homing.speed.fast.x]
 rpm                          = 300.0
