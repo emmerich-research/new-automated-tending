@@ -23,7 +23,7 @@ StepperDevice::StepperDevice(PI_PIN        step_pin,
           DigitalOutputDevice::create(enable_pin, true, PI_PUD_DOWN)},
       rpm_{rpm},
       motor_steps_{steps} {
-  DEBUG_ONLY(obj_name_ = "StepperDevice");
+  DEBUG_ONLY_DEFINITION(obj_name_ = "StepperDevice");
   massert(step_device()->active(), "sanity");
   massert(dir_device()->active(), "sanity");
 
@@ -149,9 +149,6 @@ void StepperDeviceImpl<stepper::speed::linear>::start_move(long steps,
   // Save cruise timing since we will no longer have the calculated target speed
   // later
   cruise_step_pulse_ = static_cast<stepper::pulse>(1e+6 / speed / microsteps());
-
-  // LOG_DEBUG("Steps to cruise {}, steps to brake {}", steps_to_cruise(),
-  //           steps_to_brake());
 }
 
 template <>
@@ -190,9 +187,6 @@ void StepperDeviceImpl<stepper::speed::linear>::calc_step_pulse() {
     default:
       break;  // no speed changes
   }
-
-  // LOG_DEBUG("CalcStepPulse state {} step_pulse {} rest_steps {}", state(),
-  //           step_pulse(), rest_steps());
 }
 
 template <>

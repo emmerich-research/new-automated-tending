@@ -24,16 +24,27 @@
  * @param Msg  message for this assert
  */
 
-#ifdef NDEBUG
-#define DEBUG_ONLY(code) code
+#ifdef PROJECT_DEBUG
+#define DEBUG_ONLY_DEFINITION(code) code
+#define DEBUG_ONLY(code) \
+  do {                   \
+    code;                \
+  } while (0)
+#define NOT_DEBUG_DEFINITION(code)
 #define NOT_DEBUG(code) static_cast<void>(0)
 #define massert(Expr, Msg) _massert(#Expr, Expr, __FILE__, __LINE__, Msg)
 #else
+#define DEBUG_ONLY_DEFINITION(code)
 #define DEBUG_ONLY(code) static_cast<void>(0)
-#define NOT_DEBUG(code) code
+#define NOT_DEBUG_DEFINITION(code) code
+#define NOT_DEBUG(code) \
+  do {                  \
+    code;               \
+  } while (0)
 #define massert(Expr, Msg) static_cast<void>(0)
 #endif
 
+#ifdef PROJECT_DEBUG
 /**
  * @brief Assertion with message.
  *        Enabled only in development.
@@ -55,5 +66,6 @@ void _massert(const char* expr_str,
               const char* file,
               int         line,
               const char* msg);
+#endif
 
 #endif  // LIB_UTIL_MACROS_HPP_

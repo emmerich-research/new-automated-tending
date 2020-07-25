@@ -28,13 +28,14 @@ void FaultWindow::show([[maybe_unused]] Manager* manager) {
   const ImVec2 popup_size = util::size::h_wide(125.0f);
   unsigned int id = 0;
 
+  ImGui::Columns(3, NULL, /* v_borders */ true);
   {
     if (!fault) {
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
       ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.8f);
     }
 
-    if (util::button("Automatic Mode / Reset", id++, !fault, size)) {
+    if (util::button("AUTOMATIC\nMODE / RESET", id++, !fault, size)) {
       ImGui::OpenPopup("Reset?");
     }
 
@@ -62,15 +63,15 @@ void FaultWindow::show([[maybe_unused]] Manager* manager) {
       ImGui::EndPopup();
     }
   }
-
+  ImGui::NextColumn();
   {
     if (fault) {
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
       ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.8f);
     }
 
-    if (util::button("Fault Trigger", id++, fault, size)) {
-      LOG_INFO("Fault trigger");
+    if (util::button("FAULT\nTRIGGER", id++, fault, size)) {
+      LOG_ERROR("[FAULT] fault trigger");
       state->fault(true);
       tsm()->fault();
     }
@@ -80,22 +81,23 @@ void FaultWindow::show([[maybe_unused]] Manager* manager) {
       ImGui::PopItemFlag();
     }
   }
-
+  ImGui::NextColumn();
   {
     if (!fault || manual_mode) {
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
       ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.8f);
     }
 
-    if (util::button("Manual Move", id++, manual_mode, size)) {
+    if (util::button("MANUAL\nMOVE", id++, manual_mode, size)) {
       tsm()->fault_manual();
     }
 
     if (!fault || manual_mode) {
       ImGui::PopStyleVar();
-      ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+      ImGui::PopItemFlag();
     }
   }
+  ImGui::NextColumn();
 }
 }  // namespace gui
 

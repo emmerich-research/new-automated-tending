@@ -18,20 +18,25 @@ CleaningWindow::~CleaningWindow() {}
 void CleaningWindow::show([[maybe_unused]] Manager* manager) {
   unsigned int status_id = 0;
 
-  const ImVec2 size = util::size::h_wide(50.0f);
+  const ImVec2 size = util::size::h_wide(32.0f);
   const bool   active = true;
 
   ImGui::Columns(2, NULL, /* v_borders */ true);
   {
-    util::status_button("Water Full", status_id++, active, size);
-    util::status_button("Water Normal", status_id++, active, size);
-    util::status_button("Water Low", status_id++, active, size);
+    if (ImGui::GetColumnIndex() == 0)
+      ImGui::Separator();
+
+    ImGui::Text("WATER");
+    util::status_button("FULL", status_id++, active, size);
+    util::status_button("NORMAL", status_id++, active, size);
+    util::status_button("LOW", status_id++, active, size);
   }
   ImGui::NextColumn();
   {
-    util::status_button("Disinfectant Full", status_id++, active, size);
-    util::status_button("Disinfectant Normal", status_id++, active, size);
-    util::status_button("Disinfectant Low", status_id++, active, size);
+    ImGui::Text("DISINFECTANT");
+    util::status_button("FULL", status_id++, active, size);
+    util::status_button("NORMAL", status_id++, active, size);
+    util::status_button("LOW", status_id++, active, size);
   }
   ImGui::NextColumn();
 }

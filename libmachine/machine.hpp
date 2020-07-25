@@ -4,11 +4,13 @@
 #pragma GCC system_header
 
 // 1. STD
+#include <condition_variable>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <stdexcept>
 #include <thread>
+#include <type_traits>
 
 // 2. vendor
 
@@ -32,6 +34,9 @@
 
 #include "guard.hpp"
 #include "guard.inline.hpp"
+
+#include "fault-listener.hpp"
+#include "task-listener.hpp"
 
 #include "util.hpp"
 

@@ -102,11 +102,12 @@ class MovementBuilderImpl : public StackObj {
    * Setup finger
    *
    * @param finger_id            finger instance id
-   * @param finger_pin           steps conversion to mm
+   * @param finger_infrared_id   finger infrared id
    *
    * @return ATM_STATUS ATM_OK or ATM_ERR, but not both
    */
-  ATM_STATUS setup_finger(const std::string& finger_id, PI_PIN finger_pin);
+  ATM_STATUS setup_finger(const std::string& finger_id,
+                          const std::string& finger_infrared_id);
   /**
    * Build movement mechanism
    *
@@ -188,18 +189,18 @@ class MovementBuilderImpl : public StackObj {
     return limit_switch_z_bottom_id_;
   }
   /**
-   * Get finger instance ID
+   * Get finger motor instance ID
    *
    * @return instance id of finger
    */
   inline const std::string& finger_id() const { return finger_id_; }
   /**
-   * Get rotary encoder pin
+   * Get finger infrared instance ID
    *
-   * @return rotary encoder pin
+   * @return instance id of finger infrared
    */
-  inline const PI_PIN& rotary_encoder_pin() const {
-    return rotary_encoder_pin_;
+  inline const std::string& finger_infrared_id() const {
+    return finger_infrared_id_;
   }
   /**
    * Get movement mechanism instance
@@ -280,9 +281,9 @@ class MovementBuilderImpl : public StackObj {
    */
   std::string finger_id_;
   /**
-   * Pin of rotary encoder
+   * Instance id of finger infrared
    */
-  PI_PIN rotary_encoder_pin_;
+  std::string finger_infrared_id_;
 };
 }  // namespace impl
 
@@ -525,6 +526,16 @@ class Movement : public StackObj {
     return finger_;
   }
   /**
+   * Get Finger infrared instance of DigitalInputDevice that has
+   * been initialized
+   *
+   * @return shared_ptr of DigitalInputDevice
+   */
+  inline const std::shared_ptr<device::DigitalInputDevice>& finger_infrared()
+      const {
+    return finger_infrared_;
+  }
+  /**
    * Setup all stepper devices
    *
    * Will return early if fails
@@ -677,9 +688,13 @@ class Movement : public StackObj {
    */
   std::shared_ptr<device::DigitalInputDevice> limit_switch_z_bottom_;
   /**
-   * Finger device that has been initialized
+   * Finger motor device that has been initialized
    */
   std::shared_ptr<device::PWMDevice> finger_;
+  /**
+   * Finger infrared device that has been initialized
+   */
+  std::shared_ptr<device::DigitalInputDevice> finger_infrared_;
 };
 }  // namespace mechanism
 

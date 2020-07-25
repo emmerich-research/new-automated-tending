@@ -19,7 +19,7 @@ void StatusWindow::show([[maybe_unused]] Manager* manager) {
 
   auto* state = State::get();
 
-  const ImVec2 size = util::size::h_wide(50.0f);
+  const ImVec2 size = util::size::h_wide(32.0f);
   unsigned int status_id = 0;
 
   ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.8f);
@@ -31,40 +31,37 @@ void StatusWindow::show([[maybe_unused]] Manager* manager) {
     if (ImGui::GetColumnIndex() == 0)
       ImGui::Separator();
 
-    ImGui::Text("Spraying Status");
-    util::status_button("Spraying Ready", status_id++, state->spraying_ready(),
+    ImGui::Text("SPRAYING");
+    util::status_button("READY", status_id++, state->spraying_ready(), size);
+    util::status_button("RUNNING", status_id++, state->spraying_running(),
                         size);
-    util::status_button("Spraying Running", status_id++,
-                        state->spraying_running(), size);
-    util::status_button("Spraying Complete", status_id++,
-                        state->spraying_complete(), size);
+    util::status_button("COMPLETE", status_id++, state->spraying_complete(),
+                        size);
   }
   ImGui::NextColumn();
   {
     // Tending Status
-    ImGui::Text("Tending Status");
-    util::status_button("Tending Ready", status_id++, state->tending_ready(),
+    ImGui::Text("TENDING");
+    util::status_button("READY", status_id++, state->tending_ready(), size);
+    util::status_button("RUNNING", status_id++, state->tending_running(), size);
+    util::status_button("COMPLETE", status_id++, state->tending_complete(),
                         size);
-    util::status_button("Tending Running", status_id++,
-                        state->tending_running(), size);
-    util::status_button("Tending Complete", status_id++,
-                        state->tending_complete(), size);
   }
   ImGui::NextColumn();
   {
     // Cleaning Status
-    ImGui::Text("Cleaning Status");
-    util::status_button("Cleaning Ready", status_id++, state->cleaning_ready(),
+    ImGui::Text("CLEANING");
+    util::status_button("READY", status_id++, state->cleaning_ready(), size);
+    util::status_button("RUNNING", status_id++, state->cleaning_running(),
                         size);
-    util::status_button("Cleaning Running", status_id++,
-                        state->cleaning_running(), size);
-    util::status_button("Cleaning Complete", status_id++,
-                        state->cleaning_complete(), size);
+    util::status_button("COMPLETE", status_id++, state->cleaning_complete(),
+                        size);
   }
   ImGui::NextColumn();
 
   ImGui::Columns(1);
-  util::status_button("Fault", status_id++, state->fault(), size);
+  util::status_button("FAULT", status_id++, state->fault(), size);
+  util::status_button("HOMING", status_id++, state->homing(), size);
 
   ImGui::PopStyleVar();
 }

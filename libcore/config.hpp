@@ -49,7 +49,7 @@ namespace config {
  */
 struct Speed {
   Speed();
-  DEBUG_ONLY(void print(std::ostream& os) const);
+  DEBUG_ONLY_DEFINITION(void print(std::ostream& os) const);
 
   double rpm;
   double acceleration;
@@ -66,7 +66,7 @@ struct Speed {
  */
 struct MechanismSpeed {
   MechanismSpeed();
-  DEBUG_ONLY(void print(std::ostream& os) const);
+  DEBUG_ONLY_DEFINITION(void print(std::ostream& os) const);
 
   Speed        x;
   Speed        y;
@@ -84,9 +84,8 @@ struct MechanismSpeed {
  */
 struct SpeedProfile {
   SpeedProfile();
-  DEBUG_ONLY(void print(std::ostream& os) const);
+  DEBUG_ONLY_DEFINITION(void print(std::ostream& os) const);
 
-  double         finger_threshold;
   MechanismSpeed slow;
   MechanismSpeed normal;
   MechanismSpeed fast;
@@ -138,6 +137,14 @@ class ConfigImpl : public StackObj {
    * @return debug status
    */
   bool debug() const;
+  /**
+   * Get task timeout
+   *
+   * It should be in key "mechanism.fault.timeout"
+
+   * @return task timeout
+   */
+  unsigned int timeout() const;
   /**
    * Get speed Profile of Fault mechanism
    *
@@ -290,23 +297,24 @@ class ConfigImpl : public StackObj {
                    std::forward<Keys>(keys)...);
   }
   /**
-   * Get anomaly device info
+   * Get limit switch finger protection device info
    *
-   * It should be in key "devices.anomaly"
+   * It should be in key "devices.limit-switch.finger-protection"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
    *
-   * @return anomaly device info with type T
+   * @return limit switch finger protection info with type T
    */
   template <typename T, typename... Keys>
-  inline T anomaly(Keys&&... keys) const {
-    return find<T>("devices", "anomaly", std::forward<Keys>(keys)...);
+  inline T limit_switch_finger_protection(Keys&&... keys) const {
+    return find<T>("devices", "limit-switch", "finger-protection",
+                   std::forward<Keys>(keys)...);
   }
   /**
    * Get finger device info
    *
-   * It should be in key "devices.finger"
+   * It should be in key "devices.finger.motor"
    *
    * @tparam T     type of config value
    * @tparam Keys  variadic args for keys (should be string)
@@ -315,7 +323,22 @@ class ConfigImpl : public StackObj {
    */
   template <typename T, typename... Keys>
   inline T finger(Keys&&... keys) const {
-    return find<T>("devices", "finger", std::forward<Keys>(keys)...);
+    return find<T>("devices", "finger", "motor", std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get finger infrared device info
+   *
+   * It should be in key "devices.finger.infrared"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return finger device info with type T
+   */
+  template <typename T, typename... Keys>
+  inline T finger_infrared(Keys&&... keys) const {
+    return find<T>("devices", "finger", "infrared",
+                   std::forward<Keys>(keys)...);
   }
   /**
    * Get analog device info

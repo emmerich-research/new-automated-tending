@@ -82,6 +82,7 @@ endif()
 target_link_libraries(gui PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
   ${CMAKE_DL_LIBS}
+  spdlog::spdlog
   glfw
   ${OPENGL_LIBRARIES}
   ${GLAD_LIBRARIES}
@@ -103,6 +104,7 @@ set_target_properties(gui PROPERTIES
 
 target_compile_options(gui PRIVATE
   -Wno-extra-semi-stmt
-  -Wno-alloca)
+  -Wno-alloca
+  -Wno-cast-qual)
 
 target_enable_lto(gui optimized)

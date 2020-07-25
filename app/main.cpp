@@ -9,9 +9,42 @@
 int main() {
   USE_NAMESPACE;
 
-  ATM_STATUS       status = ATM_OK;
-  machine::tending tsm;
-  gui::Manager     ui_manager;
+  ATM_STATUS status = ATM_OK;
+
+  machine::tending       tsm;
+  gui::Manager           ui_manager;
+  machine::FaultListener fault_listener(&tsm);
+  machine::TaskListener  task_listener(&tsm);
+  auto logger_window = std::make_shared<gui::LoggerWindowMT>();
+
+  // initialize logger
+  if (Logger::create() == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  // initialize config
+  if (Config::create(PROJECT_CONFIG_FILE) == ATM_ERR) {
+    LOG_ERROR("Failed to load configuration");
+    return ATM_ERR;
+  }
+
+  // re-init logger based on config
+  const auto* config = Config::get();
+  auto*       logger = Logger::get();
+  logger_window->set_level(config->debug() ? spdlog::level::debug
+                                           : spdlog::level::info);
+  logger->init(config, {logger_window});
+  // logger_window->set_pattern("%v");
+
+  // init state
+  if (State::create() == ATM_ERR) {
+    LOG_ERROR("Failed to initialize state");
+    return ATM_ERR;
+  }
+
+  auto* state = State::get();
+
+  LOG_INFO("Booting up...");
 
   // initialization
   try {
@@ -22,12 +55,18 @@ int main() {
     status = ATM_ERR;
   }
 
+  state->running(true);
+
   // early stopping
   if (status == ATM_ERR) {
     tsm.stop();
     massert(tsm.is_terminated(), "sanity");
     return status;
   }
+
+  // starting listeners
+  fault_listener.start();
+  task_listener.start();
 
   ui_manager.name(Config::get()->name());
   ui_manager.init();
@@ -51,6 +90,7 @@ int main() {
     LOG_ERROR("Glfw Error {}: {}", error, description);
   });
 
+  ui_manager.add_window(logger_window);
   ui_manager.add_window<gui::SystemInfoWindow>();
   ui_manager.add_window<gui::FaultWindow>(&tsm);
   ui_manager.add_window<gui::MovementWindow>();
@@ -66,12 +106,21 @@ int main() {
     ui_manager.render();
   }
 
-  // stopping
+  // stopping listeners
+  task_listener.stop();
+  fault_listener.stop();
+
+  // stopping ui
   ui_manager.exit();
-  State::get()->fault(true);
+
+  // killing machine
+  state->fault(true);
   LOG_INFO("Killing task workers, will go into fault mode to kill app...");
   tsm.fault();
   sleep_for<time_units::seconds>(5);
+
+  state->running(false);
+
   tsm.stop();
   massert(tsm.is_terminated(), "sanity");
 

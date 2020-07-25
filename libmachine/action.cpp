@@ -18,7 +18,7 @@ void shutdown_hook() {
   destroy_device();
   // destroy_gui();
   destroy_core();
-  std::cout << "Shutting down is completed!" << std::endl;
+  // std::cout << "Shutting down is completed!" << std::endl;
 }
 }  // namespace action
 

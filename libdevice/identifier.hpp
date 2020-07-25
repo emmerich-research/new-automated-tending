@@ -12,13 +12,13 @@ NAMESPACE_BEGIN
 
 namespace device {
 namespace id {
-extern std::string   analog_;
-static auto          analog = []() {
-  if (analog_.empty()) {
-    analog_ = Config::get()->analog<std::string>("key");
-  }
-  return analog_;
-};
+// extern std::string   analog_;
+// static auto          analog = []() {
+//   if (analog_.empty()) {
+//     analog_ = Config::get()->analog<std::string>("key");
+//   }
+//   return analog_;
+// };
 
 namespace stepper {
 extern std::string x_;
@@ -80,6 +80,16 @@ static auto        z2 = []() {
   }
   return z2_;
 };
+
+// finger protection
+extern std::string finger_protection_;
+static auto        finger_protection = []() {
+  if (finger_protection_.empty()) {
+    finger_protection_ =
+        Config::get()->limit_switch_finger_protection<std::string>("key");
+  }
+  return finger_protection_;
+};
 }  // namespace limit_switch
 
 extern std::string spray_;
@@ -98,12 +108,12 @@ static auto        finger = []() {
   return finger_;
 };
 
-extern std::string anomaly_;
-static auto        anomaly = []() {
-  if (anomaly_.empty()) {
-    anomaly_ = Config::get()->anomaly<std::string>("key");
+extern std::string finger_infrared_;
+static auto        finger_infrared = []() {
+  if (finger_infrared_.empty()) {
+    finger_infrared_ = Config::get()->finger_infrared<std::string>("key");
   }
-  return anomaly_;
+  return finger_infrared_;
 };
 
 namespace ultrasonic {

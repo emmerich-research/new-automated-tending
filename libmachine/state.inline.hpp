@@ -22,26 +22,48 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
   massert(mechanism::movement_mechanism()->active(), "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
 
-  root_machine(fsm).thread_pool().enqueue([fsm]() mutable -> void {
+  root_machine(fsm).thread_pool().enqueue([&fsm]() mutable -> void {
     auto*  state = State::get();
     auto*  shift_register = device::ShiftRegister::get();
     auto&& movement = mechanism::movement_mechanism();
 
+    if (state->fault()) {
+      root_machine(fsm).fault();
+      return;
+    }
+
     state->fault(false);
     state->manual_mode(false);
 
-    shift_register->write(device::id::comm::pi::spraying_ready(),
-                          device::digital::value::low);
-    state->spraying_ready(false);
+    if (state->fault()) {
+      root_machine(fsm).fault();
+      return;
+    }
 
-    shift_register->write(device::id::comm::pi::tending_ready(),
-                          device::digital::value::low);
-    state->tending_ready(false);
+    machine::util::reset_task_state();
 
-    state->cleaning_ready(false);
+    if (state->fault()) {
+      root_machine(fsm).fault();
+      return;
+    }
+
+    // shift_register->write(device::id::comm::pi::spraying_ready(),
+    //                       device::digital::value::low);
+    // state->spraying_ready(false);
+
+    // shift_register->write(device::id::comm::pi::tending_ready(),
+    //                       device::digital::value::low);
+    // state->tending_ready(false);
+
+    // state->cleaning_ready(false);
 
     LOG_INFO("Homing...");
     movement->homing();
+
+    if (state->fault()) {
+      root_machine(fsm).fault();
+      return;
+    }
 
     shift_register->write(device::id::comm::pi::spraying_ready(),
                           device::digital::value::high);
@@ -56,16 +78,34 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
     guard::height::spraying_tending spraying_tending_height;
     guard::height::cleaning         cleaning_height;
 
-    while (!root_machine(fsm).is_terminated() && !state->fault()) {
-      if (spraying_tending_height.check()) {
+    while (state->running() && !root_machine(fsm).is_terminated() &&
+           !state->fault()) {
+      if (spraying_tending_height.check() && !state->fault()) {
+        if (state->fault()) {
+          root_machine(fsm).fault();
+          return;
+        }
         root_machine(fsm).start_spraying();
+        if (state->fault()) {
+          root_machine(fsm).fault();
+          return;
+        }
         root_machine(fsm).start_tending();
-        break;
-      } else if (cleaning_height.check()) {
+        return;
+      } else if (cleaning_height.check() && !state->fault()) {
+        if (state->fault()) {
+          root_machine(fsm).fault();
+          return;
+        }
         root_machine(fsm).start_cleaning();
         break;
       }
-      sleep_for<time_units::millis>(500);
+      if (state->fault()) {
+        root_machine(fsm).fault();
+        return;
+      } else {
+        sleep_for<time_units::millis>(500);
+      }
     }
   });
 }
@@ -267,30 +307,21 @@ void TendingDef::running::cleaning::preparation::on_exit(Event&&,
  */
 template <typename Event, typename FSM>
 void TendingDef::fault::idle::on_enter(Event const&&, FSM& fsm) const {
-  massert(State::get() != nullptr, "sanity");
-  massert(device::ShiftRegister::get() != nullptr, "sanity");
-
-  auto* state = State::get();
-  auto* shift_register = device::ShiftRegister::get();
-
   LOG_INFO("Entering fault mode");
+
   machine::util::reset_task_state();
 }
 
 template <typename Event, typename FSM>
 void TendingDef::fault::manual::on_enter(Event const&&, FSM& fsm) const {
-  massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
-  massert(mechanism::movement_mechanism() != nullptr, "sanity");
-  massert(mechanism::movement_mechanism()->active(), "sanity");
 
   LOG_INFO("Entering fault manual mode");
 
-  auto*  config = Config::get();
-  auto*  state = State::get();
-  auto&& movement = mechanism::movement_mechanism();
+  auto* state = State::get();
 
   state->manual_mode(true);
+  machine::util::reset_task_state();
 }
 
 template <typename Event, typename FSM>

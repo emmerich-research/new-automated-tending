@@ -89,14 +89,16 @@ ATM_STATUS MovementBuilderImpl::setup_z(
   return ATM_OK;
 }
 
-ATM_STATUS MovementBuilderImpl::setup_finger(const std::string& finger_id,
-                                             PI_PIN rotary_encoder_pin) {
-  if (!device::PWMDeviceRegistry::get()->exist(finger_id)) {
+ATM_STATUS MovementBuilderImpl::setup_finger(
+    const std::string& finger_id,
+    const std::string& finger_infrared_id) {
+  if (!device::PWMDeviceRegistry::get()->exist(finger_id) ||
+      !device::DigitalInputDeviceRegistry::get()->exist(finger_infrared_id)) {
     return ATM_ERR;
   }
 
   finger_id_ = finger_id;
-  rotary_encoder_pin_ = rotary_encoder_pin;
+  finger_infrared_id_ = finger_infrared_id;
 
   return ATM_OK;
 }
@@ -165,6 +167,7 @@ void Movement::setup_stepper() {
 }
 
 void Movement::setup_limit_switch() {
+  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
   auto* digital_input_registry = device::DigitalInputDeviceRegistry::get();
 
   auto&& limit_switch_x =
@@ -209,15 +212,23 @@ void Movement::setup_limit_switch() {
 }
 
 void Movement::setup_finger() {
-  auto*  pwm_registry = device::PWMDeviceRegistry::get();
-  auto&& finger = pwm_registry->get(builder()->finger_id());
+  massert(device::PWMRDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
 
-  if (!finger) {
+  auto* pwm_registry = device::PWMDeviceRegistry::get();
+  auto* digital_input_registry = device::DigitalInputDeviceRegistry::get();
+
+  auto&& finger = pwm_registry->get(builder()->finger_id());
+  auto&& finger_infrared =
+      digital_input_registry->get(builder()->finger_infrared_id());
+
+  if (!finger || !finger_infrared) {
     active_ = false;
     return;
   }
 
   finger_ = finger;
+  finger_infrared_ = finger_infrared;
 }
 
 device::stepper::step Movement::stop_x(void) {
@@ -505,7 +516,7 @@ time_unit Movement::next() {
 }
 
 void Movement::move_to_spraying_position() {
-  LOG_INFO("Move to spraying position...");
+  LOG_DEBUG("Move to spraying position...");
   const auto& iter = Config::get()->spraying_position();
   move<movement::unit::mm>(iter.first, iter.second, 0.0);
   // reset position so imaginary homing equals tending position
@@ -513,7 +524,7 @@ void Movement::move_to_spraying_position() {
 }
 
 void Movement::move_to_tending_position() {
-  LOG_INFO("Move to tending position...");
+  LOG_DEBUG("Move to tending position...");
   const auto& iter = Config::get()->tending_position();
   move<movement::unit::mm>(iter.first, iter.second, 0.0);
   // reset position so imaginary homing equals tending position
@@ -529,11 +540,11 @@ void Movement::follow_spraying_paths() {
 
   motor_profile(config->spraying_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Following spraying paths...");
+  LOG_DEBUG("Following spraying paths...");
   for (const auto& iter : Config::get()->spraying_path()) {
     if (state->fault())
       return;
-    LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+    LOG_DEBUG("Move to x={}mm y={}mm", iter.first, iter.second);
     move<movement::unit::mm>(iter.first, iter.second, 0.0);
   }
 
@@ -549,12 +560,12 @@ void Movement::follow_tending_paths_edge() {
 
   motor_profile(config->tending_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Following tending paths edge...");
+  LOG_DEBUG("Following tending paths edge...");
 
   for (const auto& iter : config->tending_path_edge()) {
     if (state->fault())
       return;
-    LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+    LOG_DEBUG("Move to x={}mm y={}mm", iter.first, iter.second);
     move<movement::unit::mm>(iter.first, iter.second, state->z());
   }
 
@@ -570,12 +581,12 @@ void Movement::follow_tending_paths_zigzag() {
 
   motor_profile(config->tending_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Following tending paths zigzag...");
+  LOG_DEBUG("Following tending paths zigzag...");
 
   for (const auto& iter : config->tending_path_zigzag()) {
     if (state->fault())
       return;
-    LOG_INFO("Move to x={}mm y={}mm", iter.first, iter.second);
+    LOG_DEBUG("Move to x={}mm y={}mm", iter.first, iter.second);
     move<movement::unit::mm>(iter.first, iter.second, state->z());
   }
 
@@ -621,7 +632,7 @@ void Movement::move_finger_up() {
   // set speed profile
   motor_profile(config->homing_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Lifting finger...");
+  LOG_DEBUG("Lifting finger...");
 
   enable_motors();
 
@@ -651,7 +662,7 @@ void Movement::move_finger_up() {
 
   disable_motors();
 
-  State::get()->z(0.0);
+  state->z(0.0);
 }
 
 void Movement::move_finger_down() {
@@ -664,7 +675,7 @@ void Movement::move_finger_down() {
   // set speed profile
   motor_profile(config->homing_speed_profile(state->speed_profile()));
 
-  LOG_INFO("Lowering finger...");
+  LOG_DEBUG("Lowering finger...");
 
   enable_motors();
 
@@ -695,7 +706,7 @@ void Movement::move_finger_down() {
 
   disable_motors();
 
-  State::get()->z(52.0);
+  state->z(52.0);
 }
 
 void Movement::rotate_finger() const {
@@ -707,52 +718,38 @@ void Movement::rotate_finger() const {
 
   const auto& speed_profile =
       config->tending_speed_profile(state->speed_profile());
-  LOG_INFO("Rotating finger...");
+  LOG_DEBUG("Rotating finger...");
   if (finger()->duty_cycle(speed_profile.duty_cycle) == ATM_ERR) {
-    LOG_INFO("Cannot set finger duty cycle...");
+    LOG_DEBUG("Cannot set finger duty cycle...");
   }
 }
 
 void Movement::stop_finger() const {
-  LOG_INFO("Stopping finger...");
+  LOG_DEBUG("Stopping finger...");
   finger()->write(device::digital::value::low);
 }
 
 void Movement::homing_finger() const {
   massert(Config::get() != nullptr, "sanity");
-  massert(device::PCF8591Device::get() != nullptr, "sanity");
 
   auto* config = Config::get();
-  auto* analog_device = device::PCF8591Device::get();
 
-  const auto& homing_speed_profile = config->homing_speed_profile();
   const auto& speed_profile =
       config->homing_speed_profile(State::get()->speed_profile());
-  const auto& offset = homing_speed_profile.finger_threshold;
 
-  double zero_deg =
-      static_cast<double>(config->finger<unsigned int>("zero-degree"));
-  double lower_bound = zero_deg - offset;
-  double upper_bound = zero_deg + offset;
-
-  double average = 0;
-
-  LOG_INFO("Setting to homing duty cycle");
+  LOG_DEBUG("Starting to homing finger");
+  LOG_DEBUG("Setting to homing duty cycle");
   finger()->duty_cycle(speed_profile.duty_cycle);
   while (true) {
-    if (auto degree = analog_device->read(builder()->rotary_encoder_pin())) {
-      util::math::moving_average<5>(average, *degree);
-      // DEBUG_ONLY(
-      //     LOG_DEBUG("Average {}, Degree {}, Lower Bound {}, Upper Bound {}",
-      //               average, *degree, lower_bound, upper_bound));
-      if ((lower_bound <= average) && (average <= upper_bound)) {
-        stop_finger();
-        break;
-      }
+    if (finger_infrared()->read().value_or(device::digital::value::low) ==
+        device::digital::value::high) {
+      stop_finger();
+      break;
     }
     // add delay
-    sleep_for<time_units::micros>(100);
+    sleep_for<time_units::micros>(50);
   }
+  LOG_DEBUG("Homing finger is finished");
 }
 
 void Movement::homing() {
@@ -762,7 +759,14 @@ void Movement::homing() {
   auto* config = Config::get();
   auto* state = State::get();
 
-  LOG_INFO("Homing is started...");
+  LOG_DEBUG("Homing is started...");
+
+  state->homing(true);
+
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
 
   // set speed profile
   motor_profile(config->homing_speed_profile(state->speed_profile()));
@@ -781,7 +785,13 @@ void Movement::homing() {
       limit_switch_y()->read().value_or(device::digital::value::low) ==
       device::digital::value::high;
 
-  while (!is_x_completed || !is_y_completed) {
+  while ((!state->fault() || (state->fault() && state->manual_mode())) &&
+         (!is_x_completed || !is_y_completed)) {
+    if (state->fault() && !state->manual_mode()) {
+      state->homing(false);
+      return;
+    }
+
     long steps_x = 0;
     long steps_y = 0;
 
@@ -827,30 +837,57 @@ void Movement::homing() {
     }
   }
 
-  // move a bit
-  start_move(5, 5, 5);
-  while (!ready()) {
-    next();
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
   }
 
   // set state to 0,0,0
   state->reset_coordinate();
 
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
+
+  // move a bit (5mm for each axis)
+  move<movement::unit::mm>(5.0, 5.0, 5.0);
+
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
+
+  // set state to 0,0,0
+  state->reset_coordinate();
+
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
+
   // disabling motor
   disable_motors();
 
-  LOG_INFO("Homing is finished...");
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
+
+  state->homing(false);
+
+  LOG_DEBUG("Homing is finished...");
 }
 
 void Movement::enable_motors() const {
-  LOG_INFO("Enabling motors...");
+  LOG_DEBUG("Enabling motors...");
   stepper_x()->enable();
   stepper_y()->enable();
   stepper_z()->enable();
 }
 
 void Movement::disable_motors() const {
-  LOG_INFO("Disabling motors...");
+  LOG_DEBUG("Disabling motors...");
   stepper_x()->disable();
   stepper_y()->disable();
   stepper_z()->disable();

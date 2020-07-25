@@ -24,13 +24,6 @@ void start::operator()(Event const&,
                        TargetState&) const {
   ATM_STATUS status = ATM_OK;
 
-  // initialize `core` such as config, logger, and state
-  status = initialize_core();
-  if (status == ATM_ERR) {
-    throw std::runtime_error(
-        "Failed to initialize `core` functionality, something is wrong");
-  }
-
   // initialize `GPIO-based` devices such as analog, digital, and PWM
   status = initialize_device();
   if (status == ATM_ERR) {
@@ -77,6 +70,7 @@ void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
 
   auto* state = State::get();
 
+  state->homing(false);
   state->fault(false);
 }
 
@@ -102,7 +96,6 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
   LOG_INFO("Spraying...");
   shift_register->write(device::id::comm::pi::spraying_running(),
                         device::digital::value::high);
-  // fsm.spraying_running->write(device::digital::value::high);
   state->spraying_running(true);
 
   if (state->fault())
@@ -335,6 +328,7 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
     return;
 
   LOG_INFO("Cleaning begins...");
+  state->cleaning_running(true);
 
   LOG_INFO("Homing finger...");
   movement->homing_finger();

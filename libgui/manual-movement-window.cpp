@@ -20,7 +20,7 @@ ManualMovementWindow::ManualMovementWindow(machine::tending*       tsm,
 
 ManualMovementWindow::~ManualMovementWindow() {}
 
-void ManualMovementWindow::show([[maybe_unused]] Manager* manager) {
+void ManualMovementWindow::show(Manager* manager) {
   massert(State::get() != nullptr, "sanity");
   massert(Config::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
@@ -31,7 +31,7 @@ void ManualMovementWindow::show([[maybe_unused]] Manager* manager) {
   const auto* config = Config::get();
   auto&&      movement = mechanism::movement_mechanism();
 
-  const ImVec2 button_size = util::size::h_wide(75);
+  const ImVec2 button_size = util::size::h_wide(80);
 
   const double x_manual = config->fault_manual_movement<double>("x");
   const double y_manual = config->fault_manual_movement<double>("y");
@@ -39,6 +39,7 @@ void ManualMovementWindow::show([[maybe_unused]] Manager* manager) {
 
   const bool disabled = !state->manual_mode() || !movement->ready();
 
+  ImGui::PushFont(manager->button_font());
   if (disabled) {
     ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
@@ -94,13 +95,14 @@ void ManualMovementWindow::show([[maybe_unused]] Manager* manager) {
   ImGui::Columns(1);
   ImGui::Separator();
   if (ImGui::Button("HOME", button_size)) {
-    thread_pool().enqueue([&]() { movement->homing(); });
+    thread_pool().enqueue([movement]() mutable { movement->homing(); });
   }
 
   if (disabled) {
     ImGui::PopItemFlag();
     ImGui::PopStyleVar();
   }
+  ImGui::PopFont();
 }
 }  // namespace gui
 

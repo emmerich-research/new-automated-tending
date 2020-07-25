@@ -33,20 +33,20 @@ static ATM_STATUS initialize_stepper_devices();
 static ATM_STATUS initialize_ultrasonic_devices();
 
 static ATM_STATUS initialize_analog_devices() {
-  ATM_STATUS status = ATM_OK;
+  // ATM_STATUS status = ATM_OK;
 
-  status = PCF8591Device::create();
-  if (status == ATM_ERR) {
-    return status;
-  }
+  // status = PCF8591Device::create();
+  // if (status == ATM_ERR) {
+  //   return status;
+  // }
 
-  auto* analog_device = PCF8591Device::get();
+  // auto* analog_device = PCF8591Device::get();
 
-  if (analog_device == nullptr) {
-    return ATM_ERR;
-  }
+  // if (analog_device == nullptr) {
+  //   return ATM_ERR;
+  // }
 
-  return status;
+  return ATM_OK;
 }
 
 static ATM_STATUS initialize_plc_to_pi_comm() {
@@ -124,11 +124,19 @@ static ATM_STATUS initialize_limit_switches() {
     return status;
   }
 
+  status = digital_input_registry->create(
+      id::limit_switch::finger_protection(),
+      config->limit_switch_finger_protection<PI_PIN>("pin"),
+      config->limit_switch_finger_protection<bool>("active-state"), PI_PUD_UP);
+  if (status == ATM_ERR) {
+    return status;
+  }
+
   return status;
 }
 
 static ATM_STATUS initialize_input_digital_devices() {
-  auto*      config = Config::get();
+  auto* config = Config::get();
   ATM_STATUS status = ATM_OK;
 
   status = DigitalInputDeviceRegistry::create();
@@ -146,13 +154,12 @@ static ATM_STATUS initialize_input_digital_devices() {
     return status;
   }
 
-  /**
-   * Anomaly PIN
-   */
+  // initialize IR
   auto* digital_input_registry = DigitalInputDeviceRegistry::get();
   status = digital_input_registry->create(
-      id::anomaly(), config->anomaly<PI_PIN>("pin"),
-      config->anomaly<bool>("active-state"), PI_PUD_DOWN);
+      id::finger_infrared(),
+      config->finger_infrared<PI_PIN>("pin"),
+      config->finger_infrared<bool>("active-state"), PI_PUD_UP);
   if (status == ATM_ERR) {
     return status;
   }
@@ -168,28 +175,6 @@ static ATM_STATUS initialize_output_digital_devices() {
   if (status == ATM_ERR) {
     return status;
   }
-
-  // auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
-
-  // status = digital_output_registry->create(
-  //     id::spray(), config->spray<PI_PIN>("pin"),
-  //     config->spray<bool>("active-state"), PI_PUD_UP);
-  // if (status == ATM_ERR) {
-  //   return status;
-  // }
-
-  // auto&& spray = digital_output_registry->get(id::spray());
-  // spray->write(device::digital::value::low);
-
-  /**
-   * Anomaly with Pin 18 BCM
-   * Always start with mode IN with value 1
-   */
-  // auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
-  // status = digital_output_registry->create("UNK", 18, true);
-  // if (status == ATM_ERR) {
-  //   return ATM_ERR;
-  // }
 
   return status;
 }

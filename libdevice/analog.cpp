@@ -11,19 +11,19 @@ AnalogDevice::AnalogDevice(unsigned char address,
                            unsigned char bus,
                            unsigned char flags)
     : address_{address}, bus_{bus}, flags_{flags} {
-  DEBUG_ONLY(obj_name_ = "AnalogDevice");
-  LOG_DEBUG(
+  DEBUG_ONLY_DEFINITION(obj_name_ = "AnalogDevice");
+  DEBUG_ONLY(LOG_DEBUG(
       "Initializing AnalogDevice using i2c with address {}, bus {}, and flags "
       "{}",
-      address, bus, flags);
+      address, bus, flags));
   handle_ = i2cOpen(bus, address, flags);
 }
 
 AnalogDevice::~AnalogDevice() {
-  LOG_DEBUG(
+  DEBUG_ONLY(LOG_DEBUG(
       "Closing AnalogDevice using i2c with address {}, bus {}, and flags {} "
       "with handle {}",
-      address_, bus_, flags_, handle_);
+      address_, bus_, flags_, handle_));
   PI_RES res = i2cClose(static_cast<unsigned int>(handle_));
 
   if (res != PI_OK) {

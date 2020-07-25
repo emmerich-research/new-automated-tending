@@ -7,6 +7,7 @@
  * Hold all machine's state
  */
 
+#include <condition_variable>
 #include <shared_mutex>
 #include <thread>
 #include <utility>
@@ -62,6 +63,9 @@ struct Task {
   bool running;
   bool complete;
   // bool fault;
+
+  Task();
+  void reset();
 };
 
 namespace impl {
@@ -83,19 +87,45 @@ class StateImpl : public StackObj {
  public:
   using StateMutex = std::shared_mutex;
   using StateLock = std::lock_guard<StateMutex>;
+  using Signal = std::condition_variable;
 
   /**
-   * Return the latest path movement id
-   *
-   * @return latest path id
+   * Reset ui state
    */
-  unsigned int path_id();
+  void reset_ui();
   /**
-   * Set the latest path id
+   * Get signal
    *
-   * @param path_id  set the latest path id
+   * @return signal
    */
-  void path_id(unsigned int path_id);
+  Signal& signal();
+  /**
+   * Notify one thread
+   */
+  void notify_one();
+  /**
+   * Notify all threads
+   */
+  void notify_all();
+  /**
+   * Get mutex
+   *
+   * @return state mutex
+   */
+  StateMutex& mutex();
+
+  /**
+   * Return running status
+   *
+   * @return running status
+   */
+  bool running();
+  /**
+   * Set the running status
+   *
+   * @param run  set the running status
+   */
+  void running(bool run);
   /**
    * Set new coordinate
    *
@@ -215,18 +245,6 @@ class StateImpl : public StackObj {
    */
   bool spraying_complete();
   /**
-   * Set spraying fault
-   *
-   * @param fault fault status (true or false)
-   */
-  // void spraying_fault(bool fault);
-  /**
-   * Get spraying fault
-   *
-   * @return status of spraying fault
-   */
-  // bool spraying_fault();
-  /**
    * Get tending task
    *
    * @return tending task
@@ -268,18 +286,6 @@ class StateImpl : public StackObj {
    * @return status of tending complete
    */
   bool tending_complete();
-  /**
-   * Set tending fault
-   *
-   * @param fault fault status (true or false)
-   */
-  // void tending_fault(bool fault);
-  /**
-   * Get tending fault
-   *
-   * @return status of tending fault
-   */
-  // bool tending_fault();
   /**
    * Get cleaning task
    *
@@ -323,18 +329,6 @@ class StateImpl : public StackObj {
    */
   bool cleaning_complete();
   /**
-   * Set cleaning fault
-   *
-   * @param fault fault status (true or false)
-   */
-  // void cleaning_fault(bool fault);
-  /**
-   * Get cleaning fault
-   *
-   * @return status of cleaning fault
-   */
-  // bool cleaning_fault();
-  /**
    * Set fault status
    *
    * @param fault fault status (true or false)
@@ -348,6 +342,8 @@ class StateImpl : public StackObj {
   bool fault();
   /**
    * Set manual mode
+   *
+   * @param manual manual mode status
    */
   void manual_mode(bool manual);
   /**
@@ -356,6 +352,18 @@ class StateImpl : public StackObj {
    * @return status of manual mode
    */
   bool manual_mode();
+  /**
+   * Set homing status
+   *
+   * @param status homing status
+   */
+  void homing(bool status);
+  /**
+   * Homing status
+   *
+   * @return status of homing
+   */
+  bool homing();
   /**
    * Set profile speed
    */
@@ -384,21 +392,13 @@ class StateImpl : public StackObj {
 
  private:
   /**
-   * Get mutex
-   *
-   * @return state mutex
-   */
-  StateMutex& mutex();
-
- private:
-  /**
    * Speed profile
    */
   config::speed speed_profile_;
   /**
-   * Latest path id
+   * Running
    */
-  unsigned int path_id_;
+  bool running_;
   /**
    * Current coordinate
    */
@@ -407,6 +407,10 @@ class StateImpl : public StackObj {
    * State read mutex
    */
   StateMutex mutex_;
+  /**
+   * Signal
+   */
+  Signal signal_;
   /**
    * Tending task
    */
@@ -427,6 +431,10 @@ class StateImpl : public StackObj {
    * Manual mode
    */
   bool manual_mode_;
+  /**
+   * Homing
+   */
+  bool homing_;
 };
 }  // namespace impl
 

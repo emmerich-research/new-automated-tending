@@ -87,16 +87,17 @@ microsteps                   = 8
 # ----------------------------------------------------------
 
 [devices.finger]
+
+[devices.finger.motor]
 # default range 0 - 255
 key                          = "FINGER"
 pin                          = 18
 active-state                 = true
-zero-degree                  = 127
 
-[devices.anomaly]
-key                          = "ANOMALY"
-pin                          = 12
-active-state                 = true
+[devices.finger.infrared]
+key                          = "FINGER-IR"
+pin                          = 3
+active-state                 = false
 
 # ----------------------------------------------------------
 # Limit Switch
@@ -133,6 +134,12 @@ active-state                 = false
 key                          = "LIMIT-Z2"
 pin                          = 16
 active-state                 = false
+
+# limit switch for finger protection
+[devices.limit-switch.finger-protection]
+key                          = "LIMIT-FINGER-PROTECTION"
+pin                          = 12
+active-state                 = false
 # ----------------------------------------------------------
 # End of Limit Switch
 # ----------------------------------------------------------
@@ -166,13 +173,6 @@ active-state                 = true
 # ----------------------------------------------------------
 # End of Communication
 # ----------------------------------------------------------
-
-# analog
-[devices.analog]
-key                          = "PCF8591"
-rotary-encoder-pin           = 0
-water-level-pin              = 1
-disinfectant-level-pin       = 2
 
 # shift register
 [devices.shift-register]
@@ -289,6 +289,8 @@ max-range                    = 25.0 # in cm
 # - Motors will be active if manual mode are true (check UI/HMI)
 # ----------------------------------------------------------
 [mechanisms.fault]
+# tasks timeout in seconds
+timeout                      = 40
 
 [mechanisms.fault.manual.movement]
 # movement of manual mode in mm
@@ -348,12 +350,11 @@ deceleration                 = 1000.0 # steps / s^2
 # Homing Mechanism
 #
 # For finger :
-# Will try to homing finger until threshold is achieved
+# Will try to homing finger until finger infrared is high
 # ----------------------------------------------------------
 [mechanisms.homing]
 
 [mechanisms.homing.finger]
-threshold                    = 1.0
 
 [mechanisms.homing.speed.slow]
 duty-cycle                   = 150
@@ -392,7 +393,7 @@ acceleration                 = 100.0 # steps / s^2
 deceleration                 = 100.0 # steps / s^2
 
 [mechanisms.homing.speed.fast]
-duty-cycle                   = 50
+duty-cycle                   = 150
 
 [mechanisms.homing.speed.fast.x]
 rpm                          = 300.0
