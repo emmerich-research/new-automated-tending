@@ -1,0 +1,25 @@
+#+TITLE: Notes
+
+* Development
+** Device [6/7]
+*** DONE Analog
+*** DONE Digital
+**** DONE Input
+**** DONE Output
+**** DONE Stepper
+***** DONE A4988
+*** HOLD PWM -> this is digital (inherit digital (?))
+** State [/]
+*** Implement using machine state -> this is preferred
+*** Should be continueable
+*** Traceable
+** Mechanism [1/7]
+*** TODO Movement [1/4]
+**** DONE can move sync
+**** TODO Create paths
+***** WAIT Should be continueable
+**** HOLD Check limit of each axis
+*** HOLD Rotation [0/1]
+**** HOLD Read degree regularly via thread
+** Threads
+*** Using thread pool

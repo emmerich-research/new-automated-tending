@@ -1,16 +1,94 @@
 #ifndef LIB_CORE_COMMON_HPP_
 #define LIB_CORE_COMMON_HPP_
 
-#define NAMESPACE_BEGIN       namespace @PROJECT_NAMESPACE@ {
-#define NAMESPACE_END         }
-#define ns(T)                 @PROJECT_NAMESPACE@::T
-#define USE_NAMESPACE         using namespace @PROJECT_NAMESPACE@;
+/** @file common.hpp
+ *  @brief Common definitions for whole project
+ *
+ * Every implementation must use the namespace defined this file
+ *
+ * List of global variables
+ * - PROJECT_CONFIG_DIR
+ * - PROJECT_CONFIG_FILE
+ * - PROJECT_STATE_FILE
+ * - APP_AUTHOR
+ * - APP_AUTHOR
+ * - LOGS_DIR  
+ * - APP_NAME  
+ * - APP_ALT_NAME
+ * - APP_DESC   
+ * - DEBUG     
+ * - TIME_FMT
+ * - ATM_OK
+ * - ATM_ERR
+ */
 
-static const char* APP_AUTHOR = "@PROJECT_AUTHOR@";
-static const char* LOGS_DIR   = "logs";
-static const char* APP_NAME   = "@PROJECT_ALT_TITLE@";
-static const char* APP_DESC   = "@PROJECT_DESCRIPTION@";
-static const bool  DEBUG      = false;
-static const char* TIME_FMT   = "%Y-%m-%dT%H:%M:%S";
+/**
+ * @def NAMESPACE_BEGIN
+ * Macro namespace begin definition (auto generated from cmake)
+ */
+#define NAMESPACE_BEGIN       namespace @PROJECT_NAMESPACE@ {
+
+/**
+ * @def NAMESPACE_END
+ * Macro namespace begin definition (auto generated from cmake)
+ */
+#define NAMESPACE_END         }
+
+/**
+ * @def ns(T)
+ * (Outside the project the namespace) Use static function \a T inside class that is defined inside the project namespace (auto generated from cmake)
+ *
+ * Usage:
+ * ns(SomeClass)::print() will be expanded into namespace::SomeClass::print()
+ *
+ * @param T  static function
+ */
+#define ns(T)                 @PROJECT_NAMESPACE@::T
+
+/**
+ * @def USE_NAMESPACE
+ * using project namespace (auto generated from cmake)
+ */
+#define USE_NAMESPACE         using namespace @PROJECT_NAMESPACE@
+
+
+NAMESPACE_BEGIN
+
+/**
+ * @var using ATM_STATUS = int
+ * @brief Type definition for whole project status
+ */
+using ATM_STATUS = int;
+
+/**
+ * @var ATM_OK = 0
+ * OK status for all project
+ */
+extern const int ATM_OK;
+
+/**
+ * @var ATM_ERR = -1
+ * ERROR status for all project
+ */
+extern const int ATM_ERR;
+
+/**
+ * @var using byte = unsigned char
+ * @brief Type definition for byte
+ */
+using byte = unsigned char;
+
+extern const char* PROJECT_CONFIG_DIR;
+extern const char* PROJECT_CONFIG_FILE;
+extern const char* PROJECT_STATE_FILE;
+extern const char* APP_AUTHOR;
+extern const char* LOGS_DIR;
+extern const char* APP_NAME;
+extern const char* APP_ALT_NAME;
+extern const char* APP_DESC;
+extern const bool  DEBUG;
+extern const char* TIME_FMT;
+
+NAMESPACE_END
 
 #endif

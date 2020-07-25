@@ -1,9 +1,27 @@
-[submodule "external/yaml"]
-	path = external/yaml
-	url = https://github.com/jbeder/yaml-cpp.git
 [submodule "external/doctest"]
 	path = external/doctest
 	url = https://github.com/onqtam/doctest.git
 [submodule "external/spdlog"]
 	path = external/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "external/filesystem"]
+	path = external/filesystem
+	url = https://github.com/gulrak/filesystem.git
+[submodule "external/toml"]
+	path = external/toml
+	url = https://github.com/ToruNiina/toml11.git
+[submodule "external/afsm"]
+	path = external/afsm
+	url = https://github.com/zmij/afsm.git
+[submodule "external/imgui"]
+	path = external/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "external/glad"]
+	path = external/glad
+	url = https://github.com/Dav1dde/glad.git
+[submodule "external/ucm"]
+	path = external/ucm
+	url = https://github.com/onqtam/ucm.git
+[submodule "external/cotire"]
+	path = external/cotire
+	url = https://github.com/sakra/cotire.git

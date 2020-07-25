@@ -26,42 +26,33 @@ option(BUILD_SHARED_LIBS "Build shared libs in order for some libraries to work"
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Include stuffs
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+# Include stuffs
+set(CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH}
+  "${CMAKE_SOURCE_DIR}/external/cotire/CMake/"
+  "${CMAKE_SOURCE_DIR}/external/ucm/cmake/"
+  "${CMAKE_SOURCE_DIR}/cmake/")
+
+include(Warnings)
 
 include(GNUInstallDirs)
+include(AFSM)
 include(ConfigSafeGuards)
 include(Colors)
-include(Cotire)
+include(cotire)
 include(CTest)
 include(Doctest)
 include(Documentation)
-# include(Fmt)
-# include(Fruit)
+include(FetchContent)
+include(Filesystem)
 include(LTO)
 include(Misc)
 include(Spdlog)
-include(Ucm)
-include(Warnings)
-include(Yaml)
-
-## GTKMM
-find_package(PkgConfig)
-# pkg_check_modules(GTKMM gtkmm-3.0)
+include(Toml)
+include(ucm)
 
 # enable unity build
 set(UCM_UNITY_BUILD ON)
-
-set(RASPI_LIB "")
-
-EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE arch)
-
-if (${arch} MATCHES "^arm")
-  find_package(pigpio REQUIRED)
-  LIST(APPEND RASPI_LIB "pigpio")
-  LIST(APPEND RASPI_LIB "rt")
-else()
-  add_definitions(-DMOCK_GPIO)
-endif()
 
 # Check for LTO support.
 find_lto(CXX)
@@ -75,8 +66,52 @@ set(Boost_USE_STATIC_RUNTIME     OFF)
 
 enable_testing()
 
-# find_package(spdlog::spdlog  REQUIRED)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+  add_definitions(-DNDEBUG)
+  add_definitions(-DPROJECT_DEBUG)
+endif()
+
+add_definitions(-DATM_COMPILATION)
+
+# Add PIGPIO lib or not
+set(RASPI_LIB "")
+
+EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE arch)
+
+if (${arch} MATCHES "^arm")
+  find_package(pigpio REQUIRED)
+  LIST(APPEND RASPI_LIB "pigpio")
+  LIST(APPEND RASPI_LIB "rt")
+
+  # check version
+  # glxinfo | grep "OpenGL version string:" | grep -E -o "[0-9]\.[0-9]" | head -1
+
+  # to make OpenGL3 + ImGUI works
+  # OpenGL in Raspi is basically OpenGL2
+  # there is error with :
+  # GL_SAMPLER_BINDING (needs to be OpenGL3)
+  # https://github.com/ocornut/imgui/pull/1806
+
+  # set(GLAD_API "gl=2.1,gles2=2.0" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest" FORCE)
+  set(OPENGL2 ON)
+  set(OPENGL3 OFF)
+else()
+  add_definitions(-DMOCK_GPIO)
+  set(GLAD_API "" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest" FORCE)
+  set(OpenGL_GL_PREFERENCE "GLVND")
+  include(Glad)
+  set(OPENGL2 OFF)
+  set(OPENGL3 ON)
+endif()
+
 find_package(Threads REQUIRED)
 
+add_subdirectory(libutil)
 add_subdirectory(libcore)
+add_subdirectory(libalgo)
+add_subdirectory(libgui)
+add_subdirectory(libdevice)
+add_subdirectory(libmechanism)
+add_subdirectory(libmachine)
+add_subdirectory(driver)
 add_subdirectory(app)
