@@ -15,9 +15,9 @@ jobs:
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -q
             apt-get install -q -y software-properties-common wget
+            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
             add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
             add-apt-repository "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main
-            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
             apt-get update -q
             apt-get install -q -y libllvm-10-ocaml-dev libllvm10 llvm-10 llvm-10-dev llvm-10-doc llvm-10-examples llvm-10-runtime
             apt-get install -q -y clang-10 clang-tools-10 clang-10-doc libclang-common-10-dev libclang-10-dev libclang1-10 clang-format-10 python-clang-10 clangd-10
