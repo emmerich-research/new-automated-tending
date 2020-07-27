@@ -1,10 +1,10 @@
 #ifndef LIB_MECHANISM_MOVEMENT_HPP_
 #define LIB_MECHANISM_MOVEMENT_HPP_
 
-/** @file multi_stepper.hpp
- *  @brief Multi stepper device class definition
+/** @file movement.hpp
+ *  @brief Movement mechanism class definition
  *
- * Multi stepper devices using GPIO
+ * Movement mechanism
  */
 
 #include <memory>

@@ -32,4 +32,7 @@
 #include "movement.hpp"
 #include "movement.inline.hpp"
 
+// 4.2. Liquid refilling Mechanism
+#include "liquid-refilling.hpp"
+
 #endif  // LIB_MECHANISM_MECHANISM_HPP_

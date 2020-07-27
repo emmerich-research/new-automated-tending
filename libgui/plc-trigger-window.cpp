@@ -29,6 +29,8 @@ void PLCTriggerWindow::show([[maybe_unused]] Manager* manager) {
   const ImVec2 size{-FLT_MIN, 32.0f};
   unsigned int status_id = 0;
 
+  ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.8f);
+
   ImGui::Columns(2, NULL, /* v_borders */ true);
   util::status_button("SPRAYING / TENDING", status_id++,
                       spraying_tending_height->read_bool(), size);
@@ -36,6 +38,8 @@ void PLCTriggerWindow::show([[maybe_unused]] Manager* manager) {
   util::status_button("CLEANING", status_id++, cleaning_height->read_bool(),
                       size);
   ImGui::NextColumn();
+
+  ImGui::PopStyleVar();
 }
 }  // namespace gui
 

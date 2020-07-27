@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "liquid-refilling.hpp"
 #include "movement.hpp"
 
 NAMESPACE_BEGIN
@@ -54,6 +55,17 @@ static ATM_STATUS initialize_movement_mechanism() {
 
   massert(movement_mechanism() != nullptr, "sanity");
   massert(movement_mechanism()->active(), "sanity");
+
+  status =
+      LiquidRefilling::create(device::id::ultrasonic::water_level(),
+                              device::id::ultrasonic::disinfectant_level());
+
+  if (status == ATM_ERR) {
+    return ATM_ERR;
+  }
+
+  massert(LiquidRefilling::get() != nullptr, "sanity");
+  massert(LiquidRefilling::get()->active(), "sanity");
 
   return status;
 }
