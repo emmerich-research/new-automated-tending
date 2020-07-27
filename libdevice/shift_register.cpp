@@ -2,6 +2,8 @@
 
 #include "shift_register.hpp"
 
+#include <libutil/util.hpp>
+
 NAMESPACE_BEGIN
 
 namespace device {
@@ -143,6 +145,13 @@ ATM_STATUS ShiftRegisterImpl::write(const std::string&    id,
   }
 
   return ATM_ERR;
+}
+
+void ShiftRegisterImpl::write_all(const digital::value& level) {
+  for (const auto& [id, _] : container_) {
+    write(id, level);
+    sleep_for<time_units::millis>(50);
+  }
 }
 
 std::optional<ShiftRegisterImpl::metadata> ShiftRegisterImpl::get(

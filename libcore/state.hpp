@@ -38,7 +38,7 @@ using Point = double;
 /**
  * @brief Coordinate
  *
- * Keeping tracks of coordinate of the machine
+ * Keeping track of coordinate of the machine
  *
  * @author Ray Andrew
  * @date   June 2020
@@ -58,13 +58,35 @@ struct Coordinate {
   Point z;
 };
 
+/**
+ * @brief Task
+ *
+ * Keeping track of task status of machine
+ *
+ * @author Ray Andrew
+ * @date   July 2020
+ */
 struct Task {
+  /**
+   * Ready
+   */
   bool ready;
+  /**
+   * Running
+   */
   bool running;
+  /**
+   * Complete
+   */
   bool complete;
-  // bool fault;
 
+  /**
+   * Task Constructor
+   */
   Task();
+  /**
+   * Reset Task status
+   */
   void reset();
 };
 
@@ -374,6 +396,30 @@ class StateImpl : public StackObj {
    * @return profile speed
    */
   const config::speed& speed_profile();
+  /**
+   * Set water refilling status
+   *
+   * @param refilling refilling status (true or false)
+   */
+  void water_refilling(bool refilling);
+  /**
+   * Get water refilling
+   *
+   * @return status of water refilling
+   */
+  bool water_refilling();
+  /**
+   * Set disinfectant refilling status
+   *
+   * @param refilling refilling status (true or false)
+   */
+  void disinfectant_refilling(bool refilling);
+  /**
+   * Get disinfectant refilling
+   *
+   * @return status of disinfectant refilling
+   */
+  bool disinfectant_refilling();
 
  private:
   /**
@@ -435,6 +481,14 @@ class StateImpl : public StackObj {
    * Homing
    */
   bool homing_;
+  /**
+   * Water refilling
+   */
+  bool water_refilling_;
+  /**
+   * Disinfectant refilling
+   */
+  bool disinfectant_refilling_;
 };
 }  // namespace impl
 

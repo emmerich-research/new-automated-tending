@@ -31,7 +31,8 @@ UltrasonicDevice::~UltrasonicDevice() {}
 
 double UltrasonicDevice::max_echo_time(double max_input_distance) const {
   // 10 is correction factor
-  return (std::min(max_distance, max_input_distance) / supersonic_speed) + 10;
+  return (std::min(max_distance, max_input_distance) / (supersonic_speed * 2)) +
+         10;
 }
 
 std::optional<double> UltrasonicDevice::distance(

@@ -2,17 +2,28 @@
 
 #include "liquid-control-window.hpp"
 
+#include <libmechanism/mechanism.hpp>
+
 NAMESPACE_BEGIN
 
 namespace gui {
-LiquidControlWindow::LiquidControlWindow(float                   width,
+LiquidControlWindow::LiquidControlWindow(machine::tending*       tsm,
+                                         float                   width,
                                          float                   height,
                                          const ImGuiWindowFlags& flags)
-    : Window{"Liquid Control", width, height, flags} {}
+    : Window{"Liquid Control", width, height, flags},
+      tsm_{tsm},
+      thread_pool_{2} {}
 
 LiquidControlWindow::~LiquidControlWindow() {}
 
 void LiquidControlWindow::show(Manager* manager) {
+  massert(State::get() != nullptr, "sanity");
+  massert(mechanism::LiquidRefilling::get() != nullptr, "sanity");
+
+  auto* state = State::get();
+  auto* liquid_refilling = mechanism::LiquidRefilling::get();
+
   const ImVec2 size = util::size::h_wide(50.0f);
   unsigned int status_id = 0;
 
@@ -20,6 +31,13 @@ void LiquidControlWindow::show(Manager* manager) {
 
   ImGui::Columns(2, NULL, /* v_borders */ true);
   {
+    const bool disabled = !tsm()->is_no_task() || state->water_refilling();
+
+    if (disabled) {
+      ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+    }
+
     ImGui::BeginChild("water_control");
     ImGui::Separator();
     ImGui::Text("Water");
@@ -41,13 +59,28 @@ void LiquidControlWindow::show(Manager* manager) {
     {
       ImGui::PushFont(manager->button_font());
       if (util::button("EXCHANGE NOW", status_id++, active, size)) {
+        thread_pool().enqueue(
+            [liquid_refilling]() { liquid_refilling->exchange_water(); });
       }
       ImGui::PopFont();
     }
     ImGui::EndChild();
+
+    if (disabled) {
+      ImGui::PopItemFlag();
+      ImGui::PopStyleVar();
+    }
   }
   ImGui::NextColumn();
   {
+    const bool disabled =
+        !tsm()->is_no_task() || state->disinfectant_refilling();
+
+    if (disabled) {
+      ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+    }
+
     ImGui::BeginChild("disinfectant_control");
     ImGui::Separator();
     ImGui::Text("Disinfectant");
@@ -69,10 +102,18 @@ void LiquidControlWindow::show(Manager* manager) {
     {
       ImGui::PushFont(manager->button_font());
       if (util::button("EXCHANGE NOW", status_id++, active, size)) {
+        thread_pool().enqueue([liquid_refilling]() {
+          liquid_refilling->exchange_disinfectant();
+        });
       }
       ImGui::PopFont();
     }
     ImGui::EndChild();
+
+    if (disabled) {
+      ImGui::PopItemFlag();
+      ImGui::PopStyleVar();
+    }
   }
   ImGui::NextColumn();
 }

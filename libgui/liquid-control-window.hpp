@@ -2,6 +2,7 @@
 #define LIB_GUI_LIQUID_CONTROL_WINDOW_HPP_
 
 #include <libcore/core.hpp>
+#include <libmachine/machine.hpp>
 
 #include "window.hpp"
 
@@ -16,11 +17,13 @@ class LiquidControlWindow : public Window {
   /**
    * Liquid Control Window constructor
    *
+   * @param tsm    state machine
    * @param width  window width
    * @param height window height
    * @param flags  window flags
    */
-  LiquidControlWindow(float                   width = 500,
+  LiquidControlWindow(machine::tending*       tsm,
+                      float                   width = 500,
                       float                   height = 100,
                       const ImGuiWindowFlags& flags = 0);
   /**
@@ -35,6 +38,28 @@ class LiquidControlWindow : public Window {
   virtual void show(Manager* manager) override;
 
  private:
+  /**
+   * Get state machine
+   *
+   * @return state machine
+   */
+  inline machine::tending* tsm() { return tsm_; }
+  /**
+   * Get thread pool
+   *
+   * @return thread pool
+   */
+  inline algo::ThreadPool& thread_pool() { return thread_pool_; }
+
+ private:
+  /**
+   * State machine
+   */
+  machine::tending* tsm_;
+  /**
+   * Liquid refilling thread pool
+   */
+  algo::ThreadPool thread_pool_;
 };
 }  // namespace gui
 

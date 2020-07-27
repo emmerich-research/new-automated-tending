@@ -97,7 +97,7 @@ int main() {
   ui_manager.add_window<gui::ManualMovementWindow>(&tsm);
   ui_manager.add_window<gui::StatusWindow>();
   ui_manager.add_window<gui::LiquidStatusWindow>();
-  ui_manager.add_window<gui::LiquidControlWindow>();
+  ui_manager.add_window<gui::LiquidControlWindow>(&tsm);
   ui_manager.add_window<gui::PLCTriggerWindow>();
   ui_manager.add_window<gui::SpeedProfileWindow>(
       reinterpret_cast<const machine::tending*>(&tsm));

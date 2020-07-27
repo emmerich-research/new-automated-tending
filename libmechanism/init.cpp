@@ -56,15 +56,24 @@ static ATM_STATUS initialize_movement_mechanism() {
   massert(movement_mechanism() != nullptr, "sanity");
   massert(movement_mechanism()->active(), "sanity");
 
-  status =
-      LiquidRefilling::create(device::id::ultrasonic::water_level(),
-                              device::id::ultrasonic::disinfectant_level());
+  status = LiquidRefilling::create();
 
   if (status == ATM_ERR) {
     return ATM_ERR;
   }
 
   massert(LiquidRefilling::get() != nullptr, "sanity");
+
+  auto* liquid_refill_mechanism = LiquidRefilling::get();
+
+  liquid_refill_mechanism->setup_water_device(
+      device::id::ultrasonic::water_level(), device::id::comm::pi::water_in(),
+      device::id::comm::pi::water_out());
+  liquid_refill_mechanism->setup_disinfectant_device(
+      device::id::ultrasonic::disinfectant_level(),
+      device::id::comm::pi::disinfectant_in(),
+      device::id::comm::pi::disinfectant_out());
+
   massert(LiquidRefilling::get()->active(), "sanity");
 
   return status;

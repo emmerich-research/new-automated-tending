@@ -33,6 +33,8 @@ void StateImpl::reset_ui() {
     spraying_.reset();
     cleaning_.reset();
     homing_ = false;
+    water_refilling_ = false;
+    disinfectant_refilling_ = false;
   }
   notify_all();
 }
@@ -353,6 +355,34 @@ void StateImpl::speed_profile(const config::speed& speed_profile) {
 const config::speed& StateImpl::speed_profile() {
   const StateImpl::StateLock lock(mutex());
   return speed_profile_;
+}
+
+void StateImpl::water_refilling(bool refilling) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    water_refilling_ = refilling;
+  }
+
+  notify_all();
+}
+
+bool StateImpl::water_refilling() {
+  const StateImpl::StateLock lock(mutex());
+  return water_refilling_;
+}
+
+void StateImpl::disinfectant_refilling(bool refilling) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    disinfectant_refilling_ = refilling;
+  }
+
+  notify_all();
+}
+
+bool StateImpl::disinfectant_refilling() {
+  const StateImpl::StateLock lock(mutex());
+  return disinfectant_refilling_;
 }
 }  // namespace impl
 
