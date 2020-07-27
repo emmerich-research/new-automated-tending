@@ -740,15 +740,14 @@ void Movement::homing_finger() const {
   LOG_DEBUG("Starting to homing finger");
   LOG_DEBUG("Setting to homing duty cycle");
   finger()->duty_cycle(speed_profile.duty_cycle);
-  sleep_for<time_units::seconds>(1);
+  sleep_for<time_units::seconds>(2);
   while (true) {
-    if (finger_infrared()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high) {
+    if (finger_infrared()->read_bool()) {
       stop_finger();
       break;
     }
     // add delay
-    // sleep_for<time_units::micros>(50);
+    sleep_for<time_units::micros>(50);
   }
   LOG_DEBUG("Homing finger is finished");
 }

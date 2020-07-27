@@ -583,7 +583,7 @@ zigzag                       = [
 ]
 
 [mechanisms.tending.speed.slow]
-duty-cycle                   = 60
+duty-cycle                   = 160
 
 [mechanisms.tending.speed.slow.x]
 rpm                          = 100.0
@@ -601,7 +601,7 @@ acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.tending.speed.normal]
-duty-cycle                   = 120
+duty-cycle                   = 180
 
 [mechanisms.tending.speed.normal.x]
 rpm                          = 250.0
@@ -619,7 +619,7 @@ acceleration                 = 1000.0 # steps / s^2
 deceleration                 = 1000.0 # steps / s^2
 
 [mechanisms.tending.speed.fast]
-duty-cycle                   = 160
+duty-cycle                   = 200
 
 [mechanisms.tending.speed.fast.x]
 rpm                          = 250.0

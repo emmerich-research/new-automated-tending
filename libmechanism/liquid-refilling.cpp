@@ -32,7 +32,7 @@ liquid::status LiquidRefillingImpl::water_level() const {
     if (height <= 3.0) {
       return liquid::status::full;
     } else if (height >= 8.0) {
-      return liquid::status::full;
+      return liquid::status::empty;
     } else {
       return liquid::status::normal;
     }
@@ -54,7 +54,7 @@ liquid::status LiquidRefillingImpl::disinfectant_level() const {
     if (height <= 3.0) {
       return liquid::status::full;
     } else if (height >= 6.0) {
-      return liquid::status::full;
+      return liquid::status::empty;
     } else {
       return liquid::status::normal;
     }
