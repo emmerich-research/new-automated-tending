@@ -79,11 +79,39 @@ struct Task {
    * Complete
    */
   bool complete;
-
   /**
    * Task Constructor
    */
   Task();
+  /**
+   * Reset Task status
+   */
+  void reset();
+};
+
+/**
+ * @brief Refill Task
+ *
+ * Refill task status
+ *
+ * @author Ray Andrew
+ * @date   July 2020
+ */
+struct Refill {
+  typedef enum { ONE_DAY, TWO_DAYS, THREE_DAYS } Schedule;
+  /**
+   * Refill
+   */
+  bool running;
+  /**
+   * Schedule
+   */
+  Schedule schedule;
+
+  /**
+   * Refill constructor
+   */
+  Refill();
   /**
    * Reset Task status
    */
@@ -397,29 +425,65 @@ class StateImpl : public StackObj {
    */
   const config::speed& speed_profile();
   /**
-   * Set water refilling status
+   * Get water refilling status
    *
-   * @param refilling refilling status (true or false)
+   * @return water refilling status
    */
-  void water_refilling(bool refilling);
+  const Refill& water_refilling();
   /**
-   * Get water refilling
+   * Set water refilling running status
    *
-   * @return status of water refilling
+   * @param refilling refilling running status (true or false)
    */
-  bool water_refilling();
+  void water_refilling_running(bool refilling);
   /**
-   * Set disinfectant refilling status
+   * Get water refilling running
    *
-   * @param refilling refilling status (true or false)
+   * @return status of water refilling running
    */
-  void disinfectant_refilling(bool refilling);
+  bool water_refilling_running();
   /**
-   * Get disinfectant refilling
+   * Get water refilling schedule
    *
-   * @return status of disinfectant refilling
+   * @return schedule of water refilling
    */
-  bool disinfectant_refilling();
+  const Refill::Schedule& water_refilling_schedule();
+  /**
+   * Set water refilling schedule
+   *
+   * @param schedule schedule of water refilling
+   */
+  void water_refilling_schedule(const Refill::Schedule& schedule);
+  /**
+   * Get disinfectant refilling status
+   *
+   * @return disinfectant refilling status
+   */
+  const Refill& disinfectant_refilling();
+  /**
+   * Set disinfectant refilling running status
+   *
+   * @param refilling refilling running status (true or false)
+   */
+  void disinfectant_refilling_running(bool refilling);
+  /**
+   * Get disinfectant refilling running
+   *
+   * @return status of disinfectant refilling running
+   */
+  bool disinfectant_refilling_running();
+  /**
+   * Get disinfectant refilling schedule
+   *
+   * @return schedule of disinfectant refilling
+   */
+  const Refill::Schedule& disinfectant_refilling_schedule();
+  /**
+   * Set disinfectant refilling schedule
+   *
+   * @param schedule schedule of disinfectant refilling
+   */
+  void disinfectant_refilling_schedule(const Refill::Schedule& schedule);
 
  private:
   /**
@@ -484,11 +548,11 @@ class StateImpl : public StackObj {
   /**
    * Water refilling
    */
-  bool water_refilling_;
+  Refill water_refilling_;
   /**
    * Disinfectant refilling
    */
-  bool disinfectant_refilling_;
+  Refill disinfectant_refilling_;
 };
 }  // namespace impl
 

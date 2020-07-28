@@ -18,10 +18,11 @@ LiquidStatusWindow::LiquidStatusWindow(float                   width,
 LiquidStatusWindow::~LiquidStatusWindow() {}
 
 void LiquidStatusWindow::show([[maybe_unused]] Manager* manager) {
-  massert(Config::get() != nullptr, "sanity");
+  massert(State::get() != nullptr, "sanity");
   massert(mechanism::LiquidRefilling::get() != nullptr, "sanity");
   massert(mechanism::LiquidRefilling::get()->active(), "sanity");
 
+  auto* state = State::get();
   auto* liquid_refilling = mechanism::LiquidRefilling::get();
 
   unsigned int status_id = 0;
@@ -33,12 +34,13 @@ void LiquidStatusWindow::show([[maybe_unused]] Manager* manager) {
   ImGui::Columns(2, NULL, /* v_borders */ true);
   {
     const mechanism::liquid::status status = liquid_refilling->water_level();
+    const bool refilling = state->water_refilling_running();
 
     if (ImGui::GetColumnIndex() == 0)
       ImGui::Separator();
 
     ImGui::Text("WATER");
-    util::status_button("REFILLING", status_id++, false, size);
+    util::status_button("REFILLING", status_id++, refilling, size);
     util::status_button("FULL", status_id++,
                         status == mechanism::liquid::status::full, size);
     util::status_button("NORMAL", status_id++,
@@ -50,9 +52,10 @@ void LiquidStatusWindow::show([[maybe_unused]] Manager* manager) {
   {
     const mechanism::liquid::status status =
         liquid_refilling->disinfectant_level();
+    const bool refilling = state->disinfectant_refilling_running();
 
     ImGui::Text("DISINFECTANT");
-    util::status_button("REFILLING", status_id++, false, size);
+    util::status_button("REFILLING", status_id++, refilling, size);
     util::status_button("FULL", status_id++,
                         status == mechanism::liquid::status::full, size);
     util::status_button("NORMAL", status_id++,

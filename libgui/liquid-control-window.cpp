@@ -31,7 +31,9 @@ void LiquidControlWindow::show(Manager* manager) {
 
   ImGui::Columns(2, NULL, /* v_borders */ true);
   {
-    const bool disabled = !tsm()->is_no_task() || state->water_refilling();
+    const bool disabled =
+        !tsm()->is_no_task() || state->water_refilling_running();
+    const auto& schedule = state->water_refilling_schedule();
 
     if (disabled) {
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -45,11 +47,20 @@ void LiquidControlWindow::show(Manager* manager) {
     ImGui::Text("Automatic Mode");
     {
       ImGui::PushFont(manager->button_font());
-      if (util::button("1 DAY", status_id++, active, size)) {
+      if (util::button("1 DAY", status_id++, schedule == Refill::ONE_DAY,
+                       size)) {
+        LOG_INFO("Changing water refilling to one day");
+        state->water_refilling_schedule(Refill::ONE_DAY);
       }
-      if (util::button("2 DAYS", status_id++, active, size)) {
+      if (util::button("2 DAYS", status_id++, schedule == Refill::TWO_DAYS,
+                       size)) {
+        LOG_INFO("Changing water refilling to two days");
+        state->water_refilling_schedule(Refill::TWO_DAYS);
       }
-      if (util::button("3 DAYS", status_id++, active, size)) {
+      if (util::button("3 DAYS", status_id++, schedule == Refill::THREE_DAYS,
+                       size)) {
+        LOG_INFO("Changing water refilling to three days");
+        state->water_refilling_schedule(Refill::THREE_DAYS);
       }
       ImGui::PopFont();
     }
@@ -74,7 +85,8 @@ void LiquidControlWindow::show(Manager* manager) {
   ImGui::NextColumn();
   {
     const bool disabled =
-        !tsm()->is_no_task() || state->disinfectant_refilling();
+        !tsm()->is_no_task() || state->disinfectant_refilling_running();
+    const auto& schedule = state->disinfectant_refilling_schedule();
 
     if (disabled) {
       ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -88,11 +100,20 @@ void LiquidControlWindow::show(Manager* manager) {
     ImGui::Text("Automatic Mode");
     {
       ImGui::PushFont(manager->button_font());
-      if (util::button("1 DAY", status_id++, active, size)) {
+      if (util::button("1 DAY", status_id++, schedule == Refill::ONE_DAY,
+                       size)) {
+        LOG_INFO("Changing water refilling to one day");
+        state->disinfectant_refilling_schedule(Refill::ONE_DAY);
       }
-      if (util::button("2 DAYS", status_id++, active, size)) {
+      if (util::button("2 DAYS", status_id++, schedule == Refill::TWO_DAYS,
+                       size)) {
+        LOG_INFO("Changing water refilling to two days");
+        state->disinfectant_refilling_schedule(Refill::TWO_DAYS);
       }
-      if (util::button("3 DAYS", status_id++, active, size)) {
+      if (util::button("3 DAYS", status_id++, schedule == Refill::THREE_DAYS,
+                       size)) {
+        LOG_INFO("Changing water refilling to three days");
+        state->disinfectant_refilling_schedule(Refill::THREE_DAYS);
       }
       ImGui::PopFont();
     }

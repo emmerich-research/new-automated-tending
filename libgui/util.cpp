@@ -26,6 +26,7 @@ bool button(const char*   label,
 
   if (active) {
     ImGui::PushID(status_id);
+    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 
     // green
     ImGui::PushStyleColor(ImGuiCol_Button,
@@ -39,6 +40,7 @@ bool button(const char*   label,
   result = ImGui::Button(label, size);
 
   if (active) {
+    ImGui::PopItemFlag();
     ImGui::PopStyleColor(3);
     ImGui::PopID();
   }

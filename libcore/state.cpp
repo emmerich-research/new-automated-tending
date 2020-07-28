@@ -13,6 +13,13 @@ void Task::reset() {
   complete = false;
 }
 
+Refill::Refill() : running{false}, schedule{Refill::ONE_DAY} {}
+
+void Refill::reset() {
+  running = false;
+  // schedule = Refill::ONE_DAY;
+}
+
 namespace impl {
 StateImpl::StateImpl()
     : speed_profile_{config::speed::normal},
@@ -22,7 +29,9 @@ StateImpl::StateImpl()
       spraying_{},
       cleaning_{},
       manual_mode_{false},
-      homing_{false} {
+      homing_{false},
+      water_refilling_{},
+      disinfectant_refilling_{} {
   DEBUG_ONLY_DEFINITION(obj_name_ = "StateImpl");
 }
 
@@ -33,8 +42,8 @@ void StateImpl::reset_ui() {
     spraying_.reset();
     cleaning_.reset();
     homing_ = false;
-    water_refilling_ = false;
-    disinfectant_refilling_ = false;
+    water_refilling_.reset();
+    disinfectant_refilling_.reset();
   }
   notify_all();
 }
@@ -357,33 +366,73 @@ const config::speed& StateImpl::speed_profile() {
   return speed_profile_;
 }
 
-void StateImpl::water_refilling(bool refilling) {
-  {
-    const StateImpl::StateLock lock(mutex());
-    water_refilling_ = refilling;
-  }
-
-  notify_all();
-}
-
-bool StateImpl::water_refilling() {
+const Refill& StateImpl::water_refilling() {
   const StateImpl::StateLock lock(mutex());
   return water_refilling_;
 }
 
-void StateImpl::disinfectant_refilling(bool refilling) {
+void StateImpl::water_refilling_running(bool refilling) {
   {
     const StateImpl::StateLock lock(mutex());
-    disinfectant_refilling_ = refilling;
+    water_refilling_.running = refilling;
   }
 
   notify_all();
 }
 
-bool StateImpl::disinfectant_refilling() {
+bool StateImpl::water_refilling_running() {
+  const StateImpl::StateLock lock(mutex());
+  return water_refilling_.running;
+}
+
+const Refill::Schedule& StateImpl::water_refilling_schedule() {
+  const StateImpl::StateLock lock(mutex());
+  return water_refilling_.schedule;
+}
+
+void StateImpl::water_refilling_schedule(const Refill::Schedule& schedule) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    water_refilling_.schedule = schedule;
+  }
+
+  notify_all();
+}
+
+const Refill& StateImpl::disinfectant_refilling() {
   const StateImpl::StateLock lock(mutex());
   return disinfectant_refilling_;
 }
+
+void StateImpl::disinfectant_refilling_running(bool refilling) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    disinfectant_refilling_.running = refilling;
+  }
+
+  notify_all();
+}
+
+bool StateImpl::disinfectant_refilling_running() {
+  const StateImpl::StateLock lock(mutex());
+  return disinfectant_refilling_.running;
+}
+
+const Refill::Schedule& StateImpl::disinfectant_refilling_schedule() {
+  const StateImpl::StateLock lock(mutex());
+  return disinfectant_refilling_.schedule;
+}
+
+void StateImpl::disinfectant_refilling_schedule(
+    const Refill::Schedule& schedule) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    disinfectant_refilling_.schedule = schedule;
+  }
+
+  notify_all();
+}
+
 }  // namespace impl
 
 NAMESPACE_END

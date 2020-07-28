@@ -129,7 +129,7 @@ void LiquidRefillingImpl::exchange_water() const {
 
   LOG_INFO("Starting to exchange water");
 
-  state->water_refilling(true);
+  state->water_refilling_running(true);
 
   const auto wait_until_empty = [this, state, shift_register]() {
     LOG_DEBUG("Draining water");
@@ -138,6 +138,10 @@ void LiquidRefillingImpl::exchange_water() const {
 
     while (!state->fault() && (water_level() != liquid::status::empty)) {
       // waiting...
+      sleep_for<time_units::millis>(100);
+      if (state->fault()) {
+        return;
+      }
     }
 
     shift_register->write(water_out_device_id(), device::digital::value::low);
@@ -151,6 +155,10 @@ void LiquidRefillingImpl::exchange_water() const {
 
     while (!state->fault() && (water_level() != liquid::status::full)) {
       // waiting...
+      sleep_for<time_units::millis>(100);
+      if (state->fault()) {
+        return;
+      }
     }
 
     shift_register->write(water_in_device_id(), device::digital::value::low);
@@ -159,15 +167,29 @@ void LiquidRefillingImpl::exchange_water() const {
 
   do {
     wait_until_empty();
+    if (state->fault()) {
+      return;
+    }
+
     sleep_for<time_units::seconds>(10);
+    if (state->fault()) {
+      return;
+    }
   } while (!state->fault() && (water_level() != liquid::status::empty));
 
   do {
     wait_until_full();
+    if (state->fault()) {
+      return;
+    }
+
     sleep_for<time_units::seconds>(10);
+    if (state->fault()) {
+      return;
+    }
   } while (!state->fault() && (water_level() != liquid::status::full));
 
-  state->water_refilling(false);
+  state->water_refilling_running(false);
 
   LOG_INFO("Exchanging water is finished");
 }
@@ -182,7 +204,7 @@ void LiquidRefillingImpl::exchange_disinfectant() const {
 
   LOG_INFO("Starting to exchange disinfectant");
 
-  state->disinfectant_refilling(true);
+  state->disinfectant_refilling_running(true);
 
   const auto wait_until_empty = [this, state, shift_register]() {
     LOG_DEBUG("Draining disinfectant");
@@ -192,6 +214,10 @@ void LiquidRefillingImpl::exchange_disinfectant() const {
 
     while (!state->fault() && (disinfectant_level() != liquid::status::empty)) {
       // waiting...
+      sleep_for<time_units::millis>(100);
+      if (state->fault()) {
+        return;
+      }
     }
 
     shift_register->write(disinfectant_out_device_id(),
@@ -207,6 +233,10 @@ void LiquidRefillingImpl::exchange_disinfectant() const {
 
     while (!state->fault() && (disinfectant_level() != liquid::status::full)) {
       // waiting...
+      sleep_for<time_units::millis>(100);
+      if (state->fault()) {
+        return;
+      }
     }
 
     shift_register->write(disinfectant_in_device_id(),
@@ -216,15 +246,29 @@ void LiquidRefillingImpl::exchange_disinfectant() const {
 
   do {
     wait_until_empty();
+    if (state->fault()) {
+      return;
+    }
+
     sleep_for<time_units::seconds>(10);
+    if (state->fault()) {
+      return;
+    }
   } while (!state->fault() && (disinfectant_level() != liquid::status::empty));
 
   do {
     wait_until_full();
+    if (state->fault()) {
+      return;
+    }
+
     sleep_for<time_units::seconds>(10);
+    if (state->fault()) {
+      return;
+    }
   } while (!state->fault() && (disinfectant_level() != liquid::status::full));
 
-  state->disinfectant_refilling(false);
+  state->disinfectant_refilling_running(false);
 
   LOG_INFO("Exchanging disinfectant is finished");
 }
