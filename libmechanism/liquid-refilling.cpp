@@ -9,9 +9,6 @@ NAMESPACE_BEGIN
 
 namespace mechanism {
 namespace impl {
-const double LiquidRefillingImpl::MinHeight = 8.0;
-const double LiquidRefillingImpl::MaxHeight = 12.0;
-
 LiquidRefillingImpl::LiquidRefillingImpl() : active_{false} {}
 
 LiquidRefillingImpl::~LiquidRefillingImpl() {}
@@ -20,12 +17,12 @@ void LiquidRefillingImpl::setup_water_device(const std::string& level_device_id,
                                              const std::string& in_device_id,
                                              const std::string& out_device_id) {
   massert(device::ShiftRegister::get() != nullptr, "sanity");
-  massert(device::UltrasonicDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::FloatDeviceRegistry::get() != nullptr, "sanity");
 
-  auto* ultrasonic_device_registry = device::UltrasonicDeviceRegistry::get();
+  auto* float_device_registry = device::FloatDeviceRegistry::get();
   auto* shift_register = device::ShiftRegister::get();
 
-  auto&& water_level_device = ultrasonic_device_registry->get(level_device_id);
+  auto&& water_level_device = float_device_registry->get(level_device_id);
 
   if (!water_level_device) {
     active_ = false;
@@ -49,13 +46,13 @@ void LiquidRefillingImpl::setup_disinfectant_device(
     const std::string& in_device_id,
     const std::string& out_device_id) {
   massert(device::ShiftRegister::get() != nullptr, "sanity");
-  massert(device::UltrasonicDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::FloatDeviceRegistry::get() != nullptr, "sanity");
 
-  auto* ultrasonic_device_registry = device::UltrasonicDeviceRegistry::get();
+  auto* float_device_registry = device::FloatDeviceRegistry::get();
   auto* shift_register = device::ShiftRegister::get();
 
   auto&& disinfectant_level_device =
-      ultrasonic_device_registry->get(level_device_id);
+      float_device_registry->get(level_device_id);
   disinfectant_level_device_ = disinfectant_level_device;
 
   if (!disinfectant_level_device) {
@@ -76,118 +73,103 @@ void LiquidRefillingImpl::setup_disinfectant_device(
 }
 
 liquid::status LiquidRefillingImpl::water_level() const {
-  massert(Config::get() != nullptr, "sanity");
-
-  auto* config = Config::get();
-  auto  water_level = water_level_device()->distance(
-      config->ultrasonic<double>("water-level", "max-range"));
-
-  if (water_level) {
-    double height = *water_level;
-
-    if (height <= MinHeight) {
-      return liquid::status::full;
-    } else if (height >= MaxHeight) {
-      return liquid::status::empty;
-    } else {
-      return liquid::status::normal;
-    }
-  }
-
-  return liquid::status::unknown;
+  return water_level_device()->read();
 }
 
 liquid::status LiquidRefillingImpl::disinfectant_level() const {
-  massert(Config::get() != nullptr, "sanity");
-
-  auto* config = Config::get();
-  auto  disinfectant_level = disinfectant_level_device()->distance(
-      config->ultrasonic<double>("disinfectant-level", "max-range"));
-
-  if (disinfectant_level) {
-    double height = *disinfectant_level;
-
-    if (height <= MinHeight) {
-      return liquid::status::full;
-    } else if (height >= MaxHeight) {
-      return liquid::status::empty;
-    } else {
-      return liquid::status::normal;
-    }
-  }
-
-  return liquid::status::unknown;
+  return disinfectant_level_device()->read();
 }
 
 void LiquidRefillingImpl::exchange_water() const {
   massert(State::get() != nullptr, "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
-  massert(device::UltrasonicDeviceRegistry::get() != nullptr, "sanity");
 
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
   LOG_INFO("Starting to exchange water");
 
+  if (state->fault()) {
+    return;
+  }
+
   state->water_refilling_running(true);
 
-  const auto wait_until_empty = [this, state, shift_register]() {
-    LOG_DEBUG("Draining water");
-    shift_register->write(water_out_device_id(), device::digital::value::high);
-    sleep_for<time_units::seconds>(1);
+  if (state->fault()) {
+    return;
+  }
 
-    while (!state->fault() && (water_level() != liquid::status::empty)) {
-      // waiting...
-      sleep_for<time_units::millis>(100);
-      if (state->fault()) {
-        return;
-      }
-    }
+  // ------------------
+  // Draining
+  // ------------------
 
-    shift_register->write(water_out_device_id(), device::digital::value::low);
-    LOG_DEBUG("Draining water is completed");
-  };
+  LOG_DEBUG("Draining water");
+  shift_register->write(water_out_device_id(), device::digital::value::high);
 
-  const auto wait_until_full = [this, state, shift_register]() {
-    LOG_DEBUG("Refilling water");
-    shift_register->write(water_in_device_id(), device::digital::value::high);
-    sleep_for<time_units::seconds>(1);
+  if (state->fault()) {
+    return;
+  }
 
-    while (!state->fault() && (water_level() != liquid::status::full)) {
-      // waiting...
-      sleep_for<time_units::millis>(100);
-      if (state->fault()) {
-        return;
-      }
-    }
+  sleep_for<time_units::seconds>(1);
 
-    shift_register->write(water_in_device_id(), device::digital::value::low);
-    LOG_DEBUG("Refilling water is completed");
-  };
+  if (state->fault()) {
+    return;
+  }
 
-  do {
-    wait_until_empty();
+  while (!state->fault() && (water_level() != liquid::status::empty)) {
+    // waiting...
+    sleep_for<time_units::millis>(100);
     if (state->fault()) {
       return;
     }
+  }
 
-    sleep_for<time_units::seconds>(10);
+  if (state->fault()) {
+    return;
+  }
+
+  shift_register->write(water_out_device_id(), device::digital::value::low);
+  LOG_DEBUG("Draining water is completed");
+
+  // ------------------
+  // Refilling
+  // ------------------
+
+  if (state->fault()) {
+    return;
+  }
+
+  LOG_DEBUG("Refilling water");
+  shift_register->write(water_in_device_id(), device::digital::value::high);
+
+  if (state->fault()) {
+    return;
+  }
+
+  sleep_for<time_units::seconds>(1);
+
+  if (state->fault()) {
+    return;
+  }
+
+  while (!state->fault() && (water_level() != liquid::status::full)) {
+    // waiting...
+    sleep_for<time_units::millis>(100);
     if (state->fault()) {
       return;
     }
-  } while (!state->fault() && (water_level() != liquid::status::empty));
+  }
 
-  do {
-    wait_until_full();
-    if (state->fault()) {
-      return;
-    }
+  if (state->fault()) {
+    return;
+  }
 
-    sleep_for<time_units::seconds>(10);
-    if (state->fault()) {
-      return;
-    }
-  } while (!state->fault() && (water_level() != liquid::status::full));
+  shift_register->write(water_in_device_id(), device::digital::value::low);
+  LOG_DEBUG("Refilling water is completed");
+
+  if (state->fault()) {
+    return;
+  }
 
   state->water_refilling_running(false);
 
@@ -197,76 +179,97 @@ void LiquidRefillingImpl::exchange_water() const {
 void LiquidRefillingImpl::exchange_disinfectant() const {
   massert(State::get() != nullptr, "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
-  massert(device::UltrasonicDeviceRegistry::get() != nullptr, "sanity");
 
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
   LOG_INFO("Starting to exchange disinfectant");
 
+  if (state->fault()) {
+    return;
+  }
+
   state->disinfectant_refilling_running(true);
 
-  const auto wait_until_empty = [this, state, shift_register]() {
-    LOG_DEBUG("Draining disinfectant");
-    shift_register->write(disinfectant_out_device_id(),
-                          device::digital::value::high);
-    sleep_for<time_units::seconds>(1);
+  if (state->fault()) {
+    return;
+  }
 
-    while (!state->fault() && (disinfectant_level() != liquid::status::empty)) {
-      // waiting...
-      sleep_for<time_units::millis>(100);
-      if (state->fault()) {
-        return;
-      }
-    }
+  // ------------------
+  // Draining
+  // ------------------
 
-    shift_register->write(disinfectant_out_device_id(),
-                          device::digital::value::low);
-    LOG_DEBUG("Draining disinfectant is completed");
-  };
+  LOG_DEBUG("Draining disinfectant");
+  shift_register->write(disinfectant_out_device_id(),
+                        device::digital::value::high);
 
-  const auto wait_until_full = [this, state, shift_register]() {
-    LOG_DEBUG("Refilling disinfectant");
-    shift_register->write(disinfectant_in_device_id(),
-                          device::digital::value::high);
-    sleep_for<time_units::seconds>(1);
+  if (state->fault()) {
+    return;
+  }
 
-    while (!state->fault() && (disinfectant_level() != liquid::status::full)) {
-      // waiting...
-      sleep_for<time_units::millis>(100);
-      if (state->fault()) {
-        return;
-      }
-    }
+  sleep_for<time_units::seconds>(1);
 
-    shift_register->write(disinfectant_in_device_id(),
-                          device::digital::value::low);
-    LOG_DEBUG("Refilling disinfectant is completed");
-  };
+  if (state->fault()) {
+    return;
+  }
 
-  do {
-    wait_until_empty();
+  while (!state->fault() && (disinfectant_level() != liquid::status::empty)) {
+    // waiting...
+    sleep_for<time_units::millis>(100);
     if (state->fault()) {
       return;
     }
+  }
 
-    sleep_for<time_units::seconds>(10);
+  if (state->fault()) {
+    return;
+  }
+
+  shift_register->write(disinfectant_out_device_id(),
+                        device::digital::value::low);
+  LOG_DEBUG("Draining disinfectant is completed");
+
+  // ------------------
+  // Refilling
+  // ------------------
+
+  if (state->fault()) {
+    return;
+  }
+
+  LOG_DEBUG("Refilling disinfectant");
+  shift_register->write(disinfectant_in_device_id(),
+                        device::digital::value::high);
+
+  if (state->fault()) {
+    return;
+  }
+
+  sleep_for<time_units::seconds>(1);
+
+  if (state->fault()) {
+    return;
+  }
+
+  while (!state->fault() && (disinfectant_level() != liquid::status::full)) {
+    // waiting...
+    sleep_for<time_units::millis>(100);
     if (state->fault()) {
       return;
     }
-  } while (!state->fault() && (disinfectant_level() != liquid::status::empty));
+  }
 
-  do {
-    wait_until_full();
-    if (state->fault()) {
-      return;
-    }
+  if (state->fault()) {
+    return;
+  }
 
-    sleep_for<time_units::seconds>(10);
-    if (state->fault()) {
-      return;
-    }
-  } while (!state->fault() && (disinfectant_level() != liquid::status::full));
+  shift_register->write(disinfectant_in_device_id(),
+                        device::digital::value::low);
+  LOG_DEBUG("Refilling disinfectant is completed");
+
+  if (state->fault()) {
+    return;
+  }
 
   state->disinfectant_refilling_running(false);
 

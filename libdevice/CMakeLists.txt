@@ -21,6 +21,9 @@ ucm_add_files(
 
   # ultrasonic
   "ultrasonic.cpp"
+
+  # float sensor
+  "float.cpp"
   TO SOURCES)
 
 ucm_add_target(

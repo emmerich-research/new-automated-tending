@@ -67,10 +67,10 @@ static ATM_STATUS initialize_movement_mechanism() {
   auto* liquid_refill_mechanism = LiquidRefilling::get();
 
   liquid_refill_mechanism->setup_water_device(
-      device::id::ultrasonic::water_level(), device::id::comm::pi::water_in(),
+      device::id::float_sensor::water_level(), device::id::comm::pi::water_in(),
       device::id::comm::pi::water_out());
   liquid_refill_mechanism->setup_disinfectant_device(
-      device::id::ultrasonic::disinfectant_level(),
+      device::id::float_sensor::disinfectant_level(),
       device::id::comm::pi::disinfectant_in(),
       device::id::comm::pi::disinfectant_out());
 

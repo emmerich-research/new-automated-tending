@@ -39,10 +39,7 @@ void FaultListener::stop() {
   if (running() && tsm()->is_ready()) {
     LOG_INFO("Stopping fault listener");
     running_ = false;
-    // if (thread().joinable()) {
-    //   thread().join();
-    // }
-    LOG_INFO("Fault listener is stopped completely");
+    // LOG_INFO("Fault listener is stopped completely");
   }
 }
 
@@ -58,10 +55,6 @@ void FaultListener::execute() {
       digital_input_registry->get(device::id::limit_switch::x());
   auto&& limit_switch_y =
       digital_input_registry->get(device::id::limit_switch::y());
-  // auto&& limit_switch_z1 =
-  //     digital_input_registry->get(device::id::limit_switch::z1());
-  // auto&& limit_switch_z2 =
-  //     digital_input_registry->get(device::id::limit_switch::z2());
   auto&& finger_protection = digital_input_registry->get(
       device::id::limit_switch::finger_protection());
   auto&& spraying_tending_height = digital_input_registry->get(
@@ -71,13 +64,12 @@ void FaultListener::execute() {
   auto&& e_stop = digital_input_registry->get(device::id::comm::plc::e_stop());
 
   while (running() && state->running()) {
-    std::unique_lock<std::mutex> lock(mutex());
-    state->signal().wait(lock, [this, state] {
-      return !state->running() || !(tsm()->is_no_task() || state->fault());
-    });
-
-    lock.unlock();
-    state->notify_all();
+    {
+      std::unique_lock<std::mutex> lock(mutex());
+      state->signal().wait(lock, [this, state] {
+        return !state->running() || !(tsm()->is_no_task() || state->fault());
+      });
+    }
 
     if (!running() || !state->running()) {
       return;
@@ -98,6 +90,20 @@ void FaultListener::execute() {
       LOG_ERROR("[FAULT] Limit switch x or y are touched");
       state->fault(true);
       tsm()->fault();
+    }
+
+    if (!state->homing()) {
+      if (limit_switch_x->read_bool()) {
+        LOG_ERROR("[FAULT] Limit switch x is touched");
+        state->fault(true);
+        tsm()->fault();
+      }
+
+      if (limit_switch_y->read_bool()) {
+        LOG_ERROR("[FAULT] Limit switch y is touched");
+        state->fault(true);
+        tsm()->fault();
+      }
     }
 
     // case 3: height is changing while running

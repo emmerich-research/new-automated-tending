@@ -22,7 +22,7 @@ class LiquidRefillingImpl;
 }
 
 namespace liquid {
-enum class status { full, normal, empty, unknown };
+using status = device::float_sensor::status;
 }
 
 using LiquidRefilling = StaticObj<impl::LiquidRefillingImpl>;
@@ -95,7 +95,7 @@ class LiquidRefillingImpl : public StackObj {
    *
    * @return water level device id
    */
-  inline const std::shared_ptr<device::UltrasonicDevice>& water_level_device()
+  inline const std::shared_ptr<device::FloatDevice>& water_level_device()
       const {
     return water_level_device_;
   }
@@ -120,8 +120,8 @@ class LiquidRefillingImpl : public StackObj {
    *
    * @return disinfectant level device
    */
-  inline const std::shared_ptr<device::UltrasonicDevice>&
-  disinfectant_level_device() const {
+  inline const std::shared_ptr<device::FloatDevice>& disinfectant_level_device()
+      const {
     return disinfectant_level_device_;
   }
   /**
@@ -143,25 +143,13 @@ class LiquidRefillingImpl : public StackObj {
 
  private:
   /**
-   * Min height for full
-   */
-  static const double MinHeight;
-  /**
-   * Max height for empty
-   */
-  static const double MaxHeight;
-  /**
    * Active status
    */
   bool active_;
   /**
    * Water level device
    */
-  std::shared_ptr<device::UltrasonicDevice> water_level_device_;
-  /**
-   * Water in device
-   */
-  std::shared_ptr<device::UltrasonicDevice> water_in_device_;
+  std::shared_ptr<device::FloatDevice> water_level_device_;
   /**
    * Water in device id in Shift Register
    */
@@ -173,7 +161,7 @@ class LiquidRefillingImpl : public StackObj {
   /**
    * Disinfectant level device
    */
-  std::shared_ptr<device::UltrasonicDevice> disinfectant_level_device_;
+  std::shared_ptr<device::FloatDevice> disinfectant_level_device_;
   /**
    * Disinfectant in device id in Shift Register
    */

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 
 #include <libcore/core.hpp>
@@ -11,10 +12,13 @@ int main() {
 
   ATM_STATUS status = ATM_OK;
 
-  machine::tending       tsm;
-  gui::Manager           ui_manager;
-  machine::FaultListener fault_listener(&tsm);
-  machine::TaskListener  task_listener(&tsm);
+  machine::tending                       tsm;
+  gui::Manager                           ui_manager;
+  machine::FaultListener                 fault_listener(&tsm);
+  machine::RestartFaultListener          restart_fault_listener(&tsm);
+  machine::TaskListener                  task_listener(&tsm);
+  machine::WaterRefillingListener        water_refilling_listener(&tsm);
+  machine::DisinfectantRefillingListener disinfectant_refilling_listener(&tsm);
   auto logger_window = std::make_shared<gui::LoggerWindowMT>();
 
   // initialize logger
@@ -66,7 +70,10 @@ int main() {
 
   // starting listeners
   fault_listener.start();
+  restart_fault_listener.start();
   task_listener.start();
+  water_refilling_listener.start();
+  disinfectant_refilling_listener.start();
 
   ui_manager.name(Config::get()->name());
   ui_manager.init();
@@ -103,12 +110,17 @@ int main() {
       reinterpret_cast<const machine::tending*>(&tsm));
 
   while (ui_manager.handle_events()) {
+    water_refilling_listener.check();
+    disinfectant_refilling_listener.check();
     ui_manager.render();
   }
 
   // stopping listeners
-  task_listener.stop();
   fault_listener.stop();
+  restart_fault_listener.stop();
+  task_listener.stop();
+  water_refilling_listener.stop();
+  disinfectant_refilling_listener.stop();
 
   // stopping ui
   ui_manager.exit();
@@ -117,7 +129,7 @@ int main() {
   state->fault(true);
   LOG_INFO("Killing task workers, will go into fault mode to kill app...");
   tsm.fault();
-  sleep_for<time_units::seconds>(5);
+  sleep_for<time_units::seconds>(2);
 
   state->running(false);
 

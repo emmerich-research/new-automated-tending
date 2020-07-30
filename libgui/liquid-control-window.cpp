@@ -11,9 +11,7 @@ LiquidControlWindow::LiquidControlWindow(machine::tending*       tsm,
                                          float                   width,
                                          float                   height,
                                          const ImGuiWindowFlags& flags)
-    : Window{"Liquid Control", width, height, flags},
-      tsm_{tsm},
-      thread_pool_{2} {}
+    : Window{"Liquid Control", width, height, flags}, tsm_{tsm} {}
 
 LiquidControlWindow::~LiquidControlWindow() {}
 
@@ -22,7 +20,6 @@ void LiquidControlWindow::show(Manager* manager) {
   massert(mechanism::LiquidRefilling::get() != nullptr, "sanity");
 
   auto* state = State::get();
-  auto* liquid_refilling = mechanism::LiquidRefilling::get();
 
   const ImVec2 size = util::size::h_wide(50.0f);
   unsigned int status_id = 0;
@@ -70,8 +67,8 @@ void LiquidControlWindow::show(Manager* manager) {
     {
       ImGui::PushFont(manager->button_font());
       if (util::button("EXCHANGE NOW", status_id++, active, size)) {
-        thread_pool().enqueue(
-            [liquid_refilling]() { liquid_refilling->exchange_water(); });
+        LOG_DEBUG("Im here to exchange");
+        state->water_refilling_request(true);
       }
       ImGui::PopFont();
     }
@@ -102,17 +99,17 @@ void LiquidControlWindow::show(Manager* manager) {
       ImGui::PushFont(manager->button_font());
       if (util::button("1 DAY", status_id++, schedule == Refill::ONE_DAY,
                        size)) {
-        LOG_INFO("Changing water refilling to one day");
+        LOG_INFO("Changing disinfectant refilling to one day");
         state->disinfectant_refilling_schedule(Refill::ONE_DAY);
       }
       if (util::button("2 DAYS", status_id++, schedule == Refill::TWO_DAYS,
                        size)) {
-        LOG_INFO("Changing water refilling to two days");
+        LOG_INFO("Changing disinfectant refilling to two days");
         state->disinfectant_refilling_schedule(Refill::TWO_DAYS);
       }
       if (util::button("3 DAYS", status_id++, schedule == Refill::THREE_DAYS,
                        size)) {
-        LOG_INFO("Changing water refilling to three days");
+        LOG_INFO("Changing disinfectant refilling to three days");
         state->disinfectant_refilling_schedule(Refill::THREE_DAYS);
       }
       ImGui::PopFont();
@@ -123,9 +120,7 @@ void LiquidControlWindow::show(Manager* manager) {
     {
       ImGui::PushFont(manager->button_font());
       if (util::button("EXCHANGE NOW", status_id++, active, size)) {
-        thread_pool().enqueue([liquid_refilling]() {
-          liquid_refilling->exchange_disinfectant();
-        });
+        state->disinfectant_refilling_request(true);
       }
       ImGui::PopFont();
     }

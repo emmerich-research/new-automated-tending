@@ -39,10 +39,7 @@ void TaskListener::stop() {
   if (running() && tsm()->is_ready()) {
     LOG_INFO("Stopping task listener");
     running_ = false;
-    // if (thread().joinable()) {
-    //   thread().join();
-    // }
-    LOG_INFO("Task listener is stopped completely");
+    // LOG_INFO("Task listener is stopped completely");
   }
 }
 
@@ -58,12 +55,11 @@ void TaskListener::execute() {
   time_unit end = seconds();
 
   while (running() && state->running()) {
-    std::unique_lock<std::mutex> lock(mutex());
-    state->signal().wait(
-        lock, [state] { return !state->running() || state->homing(); });
-
-    lock.unlock();
-    state->notify_all();
+    {
+      std::unique_lock<std::mutex> lock(mutex());
+      state->signal().wait(
+          lock, [state] { return !state->running() || state->homing(); });
+    }
 
     if (!running() || !state->running()) {
       return;

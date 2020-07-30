@@ -491,6 +491,20 @@ class ConfigImpl : public StackObj {
   inline T ultrasonic(Keys&&... keys) const {
     return find<T>("devices", "ultrasonic", std::forward<Keys>(keys)...);
   }
+  /**
+   * Get float sensor device
+   *
+   * It should be in key "devices.float-sensor"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return float sensor device
+   */
+  template <typename T, typename... Keys>
+  inline T float_sensor(Keys&&... keys) const {
+    return find<T>("devices", "float-sensor", std::forward<Keys>(keys)...);
+  }
 
  private:
   /**

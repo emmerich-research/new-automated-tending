@@ -7,6 +7,7 @@
  * Hold all machine's state
  */
 
+#include <chrono>
 #include <condition_variable>
 #include <shared_mutex>
 #include <thread>
@@ -98,20 +99,56 @@ struct Task {
  * @date   July 2020
  */
 struct Refill {
-  typedef enum { ONE_DAY, TWO_DAYS, THREE_DAYS } Schedule;
   /**
-   * Refill
+   * Schedule type
+   */
+  typedef enum { ONE_DAY = 1, TWO_DAYS, THREE_DAYS } Schedule;
+  /**
+   * Requested
+   */
+  bool requested;
+  /**
+   * Running
    */
   bool running;
   /**
    * Schedule
    */
   Schedule schedule;
-
+  /**
+   * Last refill
+   */
+  TimePoint last;
+  /**
+   * Next refill
+   */
+  TimePoint next;
   /**
    * Refill constructor
    */
   Refill();
+  /**
+   * Change schedule
+   *
+   * Will recalculate next refill time
+   *
+   * @param new_schedule new schedule
+   */
+  void set_schedule(const Schedule& new_schedule);
+  /**
+   * Change schedule
+   *
+   * Will recalculate next refill time
+   *
+   * @param time new time
+   */
+  void set_last(const TimePoint& time = Clock::now());
+  /**
+   * Update time
+   *
+   * Recalculate next refill time
+   */
+  void update();
   /**
    * Reset Task status
    */
@@ -431,6 +468,18 @@ class StateImpl : public StackObj {
    */
   const Refill& water_refilling();
   /**
+   * Set water refilling request status
+   *
+   * @param request refilling request status (true or false)
+   */
+  void water_refilling_request(bool request);
+  /**
+   * Get water refilling request
+   *
+   * @return status of water refilling request
+   */
+  bool water_refilling_requested();
+  /**
    * Set water refilling running status
    *
    * @param refilling refilling running status (true or false)
@@ -455,11 +504,35 @@ class StateImpl : public StackObj {
    */
   void water_refilling_schedule(const Refill::Schedule& schedule);
   /**
+   * Set water refilling last executed time
+   *
+   * @param time last executed time of water refilling
+   */
+  void water_refilling_last_executed(const TimePoint& time = Clock::now());
+  /**
+   * Get water refilling next executed time
+   *
+   * @return next executed time of water refilling
+   */
+  const TimePoint& water_refilling_next_executed();
+  /**
    * Get disinfectant refilling status
    *
    * @return disinfectant refilling status
    */
   const Refill& disinfectant_refilling();
+  /**
+   * Set disinfectant refilling request status
+   *
+   * @param request refilling request status (true or false)
+   */
+  void disinfectant_refilling_request(bool request);
+  /**
+   * Get disinfectant refilling request
+   *
+   * @return status of disinfectant refilling request
+   */
+  bool disinfectant_refilling_requested();
   /**
    * Set disinfectant refilling running status
    *
@@ -484,6 +557,19 @@ class StateImpl : public StackObj {
    * @param schedule schedule of disinfectant refilling
    */
   void disinfectant_refilling_schedule(const Refill::Schedule& schedule);
+  /**
+   * Set disinfectant refilling last executed time
+   *
+   * @param time last executed time of disinfectant refilling
+   */
+  void disinfectant_refilling_last_executed(
+      const TimePoint& time = Clock::now());
+  /**
+   * Get disinfectant refilling last executed time
+   *
+   * @return last executed time of disinfectant refilling
+   */
+  const TimePoint& disinfectant_refilling_next_executed();
 
  private:
   /**

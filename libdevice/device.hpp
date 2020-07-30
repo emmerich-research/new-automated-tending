@@ -61,4 +61,7 @@
 // 4.5. Ultrasonic Device
 #include "ultrasonic.hpp"
 
+// 4.6. Ultrasonic Device
+#include "float.hpp"
+
 #endif  // LIB_DEVICE_DEVICE_HPP_

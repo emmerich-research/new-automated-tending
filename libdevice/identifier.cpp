@@ -31,6 +31,11 @@ std::string water_level_;
 std::string disinfectant_level_;
 }  // namespace ultrasonic
 
+namespace float_sensor {
+std::string water_level_;
+std::string disinfectant_level_;
+}  // namespace float_sensor
+
 namespace comm {
 namespace plc {
 std::string spraying_tending_height_;

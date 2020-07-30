@@ -75,7 +75,7 @@ class UltrasonicDevice : public StackObj {
    * @param  trigger_pin          gpio pin, see Raspberry GPIO pinout for
    * details
    * @param  echo_active_state    echo active state (reversed or not)
-   * @param  trigger_active_state echo active state (reversed or not)
+   * @param  trigger_active_state trigger active state (reversed or not)
    */
   UltrasonicDevice(PI_PIN echo_pin,
                    PI_PIN trigger_pin,

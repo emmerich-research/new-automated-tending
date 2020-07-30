@@ -28,15 +28,21 @@
 
 // 2. Vendors
 // 2.1. Spdlog
-#include <spdlog/async.h>
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/fmt/ostr.h>
+
+#include <spdlog/fmt/bundled/chrono.h>
+
+#include <spdlog/async.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
 // 2.2. TOML
 #include <toml.hpp>
+
+// 2.3 Date
+#include <date/date.h>
 
 // 3. Inside Project
 #include <libutil/util.hpp>

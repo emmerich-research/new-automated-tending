@@ -44,22 +44,12 @@ class LiquidControlWindow : public Window {
    * @return state machine
    */
   inline machine::tending* tsm() { return tsm_; }
-  /**
-   * Get thread pool
-   *
-   * @return thread pool
-   */
-  inline algo::ThreadPool& thread_pool() { return thread_pool_; }
 
  private:
   /**
    * State machine
    */
   machine::tending* tsm_;
-  /**
-   * Liquid refilling thread pool
-   */
-  algo::ThreadPool thread_pool_;
 };
 }  // namespace gui
 
