@@ -104,10 +104,10 @@ time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
     unsigned long pulse = static_cast<unsigned long>(step_pulse());
     calc_step_pulse();
 
+    time_unit m = micros();
+
     // start pulsing
     step_device()->write(digital::value::high);
-
-    time_unit m = micros();
 
     // We should pull HIGH for at least 1-2us (step_high_min)
     sleep_for<time_units::micros>(StepperDevice::step_high_min);
