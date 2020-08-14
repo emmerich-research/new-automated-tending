@@ -7,7 +7,7 @@
 NAMESPACE_BEGIN
 
 namespace device {
-const time_unit StepperDevice::step_high_min = 2;
+const time_unit StepperDevice::step_high_min = 65;
 
 StepperDevice::StepperDevice(PI_PIN        step_pin,
                              PI_PIN        dir_pin,

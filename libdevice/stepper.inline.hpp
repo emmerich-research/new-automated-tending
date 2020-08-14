@@ -108,7 +108,6 @@ time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
 
     // start pulsing
     step_device()->write(digital::value::high);
-
     // We should pull HIGH for at least 1-2us (step_high_min)
     sleep_for<time_units::micros>(StepperDevice::step_high_min);
     step_device()->write(digital::value::low);
