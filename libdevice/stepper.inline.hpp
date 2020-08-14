@@ -100,13 +100,14 @@ time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
 
     // sleep_until<time_units::micros>(next_move_interval(), last_move_end());
 
+    // save value because calcStepPulse() will overwrite it
+    unsigned long pulse = static_cast<unsigned long>(step_pulse());
+    calc_step_pulse();
+
     // start pulsing
     step_device()->write(digital::value::high);
 
     time_unit m = micros();
-    // save value because calcStepPulse() will overwrite it
-    unsigned long pulse = static_cast<unsigned long>(step_pulse());
-    calc_step_pulse();
 
     // We should pull HIGH for at least 1-2us (step_high_min)
     sleep_for<time_units::micros>(StepperDevice::step_high_min);
