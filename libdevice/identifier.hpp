@@ -116,6 +116,14 @@ static auto        finger_infrared = []() {
   return finger_infrared_;
 };
 
+extern std::string sonicator_relay_;
+static auto        sonicator_relay = []() {
+  if (sonicator_relay_.empty()) {
+    sonicator_relay_ = Config::get()->sonicator_relay<std::string>("key");
+  }
+  return sonicator_relay_;
+};
+
 namespace ultrasonic {
 extern std::string water_level_;
 static auto        water_level = []() {
@@ -307,14 +315,14 @@ static auto        disinfectant_out = []() {
   return disinfectant_out_;
 };
 
-extern std::string sonicator_relay_;
-static auto        sonicator_relay = []() {
-  if (sonicator_relay_.empty()) {
-    sonicator_relay_ =
-        Config::get()->shift_register<std::string>("sonicator-relay", "key");
-  }
-  return sonicator_relay_;
-};
+/*extern std::string sonicator_relay_;*/
+// static auto        sonicator_relay = []() {
+// if (sonicator_relay_.empty()) {
+// sonicator_relay_ =
+// Config::get()->shift_register<std::string>("sonicator-relay", "key");
+//}
+// return sonicator_relay_;
+/*};*/
 }  // namespace pi
 }  // namespace comm
 }  // namespace id

@@ -114,7 +114,7 @@ type                         = "input"
 # limit switch x-axis
 [devices.limit-switch.x]
 key                          = "LIMIT-X"
-pin                          = 7
+pin                          = 2
 active-state                 = false
 
 # limit switch y-axis
@@ -300,6 +300,19 @@ top-pin                      = 21
 top-active-state             = true
 # ----------------------------------------------------------
 # End of Ultrasonic Distance Sensor
+# ----------------------------------------------------------
+
+# --------------------------------------------------
+# Sonicator Relay
+#
+# Will be pulled down
+# --------------------------------------------------
+[devices.sonicator-relay]
+key                          = "SONICATOR-RELAY"
+pin                          = 7
+active-state                 = true
+# ----------------------------------------------------------
+# End of Sonicator Relay
 # ----------------------------------------------------------
 
 [mechanisms]

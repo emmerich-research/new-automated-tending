@@ -177,6 +177,13 @@ static ATM_STATUS initialize_output_digital_devices() {
     return status;
   }
 
+  auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
+
+  // initialize sonicator relay
+  status = digital_output_registry->create(
+      id::sonicator_relay(), config->sonicator_relay<PI_PIN>("pin"),
+      config->sonicator_relay<bool>("active-state"), PI_PUD_DOWN);
+
   return status;
 }
 
@@ -223,13 +230,13 @@ static ATM_STATUS initialize_pi_to_plc_comm() {
     return status;
   }
 
-  status = shift_register->assign(
-      id::comm::pi::sonicator_relay(),
-      config->shift_register<byte>("sonicator-relay", "address"),
-      config->shift_register<bool>("sonicator-relay", "active-state"));
-  if (status == ATM_ERR) {
-    return status;
-  }
+  /*  status = shift_register->assign(*/
+  // id::comm::pi::sonicator_relay(),
+  // config->shift_register<byte>("sonicator-relay", "address"),
+  // config->shift_register<bool>("sonicator-relay", "active-state"));
+  // if (status == ATM_ERR) {
+  // return status;
+  //}
 
   // PLC to PI
   status = shift_register->assign(

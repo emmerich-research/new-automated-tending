@@ -315,14 +315,19 @@ template <typename Event,
 void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
   massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
+  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
   auto*  config = Config::get();
   auto*  state = State::get();
+  auto*  digital_output_registry = device::DigitalOutputDeviceRegistry::get();
   auto*  shift_register = device::ShiftRegister::get();
   auto&& movement = mechanism::movement_mechanism();
+
+  auto&& sonicator_relay =
+      digital_output_registry->get(device::id::sonicator_relay());
 
   if (state->fault())
     return;
@@ -354,8 +359,9 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
     if (sonicator) {
       LOG_INFO("Turning on the sonicator relay");
-      shift_register->write(device::id::comm::pi::sonicator_relay(),
-                            device::digital::value::high);
+      sonicator_relay->write(device::digital::value::high);
+      /*shift_register->write(device::id::comm::pi::sonicator_relay(),*/
+      /*device::digital::value::high);*/
     }
 
     if (state->fault())
@@ -369,8 +375,9 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
     if (sonicator) {
       LOG_INFO("Turning off the sonicator relay");
-      shift_register->write(device::id::comm::pi::sonicator_relay(),
-                            device::digital::value::low);
+      sonicator_relay->write(device::digital::value::low);
+      /*shift_register->write(device::id::comm::pi::sonicator_relay(),*/
+      /*device::digital::value::low);*/
     }
 
     if (state->fault())
