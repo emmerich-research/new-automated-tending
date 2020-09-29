@@ -308,19 +308,6 @@ key                          = "SONICATOR-RELAY"
 pin                          = 7
 active-state                 = true
 # ----------------------------------------------------------
-# End of Ultrasonic Distance Sensor
-# ----------------------------------------------------------
-
-# --------------------------------------------------
-# Sonicator Relay
-#
-# Will be pulled down
-# --------------------------------------------------
-[devices.sonicator-relay]
-key                          = "SONICATOR-RELAY"
-pin                          = 7
-active-state                 = true
-# ----------------------------------------------------------
 # End of Sonicator Relay
 # ----------------------------------------------------------
 
