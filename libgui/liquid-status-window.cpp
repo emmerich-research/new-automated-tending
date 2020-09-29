@@ -41,12 +41,10 @@ void LiquidStatusWindow::show([[maybe_unused]] Manager* manager) {
 
     ImGui::Text("WATER");
     util::status_button("REFILLING", status_id++, refilling, size);
-    util::status_button("FULL", status_id++,
-                        status == mechanism::liquid::status::full, size);
-    util::status_button("NORMAL", status_id++,
-                        status == mechanism::liquid::status::normal, size);
-    util::status_button("EMPTY", status_id++,
-                        status == mechanism::liquid::status::empty, size);
+    util::status_button("HIGH", status_id++,
+                        status == mechanism::liquid::status::high, size);
+    util::status_button("LOW", status_id++,
+                        status == mechanism::liquid::status::low, size);
   }
   ImGui::NextColumn();
   {
@@ -56,12 +54,10 @@ void LiquidStatusWindow::show([[maybe_unused]] Manager* manager) {
 
     ImGui::Text("DISINFECTANT");
     util::status_button("REFILLING", status_id++, refilling, size);
-    util::status_button("FULL", status_id++,
-                        status == mechanism::liquid::status::full, size);
-    util::status_button("NORMAL", status_id++,
-                        status == mechanism::liquid::status::normal, size);
-    util::status_button("EMPTY", status_id++,
-                        status == mechanism::liquid::status::empty, size);
+    util::status_button("HIGH", status_id++,
+                        status == mechanism::liquid::status::high, size);
+    util::status_button("LOW", status_id++,
+                        status == mechanism::liquid::status::low, size);
   }
   ImGui::NextColumn();
 

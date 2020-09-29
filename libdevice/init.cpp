@@ -452,20 +452,16 @@ static ATM_STATUS initialize_float_sensor_devices() {
 
   status = float_device_registry->create(
       id::float_sensor::water_level(),
-      config->float_sensor<PI_PIN>("water-level", "bottom-pin"),
-      config->float_sensor<PI_PIN>("water-level", "top-pin"),
-      config->float_sensor<bool>("water-level", "bottom-active-state"),
-      config->float_sensor<bool>("water-level", "top-active-state"));
+      config->float_sensor<PI_PIN>("water-level", "pin"),
+      config->float_sensor<bool>("water-level", "active-state"));
   if (status == ATM_ERR) {
     return status;
   }
 
   status = float_device_registry->create(
       id::float_sensor::disinfectant_level(),
-      config->float_sensor<PI_PIN>("disinfectant-level", "bottom-pin"),
-      config->float_sensor<PI_PIN>("disinfectant-level", "top-pin"),
-      config->float_sensor<bool>("disinfectant-level", "bottom-active-state"),
-      config->float_sensor<bool>("disinfectant-level", "top-active-state"));
+      config->float_sensor<PI_PIN>("disinfectant-level", "pin"),
+      config->float_sensor<bool>("disinfectant-level", "active-state"));
   if (status == ATM_ERR) {
     return status;
   }

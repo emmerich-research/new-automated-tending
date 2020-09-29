@@ -21,7 +21,7 @@ namespace device {
 class FloatDevice;
 
 namespace float_sensor {
-enum class status { empty, normal, full };
+enum class status { high, low };
 }
 
 /** device::FloatDevice registry singleton class using
@@ -66,15 +66,10 @@ class FloatDevice : public StackObj {
    *
    * Initialize the float sensor device by opening GPIO pins
    *
-   * @param  bottom_pin   gpio pin, see Raspberry GPIO pinout for details
-   * @param  top_pin  gpio pin, see Raspberry GPIO pinout for details
-   * @param  bottom_active_state    bottom active state (reversed or not)
-   * @param  top_active_state   top active state (reversed or not)
+   * @param  pin   gpio pin, see Raspberry GPIO pinout for details
+   * @param  active_state    bottom active state (reversed or not)
    */
-  FloatDevice(PI_PIN bottom_pin,
-              PI_PIN top_pin,
-              bool   bottom_active_state = true,
-              bool   top_active_state = true);
+  FloatDevice(PI_PIN pin, bool active_state = true);
   /**
    * FloatDevice Destructor
    *
@@ -82,51 +77,29 @@ class FloatDevice : public StackObj {
    */
   virtual ~FloatDevice();
   /**
-   * Get Bottom GPIO pin
+   * Get float pin
    *
-   * @return bottom GPIO pin
+   * @return float GPIO pin
    */
-  inline const PI_PIN& bottom_pin() const { return bottom_pin_; }
+  inline const PI_PIN& pin() const { return pin_; }
   /**
-   * Get Top float GPIO pin
-   *
-   * @return trigger GPIO pin
-   */
-  inline const PI_PIN& top_pin() const { return top_pin_; }
-  /**
-   * Get Bottom float DigitalInputDevice that has been initialized
+   * Get float DigitalOutputDevice that has been initialized
    *
    * @return shared_ptr of DigitalInputDevice
    */
-  inline const std::shared_ptr<DigitalInputDevice>& bottom_device() const {
-    return bottom_device_;
-  }
-  /**
-   * Get Top float DigitalOutputDevice that has been initialized
-   *
-   * @return shared_ptr of DigitalInputDevice
-   */
-  inline const std::shared_ptr<DigitalInputDevice>& top_device() const {
-    return top_device_;
+  inline const std::shared_ptr<DigitalInputDevice>& device() const {
+    return device_;
   }
 
  protected:
   /**
-   * Bottom float pin
+   * Float pin
    */
-  const PI_PIN bottom_pin_;
+  const PI_PIN pin_;
   /**
-   * Top float pin
+   * Float digital input device
    */
-  const PI_PIN top_pin_;
-  /**
-   * Bottom float digital input device
-   */
-  const std::shared_ptr<DigitalInputDevice> bottom_device_;
-  /**
-   * Top float digital input device
-   */
-  const std::shared_ptr<DigitalInputDevice> top_device_;
+  const std::shared_ptr<DigitalInputDevice> device_;
 };
 }  // namespace device
 

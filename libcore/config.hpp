@@ -505,6 +505,35 @@ class ConfigImpl : public StackObj {
   inline T float_sensor(Keys&&... keys) const {
     return find<T>("devices", "float-sensor", std::forward<Keys>(keys)...);
   }
+  /**
+   * Get liquid refilling config
+   *
+   * It should be in key "mechanisms.liquid-refilling"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return liquid refilling mechanisms
+   */
+  template <typename T, typename... Keys>
+  inline T liquid_refilling(Keys&&... keys) const {
+    return find<T>("mechanisms", "liquid-refilling",
+                   std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get sonicator relay device
+   *
+   * It should be in key "devices.sonicator-relay"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return sonicator-relay device
+   */
+  template <typename T, typename... Keys>
+  inline T sonicator_relay(Keys&&... keys) const {
+    return find<T>("devices", "sonicator-relay", std::forward<Keys>(keys)...);
+  }
 
  private:
   /**
@@ -539,66 +568,66 @@ class ConfigImpl : public StackObj {
   template <typename T, typename... Keys>
   inline T find(Keys&&... keys) const {
     return toml::find<T>(config(), std::forward<Keys>(keys)...);
-  }
-  /**
-   * Load speed profile for all mechanisms
-   */
-  void load_speed_profiles();
+    }
+    /**
+     * Load speed profile for all mechanisms
+     */
+    void load_speed_profiles();
 
- private:
-  /**
-   * TOML config data
-   */
-  const toml::value config_;
-  /**
-   * Config file
-   */
-  const std::string config_path_;
-  /**
-   * Spraying movement path
-   */
-  path_container spraying_path_;
-  /**
-   * Spraying position
-   */
-  coordinate spraying_position_;
-  /**
-   * Tending movement path for edge pattern
-   */
-  path_container tending_path_edge_;
-  /**
-   * Tending movement path for zigzag pattern
-   */
-  path_container tending_path_zigzag_;
-  /**
-   * Tending position
-   */
-  coordinate tending_position_;
-  /**
-   * Cleaning container
-   */
-  cleaning_container cleaning_stations_;
-  /**
-   * Fault speed profile
-   */
-  config::SpeedProfile fault_speed_profile_;
-  /**
-   * Homing speed profile
-   */
-  config::SpeedProfile homing_speed_profile_;
-  /**
-   * Tending speed profile
-   */
-  config::SpeedProfile tending_speed_profile_;
-  /**
-   * Spraying speed profile
-   */
-  config::SpeedProfile spraying_speed_profile_;
-  /**
-   * Cleaning speed profile
-   */
-  config::SpeedProfile cleaning_speed_profile_;
-};
+   private:
+    /**
+     * TOML config data
+     */
+    const toml::value config_;
+    /**
+     * Config file
+     */
+    const std::string config_path_;
+    /**
+     * Spraying movement path
+     */
+    path_container spraying_path_;
+    /**
+     * Spraying position
+     */
+    coordinate spraying_position_;
+    /**
+     * Tending movement path for edge pattern
+     */
+    path_container tending_path_edge_;
+    /**
+     * Tending movement path for zigzag pattern
+     */
+    path_container tending_path_zigzag_;
+    /**
+     * Tending position
+     */
+    coordinate tending_position_;
+    /**
+     * Cleaning container
+     */
+    cleaning_container cleaning_stations_;
+    /**
+     * Fault speed profile
+     */
+    config::SpeedProfile fault_speed_profile_;
+    /**
+     * Homing speed profile
+     */
+    config::SpeedProfile homing_speed_profile_;
+    /**
+     * Tending speed profile
+     */
+    config::SpeedProfile tending_speed_profile_;
+    /**
+     * Spraying speed profile
+     */
+    config::SpeedProfile spraying_speed_profile_;
+    /**
+     * Cleaning speed profile
+     */
+    config::SpeedProfile cleaning_speed_profile_;
+  };
 }  // namespace impl
 
 NAMESPACE_END

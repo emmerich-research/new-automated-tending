@@ -12,7 +12,7 @@ NAMESPACE_BEGIN
 using namespace mechanism;
 
 static ATM_STATUS initialize_movement_mechanism() {
-  auto       config = Config::get();
+  auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
 
   status = MovementBuilder::create();
@@ -73,6 +73,10 @@ static ATM_STATUS initialize_movement_mechanism() {
       device::id::float_sensor::disinfectant_level(),
       device::id::comm::pi::disinfectant_in(),
       device::id::comm::pi::disinfectant_out());
+
+  liquid_refill_mechanism->setup_draining_time(
+      config->liquid_refilling<unsigned int>("water", "draining-time"),
+      config->liquid_refilling<unsigned int>("disinfectant", "draining-time"));
 
   massert(LiquidRefilling::get()->active(), "sanity");
 

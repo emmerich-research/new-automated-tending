@@ -12,11 +12,11 @@
  * - PROJECT_STATE_FILE
  * - APP_AUTHOR
  * - APP_AUTHOR
- * - LOGS_DIR  
- * - APP_NAME  
+ * - LOGS_DIR
+ * - APP_NAME
  * - APP_ALT_NAME
- * - APP_DESC   
- * - DEBUG     
+ * - APP_DESC
+ * - DEBUG
  * - TIME_FMT
  * - ATM_OK
  * - ATM_ERR
@@ -51,6 +51,11 @@
  */
 #define USE_NAMESPACE         using namespace @PROJECT_NAMESPACE@
 
+/**
+ * @def APP_NAME_FULL
+ * application name (auto generated from cmake)
+ */
+#define APP_NAME_FULL         "@APP_NAME@"
 
 NAMESPACE_BEGIN
 

@@ -287,17 +287,26 @@ max-range                    = 25.0 # in cm
 
 [devices.float-sensor.water-level]
 key                          = "FLOAT-WATER-LEVEL"
-bottom-pin                   = 24
-bottom-active-state          = true
-top-pin                      = 25
-top-active-state             = true
+pin                          = 25
+active-state                 = true
 
 [devices.float-sensor.disinfectant-level]
 key                          = "FLOAT-DISINFECTANT-LEVEL"
-bottom-pin                   = 20
-bottom-active-state          = true
-top-pin                      = 21
-top-active-state             = true
+pin                          = 21
+active-state                 = true
+# ----------------------------------------------------------
+# End of Ultrasonic Distance Sensor
+# ----------------------------------------------------------
+
+# --------------------------------------------------
+# Sonicator Relay
+#
+# Will be pulled down
+# --------------------------------------------------
+[devices.sonicator-relay]
+key                          = "SONICATOR-RELAY"
+pin                          = 7
+active-state                 = true
 # ----------------------------------------------------------
 # End of Ultrasonic Distance Sensor
 # ----------------------------------------------------------
@@ -728,3 +737,11 @@ deceleration                 = 1000.0 # steps / s^2
 rpm                          = 100.0
 acceleration                 = 100.0 # steps / s^2
 deceleration                 = 100.0 # steps / s^2
+
+[mechanisms.liquid-refilling]
+
+[mechanisms.liquid-refilling.water]
+draining-time                = 10 # in seconds
+
+[mechanisms.liquid-refilling.disinfectant]
+draining-time                = 10 # in seconds

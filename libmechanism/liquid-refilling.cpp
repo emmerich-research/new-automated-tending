@@ -9,7 +9,10 @@ NAMESPACE_BEGIN
 
 namespace mechanism {
 namespace impl {
-LiquidRefillingImpl::LiquidRefillingImpl() : active_{false} {}
+LiquidRefillingImpl::LiquidRefillingImpl()
+    : active_{false},
+      water_draining_time_{30},
+      disinfectant_draining_time_{30} {}
 
 LiquidRefillingImpl::~LiquidRefillingImpl() {}
 
@@ -72,6 +75,13 @@ void LiquidRefillingImpl::setup_disinfectant_device(
   disinfectant_out_device_id_ = out_device_id;
 }
 
+void LiquidRefillingImpl::setup_draining_time(
+    unsigned int water_draining_time,
+    unsigned int disinfectant_draining_time) {
+  water_draining_time_ = water_draining_time;
+  disinfectant_draining_time_ = disinfectant_draining_time;
+}
+
 liquid::status LiquidRefillingImpl::water_level() const {
   return water_level_device()->read();
 }
@@ -116,13 +126,16 @@ void LiquidRefillingImpl::exchange_water() const {
     return;
   }
 
-  while (!state->fault() && (water_level() != liquid::status::empty)) {
+  while (!state->fault() && (water_level() != liquid::status::low)) {
     // waiting...
     sleep_for<time_units::millis>(100);
     if (state->fault()) {
       return;
     }
   }
+
+  // this should be on liquid::status::low
+  sleep_for<time_units::seconds>(water_draining_time_);
 
   if (state->fault()) {
     return;
@@ -152,7 +165,7 @@ void LiquidRefillingImpl::exchange_water() const {
     return;
   }
 
-  while (!state->fault() && (water_level() != liquid::status::full)) {
+  while (!state->fault() && (water_level() != liquid::status::high)) {
     // waiting...
     sleep_for<time_units::millis>(100);
     if (state->fault()) {
@@ -213,13 +226,16 @@ void LiquidRefillingImpl::exchange_disinfectant() const {
     return;
   }
 
-  while (!state->fault() && (disinfectant_level() != liquid::status::empty)) {
+  while (!state->fault() && (disinfectant_level() != liquid::status::low)) {
     // waiting...
     sleep_for<time_units::millis>(100);
     if (state->fault()) {
       return;
     }
   }
+
+  // this should be on liquid::status::low
+  sleep_for<time_units::seconds>(disinfectant_draining_time_);
 
   if (state->fault()) {
     return;
@@ -251,7 +267,7 @@ void LiquidRefillingImpl::exchange_disinfectant() const {
     return;
   }
 
-  while (!state->fault() && (disinfectant_level() != liquid::status::full)) {
+  while (!state->fault() && (disinfectant_level() != liquid::status::high)) {
     // waiting...
     sleep_for<time_units::millis>(100);
     if (state->fault()) {

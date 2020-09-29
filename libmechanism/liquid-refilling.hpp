@@ -61,6 +61,14 @@ class LiquidRefillingImpl : public StackObj {
                                  const std::string& in_device_id,
                                  const std::string& out_device_id);
   /**
+   * Setup draining time
+   *
+   * @param water_draining_time        water draining time
+   * @param disinfectant_draining_time disinfectant draining time
+   */
+  void setup_draining_time(unsigned int water_draining_time,
+                           unsigned int disinfectant_draining_time);
+  /**
    * Get water level status
    *
    * @return water level status
@@ -159,6 +167,10 @@ class LiquidRefillingImpl : public StackObj {
    */
   std::string water_out_device_id_;
   /**
+   * Water draining time
+   */
+  unsigned int water_draining_time_;
+  /**
    * Disinfectant level device
    */
   std::shared_ptr<device::FloatDevice> disinfectant_level_device_;
@@ -170,6 +182,10 @@ class LiquidRefillingImpl : public StackObj {
    * Disinfectant out device id in Shift Register
    */
   std::string disinfectant_out_device_id_;
+  /**
+   * Disinfectant draining time
+   */
+  unsigned int disinfectant_draining_time_;
 };
 }  // namespace impl
 }  // namespace mechanism

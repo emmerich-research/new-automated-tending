@@ -70,6 +70,7 @@
 #include "logger-window.hpp"
 #include "logger-window.inline.hpp"
 #include "manual-movement-window.hpp"
+#include "metadata-window.hpp"
 #include "movement-window.hpp"
 #include "plc-trigger-window.hpp"
 #include "speed-profile-window.hpp"

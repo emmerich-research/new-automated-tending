@@ -92,7 +92,8 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
         }
         root_machine(fsm).start_tending();
         return;
-      } else if (cleaning_height.check() && !state->fault()) {
+      } else if (cleaning_height.check() && state->tending_complete() &&
+                 !state->fault()) {
         if (state->fault()) {
           root_machine(fsm).fault();
           return;
