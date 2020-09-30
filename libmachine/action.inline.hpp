@@ -297,7 +297,7 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
   sleep_for<time_units::millis>(3000);
   shift_register->write(device::id::comm::pi::tending_complete(),
                         device::digital::value::low);
-  state->tending_complete(false);
+  // state->tending_complete(false);
 
   // reset back the spraying, tending, and cleaning ready to true
   machine::util::reset_task_ready();
@@ -414,6 +414,8 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   sleep_for<time_units::millis>(3000);
 
+  // add teding complete to make cleaning is done only once
+  state->tending_complete(false);
   state->cleaning_complete(false);
 
   // reset back the spraying, tending, and cleaning ready to true
