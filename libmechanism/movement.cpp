@@ -777,32 +777,19 @@ void Movement::homing() {
   // enabling motor
   enable_motors();
 
-  // homing x and y
-  bool is_x_completed =
-      limit_switch_x()->read().value_or(device::digital::value::low) ==
-      device::digital::value::high;
+  // homing y
   bool is_y_completed =
       limit_switch_y()->read().value_or(device::digital::value::low) ==
       device::digital::value::high;
 
   while ((!state->fault() || (state->fault() && state->manual_mode())) &&
-         (!is_x_completed || !is_y_completed)) {
+         !is_y_completed) {
     if (state->fault() && !state->manual_mode()) {
       state->homing(false);
       return;
     }
 
-    long steps_x = 0;
     long steps_y = 0;
-
-    if (limit_switch_x()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high) {
-      is_x_completed = true;
-      stepper_x()->stop();
-    } else {
-      steps_x = convert_length_to_steps<movement::unit::mm>(
-          -1500.0, builder()->steps_per_mm_x());
-    }
 
     if (limit_switch_y()->read().value_or(device::digital::value::low) ==
         device::digital::value::high) {
@@ -813,23 +800,56 @@ void Movement::homing() {
           -1200.0, builder()->steps_per_mm_y());
     }
 
-    start_move(steps_x, steps_y, 0);
+    start_move(0, steps_y, 0);
+    while (!ready()) {
+      bool y_complete =
+          limit_switch_y()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high;
+      if (y_complete) {
+        is_y_completed = true;
+        stepper_y()->stop();
+      }
+      if (y_complete) {
+        ready_ = true;
+      } else {
+        next();
+      }
+    }
+  }
+
+  // homing x
+  bool is_x_completed =
+      limit_switch_x()->read().value_or(device::digital::value::low) ==
+      device::digital::value::high;
+
+  while ((!state->fault() || (state->fault() && state->manual_mode())) &&
+         !is_x_completed) {
+    if (state->fault() && !state->manual_mode()) {
+      state->homing(false);
+      return;
+    }
+
+    long steps_x = 0;
+
+    if (limit_switch_x()->read().value_or(device::digital::value::low) ==
+        device::digital::value::high) {
+      is_x_completed = true;
+      stepper_x()->stop();
+    } else {
+      steps_x = convert_length_to_steps<movement::unit::mm>(
+          -1500.0, builder()->steps_per_mm_x());
+    }
+
+    start_move(steps_x, 0, 0);
     while (!ready()) {
       bool x_complete =
           limit_switch_x()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high;
-      bool y_complete =
-          limit_switch_y()->read().value_or(device::digital::value::low) ==
           device::digital::value::high;
       if (x_complete) {
         is_x_completed = true;
         stepper_x()->stop();
       }
-      if (y_complete) {
-        is_y_completed = true;
-        stepper_y()->stop();
-      }
-      if (x_complete && y_complete) {
+      if (x_complete) {
         ready_ = true;
       } else {
         next();
