@@ -47,16 +47,6 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
       return;
     }
 
-    // shift_register->write(device::id::comm::pi::spraying_ready(),
-    //                       device::digital::value::low);
-    // state->spraying_ready(false);
-
-    // shift_register->write(device::id::comm::pi::tending_ready(),
-    //                       device::digital::value::low);
-    // state->tending_ready(false);
-
-    // state->cleaning_ready(false);
-
     LOG_INFO("Homing...");
     movement->homing();
 

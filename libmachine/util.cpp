@@ -22,7 +22,7 @@ void reset_task_state() {
   movement->disable_motors();
 
   shift_register->write_all(device::digital::value::low);
-  state->reset_ui();
+  // state->reset_ui();
 }
 
 void reset_task_ready() {
