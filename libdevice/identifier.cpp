@@ -24,8 +24,9 @@ std::string finger_protection_;
 
 std::string spray_;
 std::string finger_;
+std::string finger_brake_;
 std::string finger_infrared_;
-std::string sonicator_relay_;
+// std::string sonicator_relay_;
 
 namespace ultrasonic {
 std::string water_level_;
@@ -57,9 +58,10 @@ std::string water_in_;
 std::string water_out_;
 std::string disinfectant_in_;
 std::string disinfectant_out_;
-// std::string sonicator_relay_;
+std::string sonicator_relay_;
 }  // namespace pi
 }  // namespace comm
 }  // namespace id
 }  // namespace device
+
 NAMESPACE_END

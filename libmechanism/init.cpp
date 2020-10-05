@@ -46,6 +46,7 @@ static ATM_STATUS initialize_movement_mechanism() {
   }
 
   status = movement_builder->setup_finger(device::id::finger(),
+                                          device::id::finger_brake(),
                                           device::id::finger_infrared());
   if (status == ATM_ERR) {
     return ATM_ERR;

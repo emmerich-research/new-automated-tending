@@ -94,6 +94,13 @@ key                          = "FINGER"
 pin                          = 18
 active-state                 = true
 
+[devices.finger.brake]
+# will be pulled down
+key                          = "FINGER-BRAKE"
+pin                          = 20
+active-state                 = true
+duration                     = 200 # in milliseconds
+
 [devices.finger.infrared]
 key                          = "FINGER-IR"
 pin                          = 12
@@ -254,30 +261,6 @@ address                      = 14
 active-state                 = true
 # ----------------------------------------------------------
 # End of RasPi to PLC
-# ----------------------------------------------------------
-
-# ----------------------------------------------------------
-# Ultrasonic Distance Sensor
-# ----------------------------------------------------------
-[devices.ultrasonic]
-
-[devices.ultrasonic.water-level]
-key                          = "ULTRASONIC-WATER-LEVEL"
-trigger-pin                  = 24
-trigger-active-state         = true
-echo-pin                     = 25
-echo-active-state            = true
-max-range                    = 25.0 # in cm
-
-[devices.ultrasonic.disinfectant-level]
-key                          = "ULTRASONIC-DISINFECTANT-LEVEL"
-trigger-pin                  = 20
-trigger-active-state         = true
-echo-pin                     = 21
-echo-active-state            = true
-max-range                    = 25.0 # in cm
-# ----------------------------------------------------------
-# End of Ultrasonic Distance Sensor
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------

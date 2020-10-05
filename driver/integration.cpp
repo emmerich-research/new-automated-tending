@@ -191,13 +191,14 @@ static void do_cleaning() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto*  config = Config::get();
-  auto*  state = State::get();
-  auto*  shift_register = device::ShiftRegister::get();
-  auto*  output_registry = device::DigitalOutputDeviceRegistry::get();
+  auto* config = Config::get();
+  auto* state = State::get();
+  auto* shift_register = device::ShiftRegister::get();
+  // auto*  output_registry = device::DigitalOutputDeviceRegistry::get();
   auto&& movement = mechanism::movement_mechanism();
 
-  auto&& sonicator_relay = output_registry->get(device::id::sonicator_relay());
+  // auto&& sonicator_relay =
+  // output_registry->get(device::id::sonicator_relay());
 
   shift_register->write(device::id::comm::pi::spraying_ready(),
                         device::digital::value::low);
@@ -221,9 +222,9 @@ static void do_cleaning() {
 
     if (sonicator) {
       LOG_INFO("Turning on the sonicator relay");
-      sonicator_relay->write(device::digital::value::high);
-      /*    shift_register->write(device::id::comm::pi::sonicator_relay(),*/
-      /*device::digital::value::high);*/
+      // sonicator_relay->write(device::digital::value::high);
+      shift_register->write(device::id::comm::pi::sonicator_relay(),
+                            device::digital::value::high);
     }
 
     LOG_INFO("Wait for {} seconds", time);
@@ -234,9 +235,9 @@ static void do_cleaning() {
 
     if (sonicator) {
       LOG_INFO("Turning off the sonicator relay");
-      sonicator_relay->write(device::digital::value::low);
-      /*shift_register->write(device::id::comm::pi::sonicator_relay(),*/
-      /*device::digital::value::low);*/
+      // sonicator_relay->write(device::digital::value::low);
+      shift_register->write(device::id::comm::pi::sonicator_relay(),
+                            device::digital::value::low);
     }
   }
 

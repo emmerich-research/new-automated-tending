@@ -91,13 +91,16 @@ ATM_STATUS MovementBuilderImpl::setup_z(
 
 ATM_STATUS MovementBuilderImpl::setup_finger(
     const std::string& finger_id,
+    const std::string& finger_brake_id,
     const std::string& finger_infrared_id) {
   if (!device::PWMDeviceRegistry::get()->exist(finger_id) ||
+      !device::DigitalOutputDeviceRegistry::get()->exist(finger_brake_id) ||
       !device::DigitalInputDeviceRegistry::get()->exist(finger_infrared_id)) {
     return ATM_ERR;
   }
 
   finger_id_ = finger_id;
+  finger_brake_id_ = finger_brake_id;
   finger_infrared_id_ = finger_infrared_id;
 
   return ATM_OK;
@@ -217,17 +220,21 @@ void Movement::setup_finger() {
 
   auto* pwm_registry = device::PWMDeviceRegistry::get();
   auto* digital_input_registry = device::DigitalInputDeviceRegistry::get();
+  auto* digital_output_registry = device::DigitalOutputDeviceRegistry::get();
 
   auto&& finger = pwm_registry->get(builder()->finger_id());
+  auto&& finger_brake =
+      digital_output_registry->get(builder()->finger_brake_id());
   auto&& finger_infrared =
       digital_input_registry->get(builder()->finger_infrared_id());
 
-  if (!finger || !finger_infrared) {
+  if (!finger || !finger_brake || !finger_infrared) {
     active_ = false;
     return;
   }
 
   finger_ = finger;
+  finger_brake_ = finger_brake;
   finger_infrared_ = finger_infrared;
 }
 
@@ -725,8 +732,13 @@ void Movement::rotate_finger() const {
 }
 
 void Movement::stop_finger() const {
+  auto* config = Config::get();
   LOG_DEBUG("Stopping finger...");
   finger()->write(device::digital::value::low);
+  finger_brake()->write(device::digital::value::high);
+  sleep_for<time_units::millis>(
+      config->finger_brake<unsigned long>("duration"));
+  finger_brake()->write(device::digital::value::low);
 }
 
 void Movement::homing_finger() const {
