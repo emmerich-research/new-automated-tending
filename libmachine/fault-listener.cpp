@@ -76,7 +76,7 @@ void FaultListener::execute() {
     }
 
     // case 1: e-stop button is pressed
-    if (e_stop->read_bool()) {
+    if (!state->fault() && e_stop->read_bool()) {
       LOG_ERROR("[FAULT] E-stop button is pressed");
       state->fault(true);
       tsm()->fault();
@@ -85,14 +85,14 @@ void FaultListener::execute() {
     // case 2: not homing
     //         limit switches are turning on while moving
     //         except for homing
-    if (!state->homing() &&
+    if (!state->fault() && !state->homing() &&
         (limit_switch_x->read_bool() || limit_switch_y->read_bool())) {
       LOG_ERROR("[FAULT] Limit switch x or y are touched");
       state->fault(true);
       tsm()->fault();
     }
 
-    if (!state->homing()) {
+    if (!state->fault() && !state->homing()) {
       if (limit_switch_x->read_bool()) {
         LOG_ERROR("[FAULT] Limit switch x is touched");
         state->fault(true);
@@ -109,8 +109,9 @@ void FaultListener::execute() {
     // case 3: height is changing while running
     // case 3.1: at tending and spraying, check the height
     //           and the special limit switch for checking the finger
-    if (state->spraying_running() || state->tending_running()) {
-      if (!spraying_tending_height->read_bool()) {
+    if (!state->fault() &&
+        (state->spraying_running() || state->tending_running())) {
+      if (!state->fault() && !spraying_tending_height->read_bool()) {
         LOG_ERROR(
             "[FAULT] Spraying/Tending height is changed while running spray "
             "or tending task");
@@ -118,7 +119,7 @@ void FaultListener::execute() {
         tsm()->fault();
       }
 
-      if (finger_protection->read_bool()) {
+      if (!state->fault() && finger_protection->read_bool()) {
         LOG_ERROR("[FAULT] Finger protection limit switch is touched");
         state->fault(true);
         tsm()->fault();
@@ -126,7 +127,7 @@ void FaultListener::execute() {
     }
 
     // case 3.2: at tending and spraying height
-    if (state->cleaning_running()) {
+    if (!state->fault() && state->cleaning_running()) {
       if (!cleaning_height->read_bool()) {
         LOG_ERROR(
             "[FAULT] Cleaning height is changed while running cleaning task");

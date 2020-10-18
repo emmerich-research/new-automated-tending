@@ -814,6 +814,11 @@ void Movement::homing() {
 
     start_move(0, steps_y, 0);
     while (!ready()) {
+      if (state->fault() && !state->manual_mode()) {
+        state->homing(false);
+        return;
+      }
+
       bool y_complete =
           limit_switch_y()->read().value_or(device::digital::value::low) ==
           device::digital::value::high;
@@ -827,6 +832,11 @@ void Movement::homing() {
         next();
       }
     }
+  }
+
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
   }
 
   // homing x
@@ -854,6 +864,11 @@ void Movement::homing() {
 
     start_move(steps_x, 0, 0);
     while (!ready()) {
+      if (state->fault() && !state->manual_mode()) {
+        state->homing(false);
+        return;
+      }
+
       bool x_complete =
           limit_switch_x()->read().value_or(device::digital::value::low) ==
           device::digital::value::high;

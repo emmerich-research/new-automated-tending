@@ -66,12 +66,12 @@ template <typename Event,
           typename SourceState,
           typename TargetState>
 void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
-  massert(State::get() != nullptr, "sanity");
+  // massert(State::get() != nullptr, "sanity");
 
-  auto* state = State::get();
+  // auto* state = State::get();
 
-  state->homing(false);
-  state->fault(false);
+  // state->homing(false);
+  // state->fault(false);
 }
 
 namespace spraying {
@@ -160,13 +160,15 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Spraying is completed...");
 
+  shift_register->write(device::id::comm::pi::spraying_ready(),
+                        device::digital::value::low);
+  state->spraying_ready(false);
+
   sleep_for<time_units::millis>(3000);
+
   shift_register->write(device::id::comm::pi::spraying_complete(),
                         device::digital::value::low);
   state->spraying_complete(false);
-
-  // reset back the spraying, tending, and cleaning ready to true
-  machine::util::reset_task_ready();
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
@@ -294,13 +296,18 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Tending is completed...");
 
+  shift_register->write(device::id::comm::pi::tending_ready(),
+                        device::digital::value::low);
+  state->tending_ready(false);
+
   sleep_for<time_units::millis>(3000);
+
+  // keep sending signal to PLC that we have done the job,
+  // however for our internal logic, the complete state must be
+  // low because of prerequisitie of cleaning
   shift_register->write(device::id::comm::pi::tending_complete(),
                         device::digital::value::low);
   // state->tending_complete(false);
-
-  // reset back the spraying, tending, and cleaning ready to true
-  machine::util::reset_task_ready();
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
@@ -412,14 +419,11 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Cleaning is completed...");
 
+  state->cleaning_ready(false);
+
   sleep_for<time_units::millis>(3000);
 
-  // add teding complete to make cleaning is done only once
-  state->tending_complete(false);
   state->cleaning_complete(false);
-
-  // reset back the spraying, tending, and cleaning ready to true
-  machine::util::reset_task_ready();
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();

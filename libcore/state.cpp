@@ -75,8 +75,8 @@ StateImpl::StateImpl()
 void StateImpl::reset_ui() {
   {
     const StateImpl::StateLock lock(mutex());
-    tending_.reset();
     spraying_.reset();
+    tending_.reset();
     cleaning_.reset();
     homing_ = false;
     water_refilling_.reset();

@@ -53,6 +53,8 @@ void FaultWindow::show([[maybe_unused]] Manager* manager) {
       ImGui::Separator();
 
       if (util::button("ACKNOWLEDGE", id++, false, popup_size)) {
+        state->homing(false);
+        state->fault(false);
         tsm()->restart();
         ImGui::CloseCurrentPopup();
       }

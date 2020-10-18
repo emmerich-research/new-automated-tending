@@ -71,7 +71,9 @@ void RestartFaultListener::execute() {
     }
 
     if (state->fault()) {
-      // fault is pressed
+      // restart is pressed
+      state->homing(false);
+      state->fault(false);
       tsm()->restart();
     }
     // else there are threads that win the restart condition
