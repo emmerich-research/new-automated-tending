@@ -55,11 +55,18 @@ void TaskListener::execute() {
   time_unit end = seconds();
 
   while (running() && state->running()) {
-    {
-      std::unique_lock<std::mutex> lock(mutex());
-      state->signal().wait(
-          lock, [state] { return !state->running() || state->homing(); });
+    while (state->running() && !state->homing()) {
+      if (!state->running()) {
+        return;
+      }
+
+      sleep_for<time_units::millis>(50);
     }
+    // {
+    //   std::unique_lock<std::mutex> lock(mutex());
+    //   state->signal().wait(
+    //       lock, [state] { return !state->running() || state->homing(); });
+    // }
 
     if (!running() || !state->running()) {
       return;

@@ -55,6 +55,16 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
       return;
     }
 
+    shift_register->write(device::id::comm::pi::spraying_ready(),
+                          device::digital::value::high);
+    // state->spraying_ready(true);
+
+    shift_register->write(device::id::comm::pi::tending_ready(),
+                          device::digital::value::high);
+    // state->tending_ready(true);
+
+    // state->cleaning_ready(true);
+
     guard::height::spraying_tending spraying_tending_height;
     guard::height::cleaning         cleaning_height;
 
