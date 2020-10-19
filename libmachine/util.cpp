@@ -21,7 +21,7 @@ void prepare_execution_state() {
   movement->stop_finger();
   movement->disable_motors();
 
-  shift_register->write_all(device::digital::value::low);
+  // shift_register->write_all(device::digital::value::low);
   // state->reset_ui();
 }
 
