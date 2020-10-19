@@ -66,9 +66,9 @@ void reset_spraying() {
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
-  shift_register->write(device::id::comm::pi::spraying_ready(),
-                        device::digital::value::low);
-  state->spraying_ready(false);
+  // shift_register->write(device::id::comm::pi::spraying_ready(),
+  //                       device::digital::value::low);
+  // state->spraying_ready(false);
 
   shift_register->write(device::id::comm::pi::spraying_running(),
                         device::digital::value::low);
@@ -86,9 +86,9 @@ void reset_tending() {
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
-  shift_register->write(device::id::comm::pi::tending_ready(),
-                        device::digital::value::low);
-  state->tending_ready(false);
+  // shift_register->write(device::id::comm::pi::tending_ready(),
+  //                       device::digital::value::low);
+  // state->tending_ready(false);
 
   shift_register->write(device::id::comm::pi::tending_running(),
                         device::digital::value::low);
@@ -103,7 +103,7 @@ void reset_cleaning() {
   massert(State::get() != nullptr, "sanity");
 
   auto* state = State::get();
-  state->cleaning_ready(false);
+  // state->cleaning_ready(false);
   state->cleaning_running(false);
   state->cleaning_complete(false);
 }
