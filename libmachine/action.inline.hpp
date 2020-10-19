@@ -160,9 +160,9 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Spraying is completed...");
 
-  shift_register->write(device::id::comm::pi::spraying_ready(),
-                        device::digital::value::low);
-  state->spraying_ready(false);
+  // shift_register->write(device::id::comm::pi::spraying_ready(),
+  //                       device::digital::value::low);
+  // state->spraying_ready(false);
 
   sleep_for<time_units::millis>(3000);
 
@@ -296,9 +296,9 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Tending is completed...");
 
-  shift_register->write(device::id::comm::pi::tending_ready(),
-                        device::digital::value::low);
-  state->tending_ready(false);
+  // shift_register->write(device::id::comm::pi::tending_ready(),
+  //                       device::digital::value::low);
+  // state->tending_ready(false);
 
   sleep_for<time_units::millis>(3000);
 
@@ -419,7 +419,7 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Cleaning is completed...");
 
-  state->cleaning_ready(false);
+  // state->cleaning_ready(false);
 
   sleep_for<time_units::millis>(3000);
 
