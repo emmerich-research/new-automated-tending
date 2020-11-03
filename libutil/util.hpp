@@ -15,8 +15,13 @@
 // 1. STL
 #include <chrono>
 #include <cstdlib>
+#include <exception>
 #include <iostream>
+#include <iterator>
+#include <sstream>
+#include <string>
 #include <thread>
+#include <vector>
 
 // 2. Vendors
 // 2.1. GHC Filesystem
@@ -28,6 +33,7 @@
 #include "macros.hpp"
 #include "math.hpp"
 #include "pair.hpp"
+#include "time.hpp"
 #include "timer.hpp"
 
 #pragma GCC diagnostic pop

@@ -280,6 +280,14 @@ class ShiftRegisterImpl : public ShiftRegisterDeviceImpl {
    */
   ATM_STATUS write(const std::string& id, const digital::value& level);
   /**
+   * Write the HIGH/LOW data to all devices that connected to Shift Register
+   *
+   * @param  level HIGH/LOW
+   *
+   * @return ATM_OK or ATM_ERR, but not both
+   */
+  void write_all(const digital::value& level);
+  /**
    * Check device with unique id
    *
    * @param  id    unique identifier of device

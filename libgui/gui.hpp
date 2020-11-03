@@ -64,12 +64,13 @@
 
 #include "window.hpp"
 
-#include "cleaning-control-window.hpp"
-#include "cleaning-window.hpp"
 #include "fault-window.hpp"
+#include "liquid-control-window.hpp"
+#include "liquid-status-window.hpp"
 #include "logger-window.hpp"
 #include "logger-window.inline.hpp"
 #include "manual-movement-window.hpp"
+#include "metadata-window.hpp"
 #include "movement-window.hpp"
 #include "plc-trigger-window.hpp"
 #include "speed-profile-window.hpp"

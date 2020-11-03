@@ -39,48 +39,24 @@ void SpeedProfileWindow::show([[maybe_unused]] Manager* manager) {
   {
     const bool is_slow = current_speed == config::speed::slow;
 
-    if (is_slow) {
-      ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-    }
-
     if (util::button("SLOW", status_id++, is_slow, size)) {
       state->speed_profile(config::speed::slow);
-    }
-
-    if (is_slow) {
-      ImGui::PopItemFlag();
     }
   }
   ImGui::NextColumn();
   {
     const bool is_normal = current_speed == config::speed::normal;
 
-    if (is_normal) {
-      ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-    }
-
     if (util::button("NORMAL", status_id++, is_normal, size)) {
       state->speed_profile(config::speed::normal);
-    }
-
-    if (is_normal) {
-      ImGui::PopItemFlag();
     }
   }
   ImGui::NextColumn();
   {
     const bool is_fast = current_speed == config::speed::fast;
 
-    if (is_fast) {
-      ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-    }
-
     if (util::button("FAST", status_id++, is_fast, size)) {
       state->speed_profile(config::speed::fast);
-    }
-
-    if (is_fast) {
-      ImGui::PopItemFlag();
     }
   }
   ImGui::NextColumn();

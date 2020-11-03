@@ -31,7 +31,7 @@ void ManualMovementWindow::show(Manager* manager) {
   const auto* config = Config::get();
   auto&&      movement = mechanism::movement_mechanism();
 
-  const ImVec2 button_size = util::size::h_wide(80);
+  const ImVec2 button_size = util::size::h_wide(94);
 
   const double x_manual = config->fault_manual_movement<double>("x");
   const double y_manual = config->fault_manual_movement<double>("y");

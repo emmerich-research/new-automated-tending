@@ -24,12 +24,19 @@ std::string finger_protection_;
 
 std::string spray_;
 std::string finger_;
+std::string finger_brake_;
 std::string finger_infrared_;
+std::string sonicator_relay_;
 
 namespace ultrasonic {
 std::string water_level_;
 std::string disinfectant_level_;
 }  // namespace ultrasonic
+
+namespace float_sensor {
+std::string water_level_;
+std::string disinfectant_level_;
+}  // namespace float_sensor
 
 namespace comm {
 namespace plc {
@@ -56,4 +63,5 @@ std::string sonicator_relay_;
 }  // namespace comm
 }  // namespace id
 }  // namespace device
+
 NAMESPACE_END

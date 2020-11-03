@@ -28,7 +28,7 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
     auto&& movement = mechanism::movement_mechanism();
 
     if (state->fault()) {
-      root_machine(fsm).fault();
+      // root_machine(fsm).fault();
       return;
     }
 
@@ -36,32 +36,22 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
     state->manual_mode(false);
 
     if (state->fault()) {
-      root_machine(fsm).fault();
+      // root_machine(fsm).fault();
       return;
     }
 
-    machine::util::reset_task_state();
+    machine::util::prepare_execution_state();
 
     if (state->fault()) {
-      root_machine(fsm).fault();
+      // root_machine(fsm).fault();
       return;
     }
-
-    // shift_register->write(device::id::comm::pi::spraying_ready(),
-    //                       device::digital::value::low);
-    // state->spraying_ready(false);
-
-    // shift_register->write(device::id::comm::pi::tending_ready(),
-    //                       device::digital::value::low);
-    // state->tending_ready(false);
-
-    // state->cleaning_ready(false);
 
     LOG_INFO("Homing...");
     movement->homing();
 
     if (state->fault()) {
-      root_machine(fsm).fault();
+      // root_machine(fsm).fault();
       return;
     }
 
@@ -82,26 +72,27 @@ void TendingDef::running::no_task::on_enter(Event const&&, FSM& fsm) const {
            !state->fault()) {
       if (spraying_tending_height.check() && !state->fault()) {
         if (state->fault()) {
-          root_machine(fsm).fault();
+          // root_machine(fsm).fault();
           return;
         }
         root_machine(fsm).start_spraying();
         if (state->fault()) {
-          root_machine(fsm).fault();
+          // root_machine(fsm).fault();
           return;
         }
         root_machine(fsm).start_tending();
         return;
-      } else if (cleaning_height.check() && !state->fault()) {
+      } else if (cleaning_height.check() && state->tending_complete() &&
+                 !state->fault()) {
         if (state->fault()) {
-          root_machine(fsm).fault();
+          // root_machine(fsm).fault();
           return;
         }
         root_machine(fsm).start_cleaning();
         break;
       }
       if (state->fault()) {
-        root_machine(fsm).fault();
+        // root_machine(fsm).fault();
         return;
       } else {
         sleep_for<time_units::millis>(500);
@@ -132,17 +123,7 @@ void TendingDef::running::spraying::preparation::on_enter(Event&&, FSM& fsm) {
 
   LOG_INFO("Spraying preparation...");
 
-  shift_register->write(device::id::comm::pi::spraying_running(),
-                        device::digital::value::low);
-  state->spraying_running(false);
-
-  shift_register->write(device::id::comm::pi::spraying_complete(),
-                        device::digital::value::low);
-  state->spraying_complete(false);
-
-  // make sure tending and cleaning ready is off
-  state->tending_ready(false);
-  state->cleaning_ready(false);
+  machine::util::reset_spraying();
 
   LOG_INFO("Homing to make sure ready to spray...");
   movement->homing();
@@ -159,17 +140,7 @@ void TendingDef::running::spraying::preparation::on_exit(Event&&,
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
-  shift_register->write(device::id::comm::pi::tending_running(),
-                        device::digital::value::low);
-  state->spraying_running(false);
-
-  shift_register->write(device::id::comm::pi::tending_complete(),
-                        device::digital::value::low);
-  state->spraying_complete(false);
-
-  // make sure tending and cleaning ready is off
-  state->tending_ready(false);
-  state->cleaning_ready(false);
+  machine::util::spraying_ready();
 
   LOG_INFO("Spraying is ready, waiting for 3 seconds...");
   sleep_for<time_units::millis>(3000);
@@ -200,17 +171,7 @@ void TendingDef::running::tending::preparation::on_enter(Event&&, FSM& fsm) {
 
   LOG_INFO("Tending preparation...");
 
-  shift_register->write(device::id::comm::pi::tending_running(),
-                        device::digital::value::low);
-  state->tending_running(false);
-
-  shift_register->write(device::id::comm::pi::tending_complete(),
-                        device::digital::value::low);
-  state->tending_complete(false);
-
-  // make sure spray and clean ready are off
-  state->spraying_ready(false);
-  state->cleaning_ready(false);
+  machine::util::reset_tending();
 
   LOG_INFO("Homing to make sure ready to tend...");
   movement->homing();
@@ -226,17 +187,7 @@ void TendingDef::running::tending::preparation::on_exit(Event&&,
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
-  shift_register->write(device::id::comm::pi::tending_running(),
-                        device::digital::value::low);
-  state->tending_running(false);
-
-  shift_register->write(device::id::comm::pi::tending_complete(),
-                        device::digital::value::low);
-  state->tending_complete(false);
-
-  // make sure spray and clean ready are off
-  state->spraying_ready(false);
-  state->cleaning_ready(false);
+  machine::util::tending_ready();
 
   LOG_INFO("Tending is ready, waiting for 3 seconds...");
   sleep_for<time_units::millis>(3000);
@@ -267,12 +218,7 @@ void TendingDef::running::cleaning::preparation::on_enter(Event&&, FSM& fsm) {
 
   LOG_INFO("Cleaning preparation...");
 
-  state->cleaning_running(false);
-  state->cleaning_complete(false);
-
-  // make sure spray and tending ready are off
-  state->spraying_ready(false);
-  state->tending_ready(false);
+  machine::util::reset_cleaning();
 
   LOG_INFO("Homing to make sure ready to clean...");
   movement->homing();
@@ -288,12 +234,10 @@ void TendingDef::running::cleaning::preparation::on_exit(Event&&,
   auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
-  state->cleaning_running(false);
-  state->cleaning_complete(false);
+  machine::util::cleaning_ready();
 
-  // make sure spray and tending ready are off
-  state->spraying_ready(false);
-  state->tending_ready(false);
+  // add tending complete to make cleaning is done only once
+  state->tending_complete(false);
 
   LOG_INFO("Cleaning is ready, waiting for 3 seconds...");
   sleep_for<time_units::millis>(3000);

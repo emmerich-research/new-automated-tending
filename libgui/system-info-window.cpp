@@ -5,6 +5,8 @@
 #include <chrono>
 #include <ctime>
 
+#include <libutil/util.hpp>
+
 #include "util.hpp"
 
 NAMESPACE_BEGIN
@@ -18,9 +20,8 @@ SystemInfoWindow::SystemInfoWindow(float                   width,
 SystemInfoWindow::~SystemInfoWindow() {}
 
 void SystemInfoWindow::show([[maybe_unused]] Manager* manager) {
-  std::time_t end_time =
-      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-  auto time_str = std::ctime(&end_time);
+  std::time_t end_time = Clock::to_time_t(Clock::now());
+  auto        time_str = std::ctime(&end_time);
 
   ImGui::Text("%s", time_str);
 

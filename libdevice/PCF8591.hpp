@@ -32,14 +32,14 @@ class PCF8591Device : public AnalogDevice {
    * @param   val   value to write
    * @return  ATM_OK or ATM_ERR, but not both
    */
-  virtual ATM_STATUS write(const PI_PIN& pin, const analog::value& val);
+  virtual ATM_STATUS write(const PI_PIN& pin, const analog::value& val) override;
   /**
    * Read data from analog pin via i2c port
    *
    * @param   pin   i2c pin
    * @return  ATM_OK or ATM_ERR, but not both
    */
-  virtual std::optional<analog::value> read(const PI_PIN& pin);
+  virtual std::optional<analog::value> read(const PI_PIN& pin) override;
   /**
    * Create shared_ptr<PCF8591Device>
    *
@@ -62,7 +62,7 @@ class PCF8591Device : public AnalogDevice {
    *
    * Close the i2c port that has been initialized
    */
-  virtual ~PCF8591Device() = default;
+  virtual ~PCF8591Device() override = default;
 };
 }  // namespace analog
 }  // namespace device

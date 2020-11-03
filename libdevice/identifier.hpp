@@ -108,12 +108,28 @@ static auto        finger = []() {
   return finger_;
 };
 
+extern std::string finger_brake_;
+static auto        finger_brake = []() {
+  if (finger_brake_.empty()) {
+    finger_brake_ = Config::get()->finger_brake<std::string>("key");
+  }
+  return finger_brake_;
+};
+
 extern std::string finger_infrared_;
 static auto        finger_infrared = []() {
   if (finger_infrared_.empty()) {
     finger_infrared_ = Config::get()->finger_infrared<std::string>("key");
   }
   return finger_infrared_;
+};
+
+extern std::string sonicator_relay_;
+static auto        sonicator_relay = []() {
+  if (sonicator_relay_.empty()) {
+    sonicator_relay_ = Config::get()->sonicator_relay<std::string>("key");
+  }
+  return sonicator_relay_;
 };
 
 namespace ultrasonic {
@@ -135,6 +151,27 @@ static auto        disinfectant_level = []() {
 };
 
 }  // namespace ultrasonic
+
+namespace float_sensor {
+extern std::string water_level_;
+static auto        water_level = []() {
+  if (water_level_.empty()) {
+    water_level_ =
+        Config::get()->float_sensor<std::string>("water-level", "key");
+  }
+  return water_level_;
+};
+
+extern std::string disinfectant_level_;
+static auto        disinfectant_level = []() {
+  if (disinfectant_level_.empty()) {
+    disinfectant_level_ =
+        Config::get()->float_sensor<std::string>("disinfectant-level", "key");
+  }
+  return disinfectant_level_;
+};
+
+}  // namespace float_sensor
 
 namespace comm {
 namespace plc {

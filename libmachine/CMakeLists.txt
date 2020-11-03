@@ -8,7 +8,11 @@ ucm_add_files(
   "util.cpp"
 
   "fault-listener.cpp"
+  "restart-fault-listener.cpp"
   "task-listener.cpp"
+
+  "water-refilling-listener.cpp"
+  "disinfectant-refilling-listener.cpp"
 
   TO SOURCES)
   

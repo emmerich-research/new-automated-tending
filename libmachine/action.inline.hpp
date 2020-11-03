@@ -66,12 +66,12 @@ template <typename Event,
           typename SourceState,
           typename TargetState>
 void restart::operator()(Event const&, FSM&, SourceState&, TargetState&) const {
-  massert(State::get() != nullptr, "sanity");
+  // massert(State::get() != nullptr, "sanity");
 
-  auto* state = State::get();
+  // auto* state = State::get();
 
-  state->homing(false);
-  state->fault(false);
+  // state->homing(false);
+  // state->fault(false);
 }
 
 namespace spraying {
@@ -160,13 +160,15 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Spraying is completed...");
 
+  // shift_register->write(device::id::comm::pi::spraying_ready(),
+  //                       device::digital::value::low);
+  // state->spraying_ready(false);
+
   sleep_for<time_units::millis>(3000);
+
   shift_register->write(device::id::comm::pi::spraying_complete(),
                         device::digital::value::low);
   state->spraying_complete(false);
-
-  // reset back the spraying, tending, and cleaning ready to true
-  machine::util::reset_task_ready();
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
@@ -294,13 +296,18 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Tending is completed...");
 
+  // shift_register->write(device::id::comm::pi::tending_ready(),
+  //                       device::digital::value::low);
+  // state->tending_ready(false);
+
   sleep_for<time_units::millis>(3000);
+
+  // keep sending signal to PLC that we have done the job,
+  // however for our internal logic, the complete state must be
+  // low because of prerequisitie of cleaning
   shift_register->write(device::id::comm::pi::tending_complete(),
                         device::digital::value::low);
-  state->tending_complete(false);
-
-  // reset back the spraying, tending, and cleaning ready to true
-  machine::util::reset_task_ready();
+  // state->tending_complete(false);
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();
@@ -315,14 +322,19 @@ template <typename Event,
 void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
   massert(Config::get() != nullptr, "sanity");
   massert(State::get() != nullptr, "sanity");
+  massert(device::DigitalOutputDeviceRegistry::get() != nullptr, "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
   auto*  config = Config::get();
   auto*  state = State::get();
+  auto*  digital_output_registry = device::DigitalOutputDeviceRegistry::get();
   auto*  shift_register = device::ShiftRegister::get();
   auto&& movement = mechanism::movement_mechanism();
+
+  auto&& sonicator_relay =
+      digital_output_registry->get(device::id::sonicator_relay());
 
   if (state->fault())
     return;
@@ -354,8 +366,9 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
     if (sonicator) {
       LOG_INFO("Turning on the sonicator relay");
-      shift_register->write(device::id::comm::pi::sonicator_relay(),
-                            device::digital::value::high);
+      sonicator_relay->write(device::digital::value::high);
+      // shift_register->write(device::id::comm::pi::sonicator_relay(),
+      //                       device::digital::value::high);
     }
 
     if (state->fault())
@@ -369,8 +382,9 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
     if (sonicator) {
       LOG_INFO("Turning off the sonicator relay");
-      shift_register->write(device::id::comm::pi::sonicator_relay(),
-                            device::digital::value::low);
+      sonicator_relay->write(device::digital::value::low);
+      // shift_register->write(device::id::comm::pi::sonicator_relay(),
+      //                       device::digital::value::low);
     }
 
     if (state->fault())
@@ -405,12 +419,11 @@ void complete::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) {
 
   LOG_INFO("Cleaning is completed...");
 
+  // state->cleaning_ready(false);
+
   sleep_for<time_units::millis>(3000);
 
   state->cleaning_complete(false);
-
-  // reset back the spraying, tending, and cleaning ready to true
-  machine::util::reset_task_ready();
 
   sleep_for<time_units::millis>(1000);
   root_machine(fsm).task_completed();

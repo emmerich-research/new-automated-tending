@@ -312,7 +312,7 @@ class ConfigImpl : public StackObj {
                    std::forward<Keys>(keys)...);
   }
   /**
-   * Get finger device info
+   * Get finger motor device info
    *
    * It should be in key "devices.finger.motor"
    *
@@ -324,6 +324,20 @@ class ConfigImpl : public StackObj {
   template <typename T, typename... Keys>
   inline T finger(Keys&&... keys) const {
     return find<T>("devices", "finger", "motor", std::forward<Keys>(keys)...);
+  }
+  /**
+   * Get finger brake device info
+   *
+   * It should be in key "devices.finger.brake"
+   *
+   * @tparam T     type of config value
+   * @tparam Keys  variadic args for keys (should be string)
+   *
+   * @return finger device info with type T
+   */
+  template <typename T, typename... Keys>
+  inline T finger_brake(Keys&&... keys) const {
+    return find<T>("devices", "finger", "brake", std::forward<Keys>(keys)...);
   }
   /**
    * Get finger infrared device info
@@ -339,252 +353,295 @@ class ConfigImpl : public StackObj {
   inline T finger_infrared(Keys&&... keys) const {
     return find<T>("devices", "finger", "infrared",
                    std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get analog device info
-   *
-   * It should be in key "devices.analog"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return stepper x-axis info with type T
-   */
-  template <typename T, typename... Keys>
-  inline T analog(Keys&&... keys) const {
-    return find<T>("devices", "analog", std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get spraying position
-   *
-   * It should be in key "mechanisms.spraying.position"
-   *
-   * @return spraying position
-   */
-  const coordinate& spraying_position();
-  /**
-   * Get spraying movement path
-   *
-   * It should be in key "mechanisms.spraying.path"
-   *
-   * @return spraying movement path
-   */
-  const path_container& spraying_path();
-  /**
-   * Get spraying movement path coordinate at specified index
-   *
-   * @param idx index to get
-   *
-   * @return spraying movement path at specified index
-   */
-  const coordinate spraying_path(size_t idx);
-  /**
-   * Get tending position
-   *
-   * It should be in key "mechanisms.tending.position"
-   *
-   * @return tending position
-   */
-  const coordinate& tending_position();
-  /**
-   * Get tending edge movement path
-   *
-   * It should be in key "mechanisms.tending.path.edge"
-   *
-   * @return tending edge movement path
-   */
-  const path_container& tending_path_edge();
-  /**
-   * Get tending edge movement path coordinate at specified index
-   *
-   * @param idx index to get
-   *
-   * @return tending edge movement path at specified index
-   */
-  const coordinate tending_path_edge(size_t idx);
-  /**
-   * Get tending zigzag movement path
-   *
-   * It should be in key "mechanisms.tending.path.zigzag"
-   *
-   * @return tending zigzag movement path
-   */
-  const path_container& tending_path_zigzag();
-  /**
-   * Get tending zigzag movement path coordinate at specified index
-   *
-   * @param idx index to get
-   *
-   * @return tending movement path at specified index
-   */
-  const coordinate tending_path_zigzag(size_t idx);
-  /**
-   * Get cleaning stations
-   *
-   * It should be in key "mechanisms.cleaning.stations"
-   *
-   * @return tending zigzag movement path
-   */
-  const cleaning_container& cleaning_stations();
-  /**
-   * Get cleaning station at specified index
-   *
-   * @param idx index to get
-   *
-   * @return cleaning station at specified index
-   */
-  const cleaning& cleaning_station(size_t idx);
-  /**
-   * Get mechanisms fault manual mode movement
-   *
-   * It should be in key "mechanisms.fault.manual.movement"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return manual mode config
-   */
-  template <typename T, typename... Keys>
-  inline T fault_manual_movement(Keys&&... keys) const {
-    return find<T>("mechanisms", "fault", "manual", "movement",
-                   std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get shift register device configuration
-   *
-   * It should be in key "devices.shift-register"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return shift register device configuration
-   */
-  template <typename T, typename... Keys>
-  inline T shift_register(Keys&&... keys) const {
-    return find<T>("devices", "shift-register", std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get communication device from PLC to RaspberryPI
-   *
-   * It should be in key "devices.plc-to-pi"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return communication device info from PLC to RaspberryPI with type T
-   */
-  template <typename T, typename... Keys>
-  inline T plc_to_pi(Keys&&... keys) const {
-    return find<T>("devices", "plc-to-pi", std::forward<Keys>(keys)...);
-  }
-  /**
-   * Get ultrasonic device
-   *
-   * It should be in key "devices.ultrasonic"
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return ultrasonic device
-   */
-  template <typename T, typename... Keys>
-  inline T ultrasonic(Keys&&... keys) const {
-    return find<T>("devices", "ultrasonic", std::forward<Keys>(keys)...);
-  }
+    }
+    /**
+     * Get analog device info
+     *
+     * It should be in key "devices.analog"
+     *
+     * @tparam T     type of config value
+     * @tparam Keys  variadic args for keys (should be string)
+     *
+     * @return stepper x-axis info with type T
+     */
+    template <typename T, typename... Keys>
+    inline T analog(Keys && ... keys) const {
+      return find<T>("devices", "analog", std::forward<Keys>(keys)...);
+    }
+    /**
+     * Get spraying position
+     *
+     * It should be in key "mechanisms.spraying.position"
+     *
+     * @return spraying position
+     */
+    const coordinate& spraying_position();
+    /**
+     * Get spraying movement path
+     *
+     * It should be in key "mechanisms.spraying.path"
+     *
+     * @return spraying movement path
+     */
+    const path_container& spraying_path();
+    /**
+     * Get spraying movement path coordinate at specified index
+     *
+     * @param idx index to get
+     *
+     * @return spraying movement path at specified index
+     */
+    const coordinate spraying_path(size_t idx);
+    /**
+     * Get tending position
+     *
+     * It should be in key "mechanisms.tending.position"
+     *
+     * @return tending position
+     */
+    const coordinate& tending_position();
+    /**
+     * Get tending edge movement path
+     *
+     * It should be in key "mechanisms.tending.path.edge"
+     *
+     * @return tending edge movement path
+     */
+    const path_container& tending_path_edge();
+    /**
+     * Get tending edge movement path coordinate at specified index
+     *
+     * @param idx index to get
+     *
+     * @return tending edge movement path at specified index
+     */
+    const coordinate tending_path_edge(size_t idx);
+    /**
+     * Get tending zigzag movement path
+     *
+     * It should be in key "mechanisms.tending.path.zigzag"
+     *
+     * @return tending zigzag movement path
+     */
+    const path_container& tending_path_zigzag();
+    /**
+     * Get tending zigzag movement path coordinate at specified index
+     *
+     * @param idx index to get
+     *
+     * @return tending movement path at specified index
+     */
+    const coordinate tending_path_zigzag(size_t idx);
+    /**
+     * Get cleaning stations
+     *
+     * It should be in key "mechanisms.cleaning.stations"
+     *
+     * @return tending zigzag movement path
+     */
+    const cleaning_container& cleaning_stations();
+    /**
+     * Get cleaning station at specified index
+     *
+     * @param idx index to get
+     *
+     * @return cleaning station at specified index
+     */
+    const cleaning& cleaning_station(size_t idx);
+    /**
+     * Get mechanisms fault manual mode movement
+     *
+     * It should be in key "mechanisms.fault.manual.movement"
+     *
+     * @tparam T     type of config value
+     * @tparam Keys  variadic args for keys (should be string)
+     *
+     * @return manual mode config
+     */
+    template <typename T, typename... Keys>
+    inline T fault_manual_movement(Keys && ... keys) const {
+      return find<T>("mechanisms", "fault", "manual", "movement",
+                     std::forward<Keys>(keys)...);
+    }
+    /**
+     * Get shift register device configuration
+     *
+     * It should be in key "devices.shift-register"
+     *
+     * @tparam T     type of config value
+     * @tparam Keys  variadic args for keys (should be string)
+     *
+     * @return shift register device configuration
+     */
+    template <typename T, typename... Keys>
+    inline T shift_register(Keys && ... keys) const {
+      return find<T>("devices", "shift-register", std::forward<Keys>(keys)...);
+    }
+    /**
+     * Get communication device from PLC to RaspberryPI
+     *
+     * It should be in key "devices.plc-to-pi"
+     *
+     * @tparam T     type of config value
+     * @tparam Keys  variadic args for keys (should be string)
+     *
+     * @return communication device info from PLC to RaspberryPI with type T
+     */
+    template <typename T, typename... Keys>
+    inline T plc_to_pi(Keys && ... keys) const {
+      return find<T>("devices", "plc-to-pi", std::forward<Keys>(keys)...);
+    }
+    /**
+     * Get ultrasonic device
+     *
+     * It should be in key "devices.ultrasonic"
+     *
+     * @tparam T     type of config value
+     * @tparam Keys  variadic args for keys (should be string)
+     *
+     * @return ultrasonic device
+     */
+    template <typename T, typename... Keys>
+    inline T ultrasonic(Keys && ... keys) const {
+      return find<T>("devices", "ultrasonic", std::forward<Keys>(keys)...);
+    }
+    /**
+     * Get sonicator relay device
+     *
+     * It should be in key "devices.sonicator-relay"
+     *
+     * @tparam T     type of config value
+     * @tparam Keys  variadic args for keys (should be string)
+     *
+     * @return sonicator relay device
+     */
+    template <typename T, typename... Keys>
+    inline T sonicator_relay(Keys&& ... keys) const {
+      return find<T>("devices", "sonicator-relay", std::forward<Keys>(keys)...);
+    }
+    /**
+     * Get float sensor device
+     *
+     * It should be in key "devices.float-sensor"
+     *
+     * @tparam T     type of config value
+     * @tparam Keys  variadic args for keys (should be string)
+     *
+     * @return float sensor device
+     */
+    template <typename T, typename... Keys>
+    inline T float_sensor(Keys && ... keys) const {
+      return find<T>("devices", "float-sensor", std::forward<Keys>(keys)...);
+    }
+    /**
+     * Get liquid refilling config
+     *
+     * It should be in key "mechanisms.liquid-refilling"
+     *
+     * @tparam T     type of config value
+     * @tparam Keys  variadic args for keys (should be string)
+     *
+     * @return liquid refilling mechanisms
+     */
+    template <typename T, typename... Keys>
+    inline T liquid_refilling(Keys&&... keys) const {
+      return find<T>("mechanisms", "liquid-refilling",
+                     std::forward<Keys>(keys)...);
+    }
 
- private:
-  /**
-   * ConfigImpl Constructor
-   *
-   * Initialize YAML-CPP and load yaml config file for this project
-   *
-   * @param config_path   config file path
-   */
-  explicit ConfigImpl(const std::string& config_path);
-  /**
-   * ConfigImpl Destructor
-   *
-   * Noop
-   *
-   */
-  ~ConfigImpl() = default;
-  /**
-   * Get TOML Config
-   *
-   * @return config tree
-   */
-  inline const toml::value& config() const { return config_; }
-  /**
-   * Find key in the TOML config
-   *
-   * @tparam T     type of config value
-   * @tparam Keys  variadic args for keys (should be string)
-   *
-   * @return config value with type T
-   */
-  template <typename T, typename... Keys>
-  inline T find(Keys&&... keys) const {
-    return toml::find<T>(config(), std::forward<Keys>(keys)...);
-  }
-  /**
-   * Load speed profile for all mechanisms
-   */
-  void load_speed_profiles();
+   private:
+    /**
+     * ConfigImpl Constructor
+     *
+     * Initialize YAML-CPP and load yaml config file for this project
+     *
+     * @param config_path   config file path
+     */
+    explicit ConfigImpl(const std::string& config_path);
+    /**
+     * ConfigImpl Destructor
+     *
+     * Noop
+     *
+     */
+    ~ConfigImpl() = default;
+    /**
+     * Get TOML Config
+     *
+     * @return config tree
+     */
+    inline const toml::value& config() const { return config_; }
+    /**
+     * Find key in the TOML config
+     *
+     * @tparam T     type of config value
+     * @tparam Keys  variadic args for keys (should be string)
+     *
+     * @return config value with type T
+     */
+    template <typename T, typename... Keys>
+    inline T find(Keys && ... keys) const {
+      return toml::find<T>(config(), std::forward<Keys>(keys)...);
+    }
+    /**
+     * Load speed profile for all mechanisms
+     */
+    void load_speed_profiles();
 
- private:
-  /**
-   * TOML config data
-   */
-  const toml::value config_;
-  /**
-   * Config file
-   */
-  const std::string config_path_;
-  /**
-   * Spraying movement path
-   */
-  path_container spraying_path_;
-  /**
-   * Spraying position
-   */
-  coordinate spraying_position_;
-  /**
-   * Tending movement path for edge pattern
-   */
-  path_container tending_path_edge_;
-  /**
-   * Tending movement path for zigzag pattern
-   */
-  path_container tending_path_zigzag_;
-  /**
-   * Tending position
-   */
-  coordinate tending_position_;
-  /**
-   * Cleaning container
-   */
-  cleaning_container cleaning_stations_;
-  /**
-   * Fault speed profile
-   */
-  config::SpeedProfile fault_speed_profile_;
-  /**
-   * Homing speed profile
-   */
-  config::SpeedProfile homing_speed_profile_;
-  /**
-   * Tending speed profile
-   */
-  config::SpeedProfile tending_speed_profile_;
-  /**
-   * Spraying speed profile
-   */
-  config::SpeedProfile spraying_speed_profile_;
-  /**
-   * Cleaning speed profile
-   */
-  config::SpeedProfile cleaning_speed_profile_;
-};
+   private:
+    /**
+     * TOML config data
+     */
+    const toml::value config_;
+    /**
+     * Config file
+     */
+    const std::string config_path_;
+    /**
+     * Spraying movement path
+     */
+    path_container spraying_path_;
+    /**
+     * Spraying position
+     */
+    coordinate spraying_position_;
+    /**
+     * Tending movement path for edge pattern
+     */
+    path_container tending_path_edge_;
+    /**
+     * Tending movement path for zigzag pattern
+     */
+    path_container tending_path_zigzag_;
+    /**
+     * Tending position
+     */
+    coordinate tending_position_;
+    /**
+     * Cleaning container
+     */
+    cleaning_container cleaning_stations_;
+    /**
+     * Fault speed profile
+     */
+    config::SpeedProfile fault_speed_profile_;
+    /**
+     * Homing speed profile
+     */
+    config::SpeedProfile homing_speed_profile_;
+    /**
+     * Tending speed profile
+     */
+    config::SpeedProfile tending_speed_profile_;
+    /**
+     * Spraying speed profile
+     */
+    config::SpeedProfile spraying_speed_profile_;
+    /**
+     * Cleaning speed profile
+     */
+    config::SpeedProfile cleaning_speed_profile_;
+  };
 }  // namespace impl
 
 NAMESPACE_END

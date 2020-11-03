@@ -91,13 +91,16 @@ ATM_STATUS MovementBuilderImpl::setup_z(
 
 ATM_STATUS MovementBuilderImpl::setup_finger(
     const std::string& finger_id,
+    const std::string& finger_brake_id,
     const std::string& finger_infrared_id) {
   if (!device::PWMDeviceRegistry::get()->exist(finger_id) ||
+      !device::DigitalOutputDeviceRegistry::get()->exist(finger_brake_id) ||
       !device::DigitalInputDeviceRegistry::get()->exist(finger_infrared_id)) {
     return ATM_ERR;
   }
 
   finger_id_ = finger_id;
+  finger_brake_id_ = finger_brake_id;
   finger_infrared_id_ = finger_infrared_id;
 
   return ATM_OK;
@@ -212,22 +215,26 @@ void Movement::setup_limit_switch() {
 }
 
 void Movement::setup_finger() {
-  massert(device::PWMRDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::PWMDeviceRegistry::get() != nullptr, "sanity");
   massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
 
   auto* pwm_registry = device::PWMDeviceRegistry::get();
   auto* digital_input_registry = device::DigitalInputDeviceRegistry::get();
+  auto* digital_output_registry = device::DigitalOutputDeviceRegistry::get();
 
   auto&& finger = pwm_registry->get(builder()->finger_id());
+  auto&& finger_brake =
+      digital_output_registry->get(builder()->finger_brake_id());
   auto&& finger_infrared =
       digital_input_registry->get(builder()->finger_infrared_id());
 
-  if (!finger || !finger_infrared) {
+  if (!finger || !finger_brake || !finger_infrared) {
     active_ = false;
     return;
   }
 
   finger_ = finger;
+  finger_brake_ = finger_brake;
   finger_infrared_ = finger_infrared;
 }
 
@@ -725,8 +732,13 @@ void Movement::rotate_finger() const {
 }
 
 void Movement::stop_finger() const {
+  auto* config = Config::get();
   LOG_DEBUG("Stopping finger...");
   finger()->write(device::digital::value::low);
+  finger_brake()->write(device::digital::value::high);
+  sleep_for<time_units::millis>(
+      config->finger_brake<unsigned long>("duration"));
+  finger_brake()->write(device::digital::value::low);
 }
 
 void Movement::homing_finger() const {
@@ -740,15 +752,14 @@ void Movement::homing_finger() const {
   LOG_DEBUG("Starting to homing finger");
   LOG_DEBUG("Setting to homing duty cycle");
   finger()->duty_cycle(speed_profile.duty_cycle);
-  sleep_for<time_units::seconds>(1);
+  sleep_for<time_units::seconds>(2);
   while (true) {
-    if (finger_infrared()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high) {
+    if (finger_infrared()->read_bool()) {
       stop_finger();
       break;
     }
     // add delay
-    // sleep_for<time_units::micros>(50);
+    sleep_for<time_units::micros>(50);
   }
   LOG_DEBUG("Homing finger is finished");
 }
@@ -778,32 +789,19 @@ void Movement::homing() {
   // enabling motor
   enable_motors();
 
-  // homing x and y
-  bool is_x_completed =
-      limit_switch_x()->read().value_or(device::digital::value::low) ==
-      device::digital::value::high;
+  // homing y
   bool is_y_completed =
       limit_switch_y()->read().value_or(device::digital::value::low) ==
       device::digital::value::high;
 
   while ((!state->fault() || (state->fault() && state->manual_mode())) &&
-         (!is_x_completed || !is_y_completed)) {
+         !is_y_completed) {
     if (state->fault() && !state->manual_mode()) {
       state->homing(false);
       return;
     }
 
-    long steps_x = 0;
     long steps_y = 0;
-
-    if (limit_switch_x()->read().value_or(device::digital::value::low) ==
-        device::digital::value::high) {
-      is_x_completed = true;
-      stepper_x()->stop();
-    } else {
-      steps_x = convert_length_to_steps<movement::unit::mm>(
-          -1500.0, builder()->steps_per_mm_x());
-    }
 
     if (limit_switch_y()->read().value_or(device::digital::value::low) ==
         device::digital::value::high) {
@@ -814,23 +812,71 @@ void Movement::homing() {
           -1200.0, builder()->steps_per_mm_y());
     }
 
-    start_move(steps_x, steps_y, 0);
+    start_move(0, steps_y, 0);
     while (!ready()) {
-      bool x_complete =
-          limit_switch_x()->read().value_or(device::digital::value::low) ==
-          device::digital::value::high;
+      if (state->fault() && !state->manual_mode()) {
+        state->homing(false);
+        return;
+      }
+
       bool y_complete =
           limit_switch_y()->read().value_or(device::digital::value::low) ==
+          device::digital::value::high;
+      if (y_complete) {
+        is_y_completed = true;
+        stepper_y()->stop();
+      }
+      if (y_complete) {
+        ready_ = true;
+      } else {
+        next();
+      }
+    }
+  }
+
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    return;
+  }
+
+  // homing x
+  bool is_x_completed =
+      limit_switch_x()->read().value_or(device::digital::value::low) ==
+      device::digital::value::high;
+
+  while ((!state->fault() || (state->fault() && state->manual_mode())) &&
+         !is_x_completed) {
+    if (state->fault() && !state->manual_mode()) {
+      state->homing(false);
+      return;
+    }
+
+    long steps_x = 0;
+
+    if (limit_switch_x()->read().value_or(device::digital::value::low) ==
+        device::digital::value::high) {
+      is_x_completed = true;
+      stepper_x()->stop();
+    } else {
+      steps_x = convert_length_to_steps<movement::unit::mm>(
+          -1500.0, builder()->steps_per_mm_x());
+    }
+
+    start_move(steps_x, 0, 0);
+    while (!ready()) {
+      if (state->fault() && !state->manual_mode()) {
+        state->homing(false);
+        return;
+      }
+
+      bool x_complete =
+          limit_switch_x()->read().value_or(device::digital::value::low) ==
           device::digital::value::high;
       if (x_complete) {
         is_x_completed = true;
         stepper_x()->stop();
       }
-      if (y_complete) {
-        is_y_completed = true;
-        stepper_y()->stop();
-      }
-      if (x_complete && y_complete) {
+      if (x_complete) {
         ready_ = true;
       } else {
         next();

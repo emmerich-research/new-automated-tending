@@ -1,10 +1,10 @@
 #ifndef LIB_MECHANISM_MOVEMENT_HPP_
 #define LIB_MECHANISM_MOVEMENT_HPP_
 
-/** @file multi_stepper.hpp
- *  @brief Multi stepper device class definition
+/** @file movement.hpp
+ *  @brief Movement mechanism class definition
  *
- * Multi stepper devices using GPIO
+ * Movement mechanism
  */
 
 #include <memory>
@@ -26,10 +26,7 @@ class MovementBuilderImpl;
 class Movement;
 
 namespace movement {
-enum class unit {
-  cm,
-  mm,
-};
+enum class unit { cm, mm };
 }  // namespace movement
 
 using MovementBuilder = StaticObj<impl::MovementBuilderImpl>;
@@ -102,11 +99,13 @@ class MovementBuilderImpl : public StackObj {
    * Setup finger
    *
    * @param finger_id            finger instance id
+   * @param finger_brake_id      finger instance id
    * @param finger_infrared_id   finger infrared id
    *
    * @return ATM_STATUS ATM_OK or ATM_ERR, but not both
    */
   ATM_STATUS setup_finger(const std::string& finger_id,
+                          const std::string& finger_brake_id,
                           const std::string& finger_infrared_id);
   /**
    * Build movement mechanism
@@ -195,6 +194,12 @@ class MovementBuilderImpl : public StackObj {
    */
   inline const std::string& finger_id() const { return finger_id_; }
   /**
+   * Get finger brake instance ID
+   *
+   * @return instance id of finger brake
+   */
+  inline const std::string& finger_brake_id() const { return finger_brake_id_; }
+  /**
    * Get finger infrared instance ID
    *
    * @return instance id of finger infrared
@@ -280,6 +285,10 @@ class MovementBuilderImpl : public StackObj {
    * Instance id of finger
    */
   std::string finger_id_;
+  /**
+   * Instance id of finger brake
+   */
+  std::string finger_brake_id_;
   /**
    * Instance id of finger infrared
    */
@@ -526,6 +535,16 @@ class Movement : public StackObj {
     return finger_;
   }
   /**
+   * Get Finger brake instance of DigitalOutputDevice that has
+   * been initialized
+   *
+   * @return shared_ptr of DigitalOutputDevice
+   */
+  inline const std::shared_ptr<device::DigitalOutputDevice>& finger_brake()
+      const {
+    return finger_brake_;
+  }
+  /**
    * Get Finger infrared instance of DigitalInputDevice that has
    * been initialized
    *
@@ -691,6 +710,10 @@ class Movement : public StackObj {
    * Finger motor device that has been initialized
    */
   std::shared_ptr<device::PWMDevice> finger_;
+  /**
+   * Finger motor device that has been initialized
+   */
+  std::shared_ptr<device::DigitalOutputDevice> finger_brake_;
   /**
    * Finger infrared device that has been initialized
    */

@@ -1,7 +1,17 @@
 #include "core.hpp"
 
-#include "config.hpp"
 #include "state.hpp"
+
+#include <chrono>
+#include <ctime>
+
+#include <spdlog/fmt/bundled/chrono.h>
+#include <spdlog/fmt/fmt.h>
+#include <spdlog/fmt/ostr.h>
+
+#include <date/date.h>
+
+#include "config.hpp"
 
 NAMESPACE_BEGIN
 
@@ -13,6 +23,40 @@ void Task::reset() {
   complete = false;
 }
 
+Refill::Refill()
+    : requested{false},
+      running{false},
+      schedule{Refill::TWO_DAYS},
+      last{Clock::now()} {
+  update();
+}
+
+void Refill::reset() {
+  requested = false;
+  running = false;
+}
+
+void Refill::update() {
+  using namespace std::chrono_literals;
+
+  // run every 6 AM at every {schedule} day(s)
+  auto last_day = date::floor<date::days>(last);
+  auto future = last_day + date::days{schedule};
+  // -1h because sys_days starts from 7 AM
+  next = date::sys_days{future} + (-1h) + 0min + 0s;
+}
+
+void Refill::set_schedule(const Refill::Schedule& new_schedule) {
+  schedule = new_schedule;
+  last = Clock::now();
+  update();
+}
+
+void Refill::set_last(const TimePoint& time) {
+  last = time;
+  update();
+}
+
 namespace impl {
 StateImpl::StateImpl()
     : speed_profile_{config::speed::normal},
@@ -22,17 +66,21 @@ StateImpl::StateImpl()
       spraying_{},
       cleaning_{},
       manual_mode_{false},
-      homing_{false} {
+      homing_{false},
+      water_refilling_{},
+      disinfectant_refilling_{} {
   DEBUG_ONLY_DEFINITION(obj_name_ = "StateImpl");
 }
 
 void StateImpl::reset_ui() {
   {
     const StateImpl::StateLock lock(mutex());
-    tending_.reset();
     spraying_.reset();
+    tending_.reset();
     cleaning_.reset();
     homing_ = false;
+    water_refilling_.reset();
+    disinfectant_refilling_.reset();
   }
   notify_all();
 }
@@ -353,6 +401,145 @@ void StateImpl::speed_profile(const config::speed& speed_profile) {
 const config::speed& StateImpl::speed_profile() {
   const StateImpl::StateLock lock(mutex());
   return speed_profile_;
+}
+
+const Refill& StateImpl::water_refilling() {
+  const StateImpl::StateLock lock(mutex());
+  return water_refilling_;
+}
+
+void StateImpl::water_refilling_request(bool request) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    water_refilling_.requested = request;
+  }
+
+  notify_all();
+}
+
+bool StateImpl::water_refilling_requested() {
+  const StateImpl::StateLock lock(mutex());
+  return water_refilling_.requested;
+}
+
+void StateImpl::water_refilling_running(bool refilling) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    water_refilling_.running = refilling;
+  }
+
+  notify_all();
+}
+
+bool StateImpl::water_refilling_running() {
+  const StateImpl::StateLock lock(mutex());
+  return water_refilling_.running;
+}
+
+const Refill::Schedule& StateImpl::water_refilling_schedule() {
+  const StateImpl::StateLock lock(mutex());
+  return water_refilling_.schedule;
+}
+
+void StateImpl::water_refilling_schedule(const Refill::Schedule& schedule) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    water_refilling_.set_schedule(schedule);
+    LOG_DEBUG(
+        "Next time to water refilling is on {}",
+        fmt::format("{:%b %d, %Y @ %T}",
+                    fmt::localtime(Clock::to_time_t(water_refilling_.next))));
+  }
+
+  notify_all();
+}
+
+void StateImpl::water_refilling_last_executed(const TimePoint& time) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    water_refilling_.set_last(time);
+    LOG_DEBUG(
+        "Next time to water refilling is on {}",
+        fmt::format("{:%b %d, %Y @ %T}",
+                    fmt::localtime(Clock::to_time_t(water_refilling_.next))));
+  }
+
+  notify_all();
+}
+
+const TimePoint& StateImpl::water_refilling_next_executed() {
+  const StateImpl::StateLock lock(mutex());
+  return water_refilling_.next;
+}
+
+const Refill& StateImpl::disinfectant_refilling() {
+  const StateImpl::StateLock lock(mutex());
+  return disinfectant_refilling_;
+}
+
+void StateImpl::disinfectant_refilling_request(bool request) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    disinfectant_refilling_.requested = request;
+  }
+
+  notify_all();
+}
+
+bool StateImpl::disinfectant_refilling_requested() {
+  const StateImpl::StateLock lock(mutex());
+  return disinfectant_refilling_.requested;
+}
+
+void StateImpl::disinfectant_refilling_running(bool refilling) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    disinfectant_refilling_.running = refilling;
+  }
+
+  notify_all();
+}
+
+bool StateImpl::disinfectant_refilling_running() {
+  const StateImpl::StateLock lock(mutex());
+  return disinfectant_refilling_.running;
+}
+
+const Refill::Schedule& StateImpl::disinfectant_refilling_schedule() {
+  const StateImpl::StateLock lock(mutex());
+  return disinfectant_refilling_.schedule;
+}
+
+void StateImpl::disinfectant_refilling_schedule(
+    const Refill::Schedule& schedule) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    disinfectant_refilling_.set_schedule(schedule);
+    LOG_DEBUG(
+        "Next time to disinfectant refilling is on {}",
+        fmt::format("{:%b %d, %Y @ %T}", fmt::localtime(Clock::to_time_t(
+                                             disinfectant_refilling_.next))));
+  }
+
+  notify_all();
+}
+
+void StateImpl::disinfectant_refilling_last_executed(const TimePoint& time) {
+  {
+    const StateImpl::StateLock lock(mutex());
+    disinfectant_refilling_.set_last(time);
+    LOG_DEBUG(
+        "Next time to disinfectant refilling is on {}",
+        fmt::format("{:%b %d, %Y @ %T}", fmt::localtime(Clock::to_time_t(
+                                             disinfectant_refilling_.next))));
+  }
+
+  notify_all();
+}
+
+const TimePoint& StateImpl::disinfectant_refilling_next_executed() {
+  const StateImpl::StateLock lock(mutex());
+  return disinfectant_refilling_.next;
 }
 }  // namespace impl
 

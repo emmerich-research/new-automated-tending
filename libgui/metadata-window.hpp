@@ -1,5 +1,5 @@
-#ifndef LIB_GUI_CLEANING_WINDOW_HPP_
-#define LIB_GUI_CLEANING_WINDOW_HPP_
+#ifndef LIB_GUI_METADATA_WINDOW_HPP_
+#define LIB_GUI_METADATA_WINDOW_HPP_
 
 #include <libcore/core.hpp>
 
@@ -11,22 +11,22 @@ namespace gui {
 // forward declarations
 class Manager;
 
-class CleaningWindow : public Window {
+class MetadataWindow : public Window {
  public:
   /**
-   * Cleaning Window constructor
+   * Metadata Window constructor
    *
    * @param width  window width
    * @param height window height
    * @param flags  window flags
    */
-  CleaningWindow(float                   width = 500,
+  MetadataWindow(float                   width = 500,
                  float                   height = 100,
                  const ImGuiWindowFlags& flags = 0);
   /**
-   * Cleaning Window destructor
+   * Metadata Window destructor
    */
-  virtual ~CleaningWindow() override;
+  virtual ~MetadataWindow() override;
   /**
    * Show contents
    *
@@ -38,4 +38,4 @@ class CleaningWindow : public Window {
 
 NAMESPACE_END
 
-#endif  // LIB_GUI_CLEANING_WINDOW_HPP_
+#endif  // LIB_GUI_METADATA_WINDOW_HPP_

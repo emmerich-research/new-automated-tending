@@ -30,7 +30,8 @@ static ATM_STATUS initialize_pi_to_plc_comm();
 static ATM_STATUS initialize_shift_register_devices();
 static ATM_STATUS initialize_pwm_devices();
 static ATM_STATUS initialize_stepper_devices();
-static ATM_STATUS initialize_ultrasonic_devices();
+// static ATM_STATUS initialize_ultrasonic_devices();
+static ATM_STATUS initialize_float_sensor_devices();
 
 static ATM_STATUS initialize_analog_devices() {
   // ATM_STATUS status = ATM_OK;
@@ -176,6 +177,20 @@ static ATM_STATUS initialize_output_digital_devices() {
     return status;
   }
 
+  auto* digital_output_registry = DigitalOutputDeviceRegistry::get();
+
+  // initialize finger brake
+  status = digital_output_registry->create(
+      id::finger_brake(), config->finger_brake<PI_PIN>("pin"),
+      config->finger_brake<bool>("active-state"), PI_PUD_DOWN);
+
+  if (status == ATM_ERR) {
+      return status;
+  }
+
+  // initialize sonicator relay
+  status = digital_output_registry->create(id::sonicator_relay(), config->sonicator_relay<PI_PIN>("pin"), config->sonicator_relay<bool>("active-state"), PI_PUD_DOWN);
+ 
   return status;
 }
 
@@ -403,33 +418,64 @@ static ATM_STATUS initialize_stepper_devices() {
   return status;
 }
 
-static ATM_STATUS initialize_ultrasonic_devices() {
+// static ATM_STATUS initialize_ultrasonic_devices() {
+//   auto*      config = Config::get();
+//   ATM_STATUS status = ATM_OK;
+
+//   status = UltrasonicDeviceRegistry::create();
+//   if (status == ATM_ERR) {
+//     return status;
+//   }
+
+//   auto* ultrasonic_device_registry = UltrasonicDeviceRegistry::get();
+
+//   status = ultrasonic_device_registry->create(
+//       id::ultrasonic::water_level(),
+//       config->ultrasonic<PI_PIN>("water-level", "echo-pin"),
+//       config->ultrasonic<PI_PIN>("water-level", "trigger-pin"),
+//       config->ultrasonic<bool>("water-level", "echo-active-state"),
+//       config->ultrasonic<bool>("water-level", "trigger-active-state"));
+//   if (status == ATM_ERR) {
+//     return status;
+//   }
+
+//   status = ultrasonic_device_registry->create(
+//       id::ultrasonic::disinfectant_level(),
+//       config->ultrasonic<PI_PIN>("disinfectant-level", "echo-pin"),
+//       config->ultrasonic<PI_PIN>("disinfectant-level", "trigger-pin"),
+//       config->ultrasonic<bool>("disinfectant-level", "echo-active-state"),
+//       config->ultrasonic<bool>("disinfectant-level",
+//       "trigger-active-state"));
+//   if (status == ATM_ERR) {
+//     return status;
+//   }
+
+//   return status;
+// }
+
+static ATM_STATUS initialize_float_sensor_devices() {
   auto*      config = Config::get();
   ATM_STATUS status = ATM_OK;
 
-  status = UltrasonicDeviceRegistry::create();
+  status = FloatDeviceRegistry::create();
   if (status == ATM_ERR) {
     return status;
   }
 
-  auto* ultrasonic_device_registry = UltrasonicDeviceRegistry::get();
+  auto* float_device_registry = FloatDeviceRegistry::get();
 
-  status = ultrasonic_device_registry->create(
-      id::ultrasonic::water_level(),
-      config->ultrasonic<PI_PIN>("water-level", "echo-pin"),
-      config->ultrasonic<PI_PIN>("water-level", "trigger-pin"),
-      config->ultrasonic<bool>("water-level", "echo-active-state"),
-      config->ultrasonic<bool>("water-level", "trigger-active-state"));
+  status = float_device_registry->create(
+      id::float_sensor::water_level(),
+      config->float_sensor<PI_PIN>("water-level", "pin"),
+      config->float_sensor<bool>("water-level", "active-state"));
   if (status == ATM_ERR) {
     return status;
   }
 
-  status = ultrasonic_device_registry->create(
-      id::ultrasonic::disinfectant_level(),
-      config->ultrasonic<PI_PIN>("disinfectant-level", "echo-pin"),
-      config->ultrasonic<PI_PIN>("disinfectant-level", "trigger-pin"),
-      config->ultrasonic<bool>("disinfectant-level", "echo-active-state"),
-      config->ultrasonic<bool>("disinfectant-level", "trigger-active-state"));
+  status = float_device_registry->create(
+      id::float_sensor::disinfectant_level(),
+      config->float_sensor<PI_PIN>("disinfectant-level", "pin"),
+      config->float_sensor<bool>("disinfectant-level", "active-state"));
   if (status == ATM_ERR) {
     return status;
   }
@@ -480,8 +526,8 @@ ATM_STATUS initialize_device() {
     return status;
   }
 
-  LOG_INFO("Initializing ultrasonic devices...");
-  status = initialize_ultrasonic_devices();
+  LOG_INFO("Initializing float sensor devices...");
+  status = initialize_float_sensor_devices();
   if (status == ATM_ERR) {
     return status;
   }

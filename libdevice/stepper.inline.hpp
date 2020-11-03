@@ -83,7 +83,7 @@ time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
     // original code : delayMicros(next_action_interval, last_action_end);
 
     // while (micros() - start_us < delay_us);
-    while ((micros() - last_move_end()) < next_move_interval()) {
+    while ((micros() - last_move_end()) < (next_move_interval() + 10)) {
       // not yet running
       // return -1;
     }
@@ -100,14 +100,14 @@ time_unit StepperDeviceImpl<Speed>::next(bool stop_condition) {
 
     // sleep_until<time_units::micros>(next_move_interval(), last_move_end());
 
-    // start pulsing
-    step_device()->write(digital::value::high);
-
-    time_unit m = micros();
     // save value because calcStepPulse() will overwrite it
     unsigned long pulse = static_cast<unsigned long>(step_pulse());
     calc_step_pulse();
 
+    time_unit m = micros();
+
+    // start pulsing
+    step_device()->write(digital::value::high);
     // We should pull HIGH for at least 1-2us (step_high_min)
     sleep_for<time_units::micros>(StepperDevice::step_high_min);
     step_device()->write(digital::value::low);

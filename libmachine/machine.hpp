@@ -36,7 +36,11 @@
 #include "guard.inline.hpp"
 
 #include "fault-listener.hpp"
+#include "restart-fault-listener.hpp"
 #include "task-listener.hpp"
+
+#include "disinfectant-refilling-listener.hpp"
+#include "water-refilling-listener.hpp"
 
 #include "util.hpp"
 

@@ -31,6 +31,7 @@ target_link_libraries(core PUBLIC
   fs::fs
   spdlog::spdlog
   toml11::toml11
+  date::date
   "${PROJECT_NAMESPACE}::util")
 
 target_set_warnings(core
