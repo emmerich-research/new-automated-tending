@@ -53,7 +53,7 @@ void RestartFaultListener::execute() {
     {
       std::unique_lock<std::mutex> lock(mutex());
       state->signal().wait(
-          lock, [this, state] { return !state->running() || state->fault(); });
+          lock, [state] { return !state->running() || state->fault(); });
     }
 
     if (!running() || !state->running()) {

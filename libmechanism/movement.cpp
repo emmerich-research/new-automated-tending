@@ -215,7 +215,7 @@ void Movement::setup_limit_switch() {
 }
 
 void Movement::setup_finger() {
-  massert(device::PWMRDeviceRegistry::get() != nullptr, "sanity");
+  massert(device::PWMDeviceRegistry::get() != nullptr, "sanity");
   massert(device::DigitalInputDeviceRegistry::get() != nullptr, "sanity");
 
   auto* pwm_registry = device::PWMDeviceRegistry::get();

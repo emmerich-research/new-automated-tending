@@ -14,8 +14,8 @@ void prepare_execution_state() {
   massert(mechanism::movement_mechanism() != nullptr, "sanity");
   massert(mechanism::movement_mechanism()->active(), "sanity");
 
-  auto*  state = State::get();
-  auto*  shift_register = device::ShiftRegister::get();
+  // auto*  state = State::get();
+  // auto*  shift_register = device::ShiftRegister::get();
   auto&& movement = mechanism::movement_mechanism();
 
   movement->stop_finger();
@@ -46,7 +46,7 @@ void reset_task_ready() {
   massert(State::get() != nullptr, "sanity");
   massert(device::ShiftRegister::get() != nullptr, "sanity");
 
-  auto* state = State::get();
+  // auto* state = State::get();
   auto* shift_register = device::ShiftRegister::get();
 
   shift_register->write(device::id::comm::pi::spraying_ready(),

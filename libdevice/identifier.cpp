@@ -26,7 +26,7 @@ std::string spray_;
 std::string finger_;
 std::string finger_brake_;
 std::string finger_infrared_;
-// std::string sonicator_relay_;
+std::string sonicator_relay_;
 
 namespace ultrasonic {
 std::string water_level_;

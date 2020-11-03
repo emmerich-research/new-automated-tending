@@ -184,6 +184,13 @@ static ATM_STATUS initialize_output_digital_devices() {
       id::finger_brake(), config->finger_brake<PI_PIN>("pin"),
       config->finger_brake<bool>("active-state"), PI_PUD_DOWN);
 
+  if (status == ATM_ERR) {
+      return status;
+  }
+
+  // initialize sonicator relay
+  status = digital_output_registry->create(id::sonicator_relay(), config->sonicator_relay<PI_PIN>("pin"), config->sonicator_relay<bool>("active-state"), PI_PUD_DOWN);
+ 
   return status;
 }
 

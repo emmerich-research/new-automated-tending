@@ -333,8 +333,8 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
   auto*  shift_register = device::ShiftRegister::get();
   auto&& movement = mechanism::movement_mechanism();
 
-  // auto&& sonicator_relay =
-  //     digital_output_registry->get(device::id::sonicator_relay());
+  auto&& sonicator_relay =
+      digital_output_registry->get(device::id::sonicator_relay());
 
   if (state->fault())
     return;
@@ -366,9 +366,9 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
     if (sonicator) {
       LOG_INFO("Turning on the sonicator relay");
-      // sonicator_relay->write(device::digital::value::high);
-      shift_register->write(device::id::comm::pi::sonicator_relay(),
-                            device::digital::value::high);
+      sonicator_relay->write(device::digital::value::high);
+      // shift_register->write(device::id::comm::pi::sonicator_relay(),
+      //                       device::digital::value::high);
     }
 
     if (state->fault())
@@ -382,9 +382,9 @@ void job::operator()(Event const&, FSM& fsm, SourceState&, TargetState&) const {
 
     if (sonicator) {
       LOG_INFO("Turning off the sonicator relay");
-      // sonicator_relay->write(device::digital::value::low);
-      shift_register->write(device::id::comm::pi::sonicator_relay(),
-                            device::digital::value::low);
+      sonicator_relay->write(device::digital::value::low);
+      // shift_register->write(device::id::comm::pi::sonicator_relay(),
+      //                       device::digital::value::low);
     }
 
     if (state->fault())

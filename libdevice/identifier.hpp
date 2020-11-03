@@ -124,13 +124,13 @@ static auto        finger_infrared = []() {
   return finger_infrared_;
 };
 
-// extern std::string sonicator_relay_;
-// static auto        sonicator_relay = []() {
-//   if (sonicator_relay_.empty()) {
-//     sonicator_relay_ = Config::get()->sonicator_relay<std::string>("key");
-//   }
-//   return sonicator_relay_;
-// };
+extern std::string sonicator_relay_;
+static auto        sonicator_relay = []() {
+  if (sonicator_relay_.empty()) {
+    sonicator_relay_ = Config::get()->sonicator_relay<std::string>("key");
+  }
+  return sonicator_relay_;
+};
 
 namespace ultrasonic {
 extern std::string water_level_;
