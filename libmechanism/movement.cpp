@@ -638,6 +638,7 @@ void Movement::move_finger_up() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -655,6 +656,7 @@ void Movement::move_finger_up() {
          !z_completed) {
     if (state->fault() && !state->manual_mode()) {
       state->homing(false);
+      stop();
       return;
     }
 
@@ -668,6 +670,7 @@ void Movement::move_finger_up() {
       while (!ready()) {
         if (state->fault() && !state->manual_mode()) {
           state->homing(false);
+          stop();
           return;
         }
 
@@ -697,6 +700,7 @@ void Movement::move_finger_down() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -715,6 +719,7 @@ void Movement::move_finger_down() {
          !z_completed) {
     if (state->fault() && !state->manual_mode()) {
       state->homing(false);
+      stop();
       return;
     }
 
@@ -728,6 +733,7 @@ void Movement::move_finger_down() {
       while (!ready()) {
         if (state->fault() && !state->manual_mode()) {
           state->homing(false);
+          stop();
           return;
         }
 
@@ -809,6 +815,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -830,6 +837,7 @@ void Movement::homing() {
          !is_y_completed) {
     if (state->fault() && !state->manual_mode()) {
       state->homing(false);
+      stop();
       return;
     }
 
@@ -848,6 +856,7 @@ void Movement::homing() {
     while (!ready()) {
       if (state->fault() && !state->manual_mode()) {
         state->homing(false);
+        stop();
         return;
       }
 
@@ -868,6 +877,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -880,6 +890,7 @@ void Movement::homing() {
          !is_x_completed) {
     if (state->fault() && !state->manual_mode()) {
       state->homing(false);
+      stop();
       return;
     }
 
@@ -898,6 +909,7 @@ void Movement::homing() {
     while (!ready()) {
       if (state->fault() && !state->manual_mode()) {
         state->homing(false);
+        stop();
         return;
       }
 
@@ -918,6 +930,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -926,6 +939,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -934,6 +948,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -942,16 +957,12 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
   // disabling motor
   disable_motors();
-
-  if (state->fault() && !state->manual_mode()) {
-    state->homing(false);
-    return;
-  }
 
   state->homing(false);
 
