@@ -636,6 +636,12 @@ void Movement::move_finger_up() {
   auto* config = Config::get();
   auto* state = State::get();
 
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    stop();
+    return;
+  }
+
   // set speed profile
   motor_profile(config->homing_speed_profile(state->speed_profile()));
 
@@ -646,7 +652,14 @@ void Movement::move_finger_up() {
   bool z_completed =
       limit_switch_z_top()->read().value_or(device::digital::value::low) ==
       device::digital::value::high;
-  while (!z_completed) {
+  while ((!state->fault() || (state->fault() && state->manual_mode())) &&
+         !z_completed) {
+    if (state->fault() && !state->manual_mode()) {
+      state->homing(false);
+      stop();
+      return;
+    }
+
     z_completed =
         limit_switch_z_top()->read().value_or(device::digital::value::low) ==
         device::digital::value::high;
@@ -655,6 +668,12 @@ void Movement::move_finger_up() {
     } else {
       start_move(0, 0, -1200);
       while (!ready()) {
+        if (state->fault() && !state->manual_mode()) {
+          state->homing(false);
+          stop();
+          return;
+        }
+
         if (limit_switch_z_top()->read().value_or(
                 device::digital::value::low) == device::digital::value::high) {
           stepper_z()->stop();
@@ -679,6 +698,12 @@ void Movement::move_finger_down() {
   auto* config = Config::get();
   auto* state = State::get();
 
+  if (state->fault() && !state->manual_mode()) {
+    state->homing(false);
+    stop();
+    return;
+  }
+
   // set speed profile
   motor_profile(config->homing_speed_profile(state->speed_profile()));
 
@@ -690,7 +715,14 @@ void Movement::move_finger_down() {
       limit_switch_z_bottom()->read().value_or(device::digital::value::low) ==
       device::digital::value::high;
 
-  while (!z_completed) {
+  while ((!state->fault() || (state->fault() && state->manual_mode())) &&
+         !z_completed) {
+    if (state->fault() && !state->manual_mode()) {
+      state->homing(false);
+      stop();
+      return;
+    }
+
     z_completed =
         limit_switch_z_bottom()->read().value_or(device::digital::value::low) ==
         device::digital::value::high;
@@ -699,6 +731,12 @@ void Movement::move_finger_down() {
     } else {
       start_move(0, 0, 1200);
       while (!ready()) {
+        if (state->fault() && !state->manual_mode()) {
+          state->homing(false);
+          stop();
+          return;
+        }
+
         if (limit_switch_z_bottom()->read().value_or(
                 device::digital::value::low) == device::digital::value::high) {
           stepper_z()->stop();
@@ -777,6 +815,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -798,6 +837,7 @@ void Movement::homing() {
          !is_y_completed) {
     if (state->fault() && !state->manual_mode()) {
       state->homing(false);
+      stop();
       return;
     }
 
@@ -816,6 +856,7 @@ void Movement::homing() {
     while (!ready()) {
       if (state->fault() && !state->manual_mode()) {
         state->homing(false);
+        stop();
         return;
       }
 
@@ -836,6 +877,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -848,6 +890,7 @@ void Movement::homing() {
          !is_x_completed) {
     if (state->fault() && !state->manual_mode()) {
       state->homing(false);
+      stop();
       return;
     }
 
@@ -866,6 +909,7 @@ void Movement::homing() {
     while (!ready()) {
       if (state->fault() && !state->manual_mode()) {
         state->homing(false);
+        stop();
         return;
       }
 
@@ -886,6 +930,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -894,6 +939,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -902,6 +948,7 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
@@ -910,16 +957,12 @@ void Movement::homing() {
 
   if (state->fault() && !state->manual_mode()) {
     state->homing(false);
+    stop();
     return;
   }
 
   // disabling motor
   disable_motors();
-
-  if (state->fault() && !state->manual_mode()) {
-    state->homing(false);
-    return;
-  }
 
   state->homing(false);
 

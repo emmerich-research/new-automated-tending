@@ -91,6 +91,7 @@ void FaultWindow::show([[maybe_unused]] Manager* manager) {
     }
 
     if (util::button("MANUAL\nMOVE", id++, manual_mode, size)) {
+      state->manual_mode(true);
       tsm()->fault_manual();
     }
 
