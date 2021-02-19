@@ -3,18 +3,19 @@ project(gui)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
-set(IMGUI_VERSION 1.77)
+set(IMGUI_VERSION "1.82")
 
 set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/external/imgui")
 
 find_package(ImGui ${IMGUI_VERSION} REQUIRED)
 
 ucm_add_files(
-  "${IMGUI_INCLUDE_DIR}/imgui.cpp"
-  "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp"
-  "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp"
-  "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp"
-  "${IMGUI_INCLUDE_DIR}/examples/imgui_impl_glfw.cpp"
+  "${IMGUI_SOURCES}"
+  "${IMGUI_DEMO_SOURCES}"
+  # "${IMGUI_INCLUDE_DIR}/imgui.cpp"
+  # "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp"
+  # "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp"
+  "${IMGUI_INCLUDE_DIR}/backends/imgui_impl_glfw.cpp"
   "util.cpp"
   "manager.cpp"
   "window.cpp"
@@ -34,10 +35,10 @@ ucm_add_files(
 
 if(OPENGL3)
   message("-- Using OpenGL3")
-  ucm_add_files("${IMGUI_INCLUDE_DIR}/examples/imgui_impl_opengl3.cpp" TO SOURCES)
+  ucm_add_files("${IMGUI_INCLUDE_DIR}/backends/imgui_impl_opengl3.cpp" TO SOURCES)
 elseif(OPENGL2)
   message("-- Using OpenGL2")
-  ucm_add_files("${IMGUI_INCLUDE_DIR}/examples/imgui_impl_opengl2.cpp" TO SOURCES)
+  ucm_add_files("${IMGUI_INCLUDE_DIR}/backends/imgui_impl_opengl2.cpp" TO SOURCES)
 endif()
 
 ucm_add_target(

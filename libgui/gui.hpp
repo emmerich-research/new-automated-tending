@@ -33,15 +33,15 @@
 #include <external/imgui/imstb_rectpack.h>
 #include <external/imgui/imstb_truetype.h>
 
-#include <external/imgui/examples/imgui_impl_glfw.h>
+#include <external/imgui/backends/imgui_impl_glfw.h>
 
 #if defined(OPENGL3_EXIST)
-#include <external/imgui/examples/imgui_impl_opengl3.h>
+#include <external/imgui/backends/imgui_impl_opengl3.h>
 
 // 2.2. Glad
 #include <glad/glad.h>
 #elif defined(OPENGL2_EXIST)
-#include <external/imgui/examples/imgui_impl_opengl2.h>
+#include <external/imgui/backends/imgui_impl_opengl2.h>
 
 // 2.3. GL
 #include <GL/gl.h>

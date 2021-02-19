@@ -4,14 +4,14 @@
 
 #include <external/imgui/imconfig.h>
 
-#include <external/imgui/examples/imgui_impl_glfw.h>
+#include <external/imgui/backends/imgui_impl_glfw.h>
 
 #if defined(OPENGL3_EXIST)
-#include <external/imgui/examples/imgui_impl_opengl3.h>
+#include <external/imgui/backends/imgui_impl_opengl3.h>
 
 #include <glad/glad.h>
 #elif defined(OPENGL2_EXIST)
-#include <external/imgui/examples/imgui_impl_opengl2.h>
+#include <external/imgui/backends/imgui_impl_opengl2.h>
 
 #include <GL/gl.h>
 #endif
@@ -143,6 +143,9 @@ void Manager::init() {
 
   ImGuiIO& io = ImGui::GetIO();
 
+  io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
   // if (fs::is_regular_file("fonts/cousine.ttf")) {
   general_font_ = io.Fonts->AddFontFromFileTTF("fonts/karla.ttf", 20.0f);
   button_font_ = io.Fonts->AddFontFromFileTTF("fonts/karla.ttf", 32.0f);
@@ -206,13 +209,87 @@ void Manager::render() {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
-  ImGui::PushFont(general_font());
+  {
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-  // render windows
-  for (auto&& s_window : windows())
-    s_window->render(this);
+    ImGui::Begin("Master Window", nullptr,
+                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+                     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                     ImGuiWindowFlags_NoBringToFrontOnFocus |
+                     ImGuiWindowFlags_NoNavFocus);
+    ImGui::PopStyleVar(2);
 
-  ImGui::PopFont();
+    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    ImGuiID            dockspace_id = ImGui::GetID("MainDockspace");
+    if (!ImGui::DockBuilderGetNode(dockspace_id)) {
+      ImGui::DockBuilderRemoveNode(dockspace_id);
+      ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_None);
+
+      ImGuiID dock_main_id = dockspace_id;
+      ImGuiID dock_up_id = ImGui::DockBuilderSplitNode(
+          dock_main_id, ImGuiDir_Up, 0.2f, nullptr, &dock_main_id);
+      //       ImGuiID dock_right_id = ImGui::DockBuilderSplitNode(
+      //           dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
+      //       ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(
+      //           dock_main_id, ImGuiDir_Left, 0.2f, nullptr, &dock_main_id);
+      //       ImGuiID dock_down_id = ImGui::DockBuilderSplitNode(
+      //           dock_main_id, ImGuiDir_Down, 0.2f, nullptr, &dock_main_id);
+
+      //       ImGui::DockBuilderDockWindow("Todo app", dock_right_id);
+      //       ImGui::DockBuilderDockWindow("Logs", dock_down_id);
+      //       ImGui::DockBuilderDockWindow("Dear ImGui Demo", dock_left_id);
+      //       ImGui::DockBuilderDockWindow("Left Camera", dock_up_id);
+      // #ifdef ENABLE_RIGHT_CAMERA
+      //       ImGui::DockBuilderDockWindow("Right Camera", dock_up_id);
+      // #endif
+
+      // ImGuiDockNodeFlags_NoTabBar
+      // ImGuiDockNode* dock_up_node = ImGui::DockBuilderGetNode(dock_up_id);
+      // dock_up_node->LocalFlags |= ImGuiDockNodeFlags_NoWindowMenuButton |
+      //                             ImGuiDockNodeFlags_NoCloseButton;
+
+      //       ImGuiDockNode* dock_left_node =
+      //       ImGui::DockBuilderGetNode(dock_left_id);
+      //       dock_left_node->LocalFlags |=
+      //       ImGuiDockNodeFlags_NoWindowMenuButton |
+      //                                     ImGuiDockNodeFlags_NoCloseButton;
+
+      //       ImGuiDockNode* dock_down_node =
+      //       ImGui::DockBuilderGetNode(dock_down_id);
+      //       dock_down_node->LocalFlags |=
+      //       ImGuiDockNodeFlags_NoWindowMenuButton |
+      //                                     ImGuiDockNodeFlags_NoCloseButton;
+
+      //       ImGuiDockNode* dock_right_node =
+      //       ImGui::DockBuilderGetNode(dock_right_id);
+      //       dock_right_node->LocalFlags |=
+      //       ImGuiDockNodeFlags_NoWindowMenuButton |
+      //                                      ImGuiDockNodeFlags_NoCloseButton;
+
+      ImGui::DockBuilderFinish(dock_main_id);
+    }
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f),
+                     ImGuiDockNodeFlags_NoTabBar |
+                         ImGuiDockNodeFlags_NoWindowMenuButton |
+                         ImGuiDockNodeFlags_NoCloseButton);
+
+    {
+      ImGui::PushFont(general_font());
+
+      // render windows
+      for (auto&& s_window : windows())
+        s_window->render(this);
+
+      ImGui::PopFont();
+    }
+
+    ImGui::End();
+  }
 
   ImGui::Render();
   int display_w, display_h;
