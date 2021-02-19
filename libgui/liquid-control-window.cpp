@@ -44,6 +44,10 @@ void LiquidControlWindow::show(Manager* manager) {
     ImGui::Text("Automatic Mode");
     {
       ImGui::PushFont(manager->button_font());
+      if (util::button("OFF", status_id++, schedule == Refill::OFF, size)) {
+        LOG_INFO("Changing water refilling to off");
+        state->water_refilling_schedule(Refill::OFF);
+      }
       if (util::button("1 DAY", status_id++, schedule == Refill::ONE_DAY,
                        size)) {
         LOG_INFO("Changing water refilling to one day");
@@ -53,11 +57,6 @@ void LiquidControlWindow::show(Manager* manager) {
                        size)) {
         LOG_INFO("Changing water refilling to two days");
         state->water_refilling_schedule(Refill::TWO_DAYS);
-      }
-      if (util::button("3 DAYS", status_id++, schedule == Refill::THREE_DAYS,
-                       size)) {
-        LOG_INFO("Changing water refilling to three days");
-        state->water_refilling_schedule(Refill::THREE_DAYS);
       }
       ImGui::PopFont();
     }
@@ -97,6 +96,10 @@ void LiquidControlWindow::show(Manager* manager) {
     ImGui::Text("Automatic Mode");
     {
       ImGui::PushFont(manager->button_font());
+      if (util::button("OFF", status_id++, schedule == Refill::OFF, size)) {
+        LOG_INFO("Changing disinfectant refilling to off");
+        state->disinfectant_refilling_schedule(Refill::OFF);
+      }
       if (util::button("1 DAY", status_id++, schedule == Refill::ONE_DAY,
                        size)) {
         LOG_INFO("Changing disinfectant refilling to one day");
@@ -106,11 +109,6 @@ void LiquidControlWindow::show(Manager* manager) {
                        size)) {
         LOG_INFO("Changing disinfectant refilling to two days");
         state->disinfectant_refilling_schedule(Refill::TWO_DAYS);
-      }
-      if (util::button("3 DAYS", status_id++, schedule == Refill::THREE_DAYS,
-                       size)) {
-        LOG_INFO("Changing disinfectant refilling to three days");
-        state->disinfectant_refilling_schedule(Refill::THREE_DAYS);
       }
       ImGui::PopFont();
     }

@@ -16,7 +16,7 @@ template <typename Mutex>
 LoggerWindow<Mutex>::LoggerWindow(float                   width,
                                   float                   height,
                                   const ImGuiWindowFlags& flags)
-    : Window{"Logger", width, height, flags},
+    : Window{"Logger", width, height, ImGuiWindowFlags_AlwaysVerticalScrollbar},
       count_{0},
       level_{spdlog::level::trace} {}
 

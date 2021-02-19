@@ -102,7 +102,7 @@ struct Refill {
   /**
    * Schedule type
    */
-  typedef enum { ONE_DAY = 1, TWO_DAYS, THREE_DAYS } Schedule;
+  typedef enum { ONE_DAY = 1, TWO_DAYS, THREE_DAYS, OFF = 3650 } Schedule;
   /**
    * Requested
    */

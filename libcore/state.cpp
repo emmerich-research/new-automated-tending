@@ -445,10 +445,14 @@ void StateImpl::water_refilling_schedule(const Refill::Schedule& schedule) {
   {
     const StateImpl::StateLock lock(mutex());
     water_refilling_.set_schedule(schedule);
-    LOG_DEBUG(
-        "Next time to water refilling is on {}",
-        fmt::format("{:%b %d, %Y @ %T}",
-                    fmt::localtime(Clock::to_time_t(water_refilling_.next))));
+    if (schedule == Refill::OFF) {
+      LOG_DEBUG("Turning off automatic water refilling");
+    } else {
+      LOG_DEBUG(
+          "Next time to water refilling is on {}",
+          fmt::format("{:%b %d, %Y @ %T}",
+                      fmt::localtime(Clock::to_time_t(water_refilling_.next))));
+    }
   }
 
   notify_all();
@@ -515,10 +519,14 @@ void StateImpl::disinfectant_refilling_schedule(
   {
     const StateImpl::StateLock lock(mutex());
     disinfectant_refilling_.set_schedule(schedule);
-    LOG_DEBUG(
-        "Next time to disinfectant refilling is on {}",
-        fmt::format("{:%b %d, %Y @ %T}", fmt::localtime(Clock::to_time_t(
-                                             disinfectant_refilling_.next))));
+    if (schedule == Refill::OFF) {
+      LOG_DEBUG("Turning off automatic disinfectant refilling");
+    } else {
+      LOG_DEBUG(
+          "Next time to disinfectant refilling is on {}",
+          fmt::format("{:%b %d, %Y @ %T}", fmt::localtime(Clock::to_time_t(
+                                               disinfectant_refilling_.next))));
+    }
   }
 
   notify_all();
