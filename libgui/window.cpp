@@ -16,11 +16,9 @@ Window::Window(const char*             name,
       height_{height},
       flags_{ImGuiWindowFlags_NoScrollbar |
              // ImGuiWindowFlags_NoScrollWithMouse |
-             ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+             // ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
              ImGuiWindowFlags_NoCollapse |
-             ImGuiWindowFlags_NoBringToFrontOnFocus |
-             ImGuiWindowFlags_NoFocusOnAppearing |
-             ImGuiWindowFlags_NoBringToFrontOnFocus |
+             // ImGuiWindowFlags_NoBringToFrontOnFocus |
              ImGuiWindowFlags_NoFocusOnAppearing | flags} {}
 
 Window::~Window() {}
