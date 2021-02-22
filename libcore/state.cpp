@@ -26,7 +26,7 @@ void Task::reset() {
 Refill::Refill()
     : requested{false},
       running{false},
-      schedule{Refill::TWO_DAYS},
+      schedule{Refill::OFF},
       last{Clock::now()} {
   update();
 }
