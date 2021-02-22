@@ -66,7 +66,6 @@ void LiquidControlWindow::show(Manager* manager) {
     {
       ImGui::PushFont(manager->button_font());
       if (util::button("EXCHANGE NOW", status_id++, active, size)) {
-        LOG_DEBUG("Im here to exchange");
         state->water_refilling_request(true);
       }
       ImGui::PopFont();
