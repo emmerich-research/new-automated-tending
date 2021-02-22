@@ -226,57 +226,15 @@ void Manager::render() {
 
     ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
     ImGuiID            dockspace_id = ImGui::GetID("MainDockspace");
-    if (!ImGui::DockBuilderGetNode(dockspace_id)) {
-      ImGui::DockBuilderRemoveNode(dockspace_id);
-      ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_None);
+    // if (!ImGui::DockBuilderGetNode(dockspace_id)) {
+    //   ImGui::DockBuilderRemoveNode(dockspace_id);
+    //   ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_None);
 
-      ImGuiID dock_main_id = dockspace_id;
-      ImGuiID dock_up_id = ImGui::DockBuilderSplitNode(
-          dock_main_id, ImGuiDir_Up, 0.2f, nullptr, &dock_main_id);
-      //       ImGuiID dock_right_id = ImGui::DockBuilderSplitNode(
-      //           dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
-      //       ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(
-      //           dock_main_id, ImGuiDir_Left, 0.2f, nullptr, &dock_main_id);
-      //       ImGuiID dock_down_id = ImGui::DockBuilderSplitNode(
-      //           dock_main_id, ImGuiDir_Down, 0.2f, nullptr, &dock_main_id);
+    //   ImGuiID dock_main_id = dockspace_id;
 
-      //       ImGui::DockBuilderDockWindow("Todo app", dock_right_id);
-      //       ImGui::DockBuilderDockWindow("Logs", dock_down_id);
-      //       ImGui::DockBuilderDockWindow("Dear ImGui Demo", dock_left_id);
-      //       ImGui::DockBuilderDockWindow("Left Camera", dock_up_id);
-      // #ifdef ENABLE_RIGHT_CAMERA
-      //       ImGui::DockBuilderDockWindow("Right Camera", dock_up_id);
-      // #endif
-
-      // ImGuiDockNodeFlags_NoTabBar
-      // ImGuiDockNode* dock_up_node = ImGui::DockBuilderGetNode(dock_up_id);
-      // dock_up_node->LocalFlags |= ImGuiDockNodeFlags_NoWindowMenuButton |
-      //                             ImGuiDockNodeFlags_NoCloseButton;
-
-      //       ImGuiDockNode* dock_left_node =
-      //       ImGui::DockBuilderGetNode(dock_left_id);
-      //       dock_left_node->LocalFlags |=
-      //       ImGuiDockNodeFlags_NoWindowMenuButton |
-      //                                     ImGuiDockNodeFlags_NoCloseButton;
-
-      //       ImGuiDockNode* dock_down_node =
-      //       ImGui::DockBuilderGetNode(dock_down_id);
-      //       dock_down_node->LocalFlags |=
-      //       ImGuiDockNodeFlags_NoWindowMenuButton |
-      //                                     ImGuiDockNodeFlags_NoCloseButton;
-
-      //       ImGuiDockNode* dock_right_node =
-      //       ImGui::DockBuilderGetNode(dock_right_id);
-      //       dock_right_node->LocalFlags |=
-      //       ImGuiDockNodeFlags_NoWindowMenuButton |
-      //                                      ImGuiDockNodeFlags_NoCloseButton;
-
-      ImGui::DockBuilderFinish(dock_main_id);
-    }
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f),
-                     ImGuiDockNodeFlags_NoTabBar |
-                         ImGuiDockNodeFlags_NoWindowMenuButton |
-                         ImGuiDockNodeFlags_NoCloseButton);
+    //   ImGui::DockBuilderFinish(dock_main_id);
+    // }
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 
     {
       ImGui::PushFont(general_font());
