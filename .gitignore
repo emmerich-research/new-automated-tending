@@ -50,3 +50,6 @@ Makefile
 *.ccls
 .ccls-*
 *.emacs.*
+
+*.bak
+libguinn

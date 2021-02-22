@@ -68,7 +68,16 @@ function(target_set_warnings)
       elseif(WGCC OR WCLANG)
         list(APPEND WarningFlags -Wno-switch-enum)
         if(WCLANG)
-          list(APPEND WarningFlags -Wno-unknown-warning-option -Wno-padded -Wno-undef -Wno-reserved-id-macro -fcomment-block-commands=test,retval)
+          list(APPEND WarningFlags
+            -Wno-unknown-warning-option
+            -Wno-padded
+            -Wno-undef
+            -Wno-documentation
+            -Wno-reserved-id-macro
+            -fcomment-block-commands=test,retval,file,gmail,n
+            -Wno-unsupported-friend
+            -Wno-global-constructors
+            -Wno-exit-time-destructors)
           if(NOT CMAKE_CXX_STANDARD EQUAL 98)
               list(APPEND WarningFlags -Wno-c++98-compat -Wno-c++98-compat-pedantic)
           endif()
