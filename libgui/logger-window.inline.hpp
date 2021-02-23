@@ -64,8 +64,7 @@ void LoggerWindow<Mutex>::show(Manager* manager) {
   }
 
   {
-    ImGui::BeginChild("ScrollingRegion", ImVec2{0, -FLT_MIN}, false,
-                      ImGuiWindowFlags_NoScrollbar);
+    ImGui::BeginChild("ScrollingRegion", ImVec2{0, -FLT_MIN}, false);
     ImGui::SetScrollX(0);
 
     ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
