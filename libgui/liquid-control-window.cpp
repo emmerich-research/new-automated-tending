@@ -28,8 +28,7 @@ void LiquidControlWindow::show(Manager* manager) {
 
   ImGui::Columns(2, NULL, /* v_borders */ true);
   {
-    const bool disabled =
-        !tsm()->is_no_task() || state->water_refilling_running();
+    const bool  disabled = state->water_refilling_running();
     const auto& schedule = state->water_refilling_schedule();
 
     if (disabled) {
@@ -79,8 +78,7 @@ void LiquidControlWindow::show(Manager* manager) {
   }
   ImGui::NextColumn();
   {
-    const bool disabled =
-        !tsm()->is_no_task() || state->disinfectant_refilling_running();
+    const bool  disabled = state->disinfectant_refilling_running();
     const auto& schedule = state->disinfectant_refilling_schedule();
 
     if (disabled) {
