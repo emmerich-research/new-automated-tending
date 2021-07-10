@@ -1,0 +1,34 @@
+on: [push, pull_request]
+
+jobs:
+  armv7l:
+    runs-on: ubuntu-18.04
+    name: Build on ARMv7l
+    steps:
+      - uses: actions/checkout@v2
+      - uses: uraimo/run-on-arch-action@v1.0.9
+        id: runcmd
+        with:
+          architecture: armv7
+          distribution: ubuntu18.04
+          run: |
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update -q
+            apt-get install -q -y software-properties-common wget
+            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+            add-apt-repository "deb [trusted=yes] http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+            add-apt-repository "deb-src [trusted=yes] http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+            apt-get update -q
+            apt-get install -q -y libllvm-10-ocaml-dev libllvm10 llvm-10 llvm-10-dev llvm-10-doc llvm-10-examples llvm-10-runtime
+            apt-get install -q -y clang-10 clang-tools-10 clang-10-doc libclang-common-10-dev libclang-10-dev libclang1-10 clang-format-10 python-clang-10 clangd-10
+            apt-get install -q -y lldb-10 lld-10 libc++-10-dev libc++abi-10-dev
+            apt-get install -q -y cmake ninja-build ccache
+            apt-get install -q -y libglfw3 libglfw3-dev
+            clang++ -v
+            export CC=clang
+            export CXX=clang++
+      - name: Build
+        run: |
+            mkdir build
+            cd build
+            cmake .. -DCMAKE_BUILD_TYPE=Release -GNinja
